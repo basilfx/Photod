@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="Photod" />
+        <meta name="keywords" content="Photod, photo management, album" />
+        <meta name="author" content="BasilFX">
+
+        <title>Photod</title>
+
+        {% if settings.STYLE_URL %}
+            <link type="text/css" rel="stylesheet" href="{{ settings.STYLE_URL }}">
+        {% endif %}
+
+        <script type="text/javascript">
+            /**
+             * Callback for application code to return the application
+             * configuration.
+             *
+             * @return {object} Application configuration.
+             */
+            function getApplicationConfig() {
+                {% if settings.FRONTEND %}
+                    return {{ settings.FRONTEND|safe }};
+                {% else %}
+                    return {};
+                {% endif %}
+            }
+
+            /**
+             * Callback for application code to load the current user details,
+             * if the user is already signed in.
+             *
+             * @return {object|null} Current user, if signed in.
+             */
+            function getApplicationUser() {
+                {% if session.user %}
+                    return {{ session.user|safe }};
+                {% else %}
+                    return null;
+                {% endif %}
+            }
+        </script>
+    </head>
+    <body>
+        <div id="react"></section>
+        <script type="text/javascript" src="{{ settings.BUNDLE_URL }}"></script>
+    </body>
+</html>

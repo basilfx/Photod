@@ -1,0 +1,26 @@
+[ignore]
+.*/node_modules/.*/test/.*
+.*/node_modules/.*/tests/.*
+.*/node_modules/fbjs
+.*/node_modules/babel-plugin-flow-runtime
+.*/node_modules/react-event-listener
+
+[include]
+
+[libs]
+interfaces/
+flow-typed/
+
+[options]
+module.system.node.resolve_dirname=src
+module.system.node.resolve_dirname=node_modules
+
+unsafe.enable_getters_and_setters=true
+
+module.name_mapper.extension='scss' -> 'empty/object'
+module.name_mapper.extension='less' -> 'empty/object'
+
+module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(css\|less\)$' -> 'StyleSheetStub'
+module.name_mapper='^[./a-zA-Z0-9$_-]+\.\(bmp\|gif\|jpg\|jpeg\|png\|psd\|svg\|webp\|m4v\|mov\|mp4\|mpeg\|mpg\|webm\|aac\|aiff\|caf\|m4a\|mp3\|wav\|html\|pdf|ttf|otf\)$' -> 'ImageStub'
+
+esproposal.decorators=ignore

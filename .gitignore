@@ -1,0 +1,6 @@
+photod-frontend/node_modules/
+
+photod-backend/env/
+photod-backend/cache/
+photod-backend/data/
+photod-backend/photod/settings/local.py

@@ -1,0 +1,9 @@
+django>=1.11.2
+django-debug-toolbar>=1.6
+django-extensions>=1.7.6
+graphene-django>=1.2.1
+Cython>=0.25.2
+tesserocr>=2.2.1
+face_recognition>=0.1.14
+Pillow>=4.1.1
+ExifRead>=2.1.2

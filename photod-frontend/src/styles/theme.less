@@ -1,0 +1,130 @@
+/* Columns */
+.tm-page {
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+}
+.tm-header {
+    order: 1;
+}
+.tm-footer{
+    order: 3;
+}
+.tm-body {
+    order: 2;
+    flex: 1;
+}
+
+/* Rows */
+.tm-body {
+    display: flex;
+    flex-direction: row;
+
+    width: 100vw;
+}
+.tm-sidebar-left {
+    order: 1;
+}
+.tm-content {
+    order: 2;
+    flex: 1;
+}
+.tm-sidebar-right {
+    order: 3;
+}
+
+/* Menu */
+.tm-sidebar-left {
+    display: flex;
+    flex-direction: row;
+}
+.tm-sidebar-left-menu {
+    order: 1;
+}
+.tm-sidebar-left-panel {
+    order: 1;
+    width: 300px;
+}
+
+/* Borders */
+.tm-header {
+    border-bottom: 1px solid #e5e5e5;
+}
+.tm-footer {
+    border-top: 1px solid #e5e5e5;
+}
+.tm-sidebar-left-panel {
+    border-right: 1px solid #e5e5e5;
+}
+.tm-sidebar-left-menu {
+    border-right: 1px solid #e5e5e5;
+}
+.tm-sidebar-right {
+    border-left: 1px solid #e5e5e5;
+}
+
+
+.tm-sidebar-left-panel {
+    background-color: @global-thirdary-background;
+}
+.tm-content {
+    // background-color: #cccccc;
+    background-color: #ffffff;
+}
+
+
+.tm-sidebar-left-menu {
+    li {
+        .uk-padding-small;
+    }
+
+    li.uk-active {
+        // background-color: #232323;
+
+        /* Black borders */
+        border-bottom: 1px solid #e5e5e5;
+
+        a {
+            color: #2761fc;
+        }
+    }
+
+    li:not(:first-child).uk-active {
+        border-top: 1px solid #e5e5e5;
+    }
+
+    /* Remove border from active item */
+    &[data-panel="true"] {
+        li.uk-active {
+            /* Mask border on the right */
+            border-right: 1px solid #ffffff;
+            margin-right: -1px;
+        }
+    }
+}
+
+.tm-sidebar-left-panel {
+    li.tm-list-item:hover {
+        color: #c6c6c6;
+        background-color: #1f3b84;
+    }
+}
+
+/*.tm-menu {
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}*/
+
+.tm-mediafile:hover {
+    box-shadow: inset 0 0 15em rgba(0,0,0,0.5);
+    transition: box-shadow 0.1s ease-in-out;
+}
+
+
+.tm-breadcrumb {
+    font-size: 24px;
+
+    * > * {
+        font-size:24px;
+    }
+}

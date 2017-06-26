@@ -1,0 +1,27 @@
+{
+    "presets": [
+        ["env", {
+            "targets": {
+                "chrome": 57
+            },
+            "modules": false,
+        }],
+        "stage-0",
+        "react"
+    ],
+    "plugins": [
+        "transform-runtime",
+        "transform-decorators-legacy",
+        "transform-react-display-name",
+        "react-hot-loader/babel"
+    ],
+    "env": {
+        "production": {
+            "plugins": [
+                "transform-react-inline-elements",
+                "transform-react-constant-elements",
+                "transform-react-remove-prop-types"
+            ]
+        }
+    }
+}

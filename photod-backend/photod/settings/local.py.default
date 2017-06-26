@@ -1,0 +1,48 @@
+from django.core.exceptions import ImproperlyConfigured
+from photod.settings import *  # noqa
+
+# Default settings, overrides settings in generic.
+DEBUG = True
+
+ENABLE_DEBUG_TOOLBAR = True
+ENABLE_SENTRY = False
+
+
+# Django Debug Toolbar
+# https://django-debug-toolbar.readthedocs.io/en/stable/
+
+if ENABLE_DEBUG_TOOLBAR:
+    if not DEBUG:
+        raise ImproperlyConfigured(
+            "Django Debug Toolbar enabled while DEBUG is False")
+
+    # Callable to always enable the toolbar, except for AJAX requests. This
+    # will override the check for remote IP in INTERAL_IPS!
+    def show_debug_toolbar(request):
+        return not request.is_ajax()
+
+    # Order is important.
+    INSTALLED_APPS = INSTALLED_APPS + ['debug_toolbar']
+
+    MIDDLEWARE = MIDDLEWARE + [
+        'debug_toolbar.middleware.DebugToolbarMiddleware'
+    ]
+
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': 'photod.settings.local.show_debug_toolbar',
+        'INTERCEPT_REDIRECTS': False,
+    }
+
+
+# Sentry logging
+# https://docs.sentry.io/clients/python/
+
+if ENABLE_SENTRY:
+    # Set your DSN value
+    RAVEN_CONFIG = {
+        'dsn': '',
+    }
+
+    # Add raven to the list of installed apps, unless DEBUG is True.
+    if not DEBUG:
+        INSTALLED_APPS = INSTALLED_APPS + ['raven.contrib.django.raven_compat']

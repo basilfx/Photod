@@ -1,0 +1,53 @@
+{
+    "env": {
+        "browser": true,
+        "node": true
+    },
+    "extends": [
+        "semistandard",
+        "plugin:react/recommended",
+        "plugin:flowtype/recommended"
+    ],
+    "parser": "babel-eslint",
+    "plugins": [
+        "babel",
+        "flowtype",
+        "flowtype-errors",
+        "import",
+        "react"
+    ],
+    "rules": {
+        /* Flowtype */
+        "flowtype-errors/show-errors": "error",
+
+        /* Overrides of Semistandard */
+        "brace-style": ["error", "stroustrup", {
+            "allowSingleLine": true
+        }],
+        "comma-dangle": ["error", "always-multiline"],
+        "indent": ["error", 4],
+        "space-before-function-paren": ["error", "never"],
+
+        /* Overrides of React */
+        "react/jsx-boolean-value": "warn",
+        "react/no-danger": "warn",
+        "react/no-did-mount-set-state": "warn",
+        "react/no-did-update-set-state": "warn",
+        "react/no-multi-comp": "warn",
+        "react/self-closing-comp": "warn",
+        "react/sort-comp": ["warn", {
+            "order": [
+                "type-annotations",
+                "static-methods",
+                "lifecycle",
+                "everything-else",
+                "render"
+            ]
+        }],
+        "react/sort-prop-types": "warn"
+    },
+    "settings": {
+        "import/resolver": "webpack",
+        "import/parser": "babel-eslint"
+    }
+}
