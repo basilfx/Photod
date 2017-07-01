@@ -1,4 +1,8 @@
+__pycache__
+*.pyc
+
 photod-frontend/node_modules/
+photod-frontend/public
 
 photod-backend/env/
 photod-backend/cache/
