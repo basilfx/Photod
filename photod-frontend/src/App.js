@@ -22,7 +22,7 @@ export default class App extends React.Component {
                 <Switch>
                     <Route exact path='/' component={Directories} />
 
-                    <Route exact path='/login' component={Login} />
+                    <Route exact path='/login' component={({ history }) => <Login history={history} />} />
 
                     <Route exact path='/directories' component={Directories } />
                     <Route exact path='/directories/:id' component={

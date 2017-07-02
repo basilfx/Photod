@@ -117,7 +117,7 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, State> {
             <List>
                 {this.props.directories && this.props.directories.edges.map(edge =>
                     <ListItem key={edge.node.id}>
-                        <span style={{ whiteSpace: "nowrap" }}>
+                        <span style={{ whiteSpace: 'nowrap' }}>
                             <a onClick={() => this.handleClick(edge.node.id)}>
                                 <Icon icon={icon(edge.node)} />
                             </a>

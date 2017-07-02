@@ -4,8 +4,6 @@ import autobind from 'autobind-decorator';
 
 import React from 'react';
 
-import { Link } from 'react-router-dom';
-
 import Main from 'components/Main';
 import Header from 'components/Header';
 
@@ -17,11 +15,13 @@ import Icon from 'ui/Icon';
 
 import UIkit from 'uikit';
 
+import queryString from 'query-string';
+
 /**
  * Type declaration for Props.
  */
 type Props = {
-
+    history: Object,
 };
 
 /**
@@ -68,10 +68,20 @@ export default class Login extends React.Component<DefaultProps, Props, void> {
             return UIkit.notification({
                 message: 'Login failed',
                 pos: 'bottom-left',
+                status: 'danger',
             });
         }
 
-        return false;
+        // Forward to next page.
+        const search = queryString.parse(location.search);
+
+        UIkit.notification({
+            message: 'Welcome back!',
+            pos: 'bottom-left',
+            status: 'success',
+        });
+
+        this.props.history.push(search.next || '/');
     }
 
     /**
@@ -102,7 +112,7 @@ export default class Login extends React.Component<DefaultProps, Props, void> {
                                 </FormGroup>
                             </div>
                             <div className='uk-margin'>
-                                <button typ='submit' className='uk-width-1-1 uk-button uk-button-primary uk-button-large'>
+                                <button type='submit' className='uk-width-1-1 uk-button uk-button-primary uk-button-large'>
                                     Login
                                 </button>
                             </div>

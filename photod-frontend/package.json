@@ -84,7 +84,7 @@
     "moment-timezone": "*",
     "normalize-wheel": "*",
     "prop-types": "^15.5.8",
-    "query-string": "*",
+    "query-string": "^4.3.4",
     "react": "^15.6.0",
     "react-apollo": "^1.4.2",
     "react-dom": "^15.6.0",
