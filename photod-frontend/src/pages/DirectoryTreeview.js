@@ -109,7 +109,7 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, State> {
             }
         };
 
-        if (!this.props.directories) {
+        if (!this.props.directories.edges.length) {
             return <span>No directories</span>;
         }
 
