@@ -17,13 +17,6 @@ module.exports = {
             debug: false,
         }),
         new webpack.optimize.OccurrenceOrderPlugin(),
-        /*new webpack.optimize.UglifyJsPlugin({
-            compressor: {
-                passes: 5,
-                warnings: false,
-            },
-            sourceMap: true,
-        }),*/
         new webpack.EnvironmentPlugin([
             'NODE_ENV',
         ]),
