@@ -59,7 +59,7 @@
     "style-loader": "^0.18.2",
     "uglify-es": "^3.0.22",
     "url-loader": "^0.5.9",
-    "webpack": "^3.0.0",
+    "webpack": "^2.0.0",
     "webpack-dev-server": "^2.5.0"
   },
   "dependencies": {
