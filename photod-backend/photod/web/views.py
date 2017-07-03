@@ -14,12 +14,18 @@ from photod.core.models import MediaFile, Thumbnail, Filmstrip
 from sendfile import sendfile
 
 import os
+import json
 
 
 @login_required
 def index(request):
     return render(request, "index.html", {
-        'settings': settings
+        'settings': settings,
+        'user': json.dumps({
+            'username': request.user.username,
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name
+        }) if request.user else None
     })
 
 

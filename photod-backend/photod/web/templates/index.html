@@ -35,8 +35,8 @@
              * @return {object|null} Current user, if signed in.
              */
             function getApplicationUser() {
-                {% if session.user %}
-                    return {{ session.user|safe }};
+                {% if user %}
+                    return {{ user|safe }};
                 {% else %}
                     return null;
                 {% endif %}
