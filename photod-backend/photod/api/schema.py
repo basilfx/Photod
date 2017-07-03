@@ -1,7 +1,7 @@
 from django.urls import reverse
 
 from photod.core import models
-from photod.web.views import thumbnail, image, filmstrip
+from photod.web.views import thumbnail, media, filmstrip
 
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django import DjangoObjectType
@@ -124,7 +124,7 @@ class MediaFile(DjangoObjectType):
     url = graphene.String()
 
     def resolve_url(self, args, context, info):
-        return reverse(image, args=[self.id])
+        return reverse(media, args=[self.id])
 
 
 class Query(graphene.ObjectType):

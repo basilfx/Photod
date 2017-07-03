@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
+from django.http import JsonResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.http import is_safe_url
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, logout as auth_logout
@@ -56,8 +56,8 @@ def login(request):
 
     # Default is to show login form.
     return render(request, "index.html", {
-        'settings': settings,
-        'form': form,
+        "settings": settings,
+        "form": form,
     })
 
 
@@ -68,41 +68,36 @@ def logout(request):
 
 
 @login_required
-def image(request, media_file_id):
+def media(request, media_file_id):
     """
-    Serve a file.
+    Serve a media file.
     """
-
-    photod_root = "/Users/basilfx/Desktop/photo-suite/photod"
 
     media_file = get_object_or_404(MediaFile, id=media_file_id)
 
-    return sendfile(request, os.path.join(photod_root, media_file.path))
+    return sendfile(
+        request, os.path.join(settings.MEDIA_ROOT, media_file.path))
 
 
 @login_required
 def thumbnail(request, media_file_id, thumbnail_id):
     """
-    Serve a file.
+    Serve a thumbnail file.
     """
-
-    photod_root = "/Users/basilfx/Desktop/photo-suite/photod-backend"
 
     thumbnail = get_object_or_404(
         Thumbnail, media_file_id=media_file_id, id=thumbnail_id)
 
-    return sendfile(request, os.path.join(photod_root, thumbnail.path))
+    return sendfile(request, os.path.join(settings.MEDIA_ROOT, thumbnail.path))
 
 
 @login_required
 def filmstrip(request, media_file_id, filmstrip_id):
     """
-    Serve a file.
+    Serve a filmstrip file.
     """
-
-    photod_root = "/Users/basilfx/Desktop/photo-suite/photod-backend"
 
     filmstrip = get_object_or_404(
         Filmstrip, media_file_id=media_file_id, id=filmstrip_id)
 
-    return sendfile(request, os.path.join(photod_root, filmstrip.path))
+    return sendfile(request, os.path.join(settings.MEDIA_ROOT, filmstrip.path))

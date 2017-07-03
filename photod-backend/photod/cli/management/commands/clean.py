@@ -6,7 +6,7 @@ import os
 
 
 class Command(BaseCommand):
-    help = 'Clean all media files that do not exist.'
+    help = 'Clean all media files that do not exist anymore.'
 
     def handle(self, *args, **options):
         cleanup = []

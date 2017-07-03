@@ -9,18 +9,29 @@ import os
 
 
 class Command(BaseCommand):
-    help = 'Enroll a directory of media files'
+    help = 'Enroll a directory of media files.'
 
     def add_arguments(self, parser):
         parser.add_argument('directories', nargs='+', type=str)
 
     def scan(self, directories):
         """
-        Scan the directories, and yield each file found.
+        Scan the directories, and yield each file found. Directories will be
+        converted to absolute paths, and de-duplicated.
         """
 
+        history = []
+
         for directory in directories:
-            search_path = os.path.join(directory, "**/*")
+            absolute_path = os.path.abspath(directory)
+
+            if not os.path.isdir(absolute_path):
+                continue
+
+            if absolute_path in history:
+                continue
+
+            search_path = os.path.join(absolute_path, "**/*")
 
             for file_path in glob.iglob(search_path, recursive=True):
                 if os.path.isfile(file_path):
@@ -83,6 +94,7 @@ class Command(BaseCommand):
                 mime_type=media_file.mime_type
             )
 
+            # Update digest.
             new_media_file.digest = media_file.digest
 
             return new_media_file.save()
@@ -96,6 +108,7 @@ class Command(BaseCommand):
                 mime_type=media_file.mime_type
             )
 
+            # Update path.
             new_media_file.path = media_file.path
 
             return new_media_file.save()

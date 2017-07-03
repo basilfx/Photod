@@ -1,12 +1,12 @@
 from django.conf.urls import url
 
-from photod.web.views import index, login, logout, image, thumbnail, filmstrip
+from photod.web.views import index, login, logout, media, thumbnail, filmstrip
 
 
 urlpatterns = [
     url(r'^media/([0-9a-zA-Z]+)/filmstrip/([0-9a-zA-Z]+)/$', filmstrip),
     url(r'^media/([0-9a-zA-Z]+)/thumbnail/([0-9a-zA-Z]+)/$', thumbnail),
-    url(r'^media/([0-9a-zA-Z]+)/$', image),
+    url(r'^media/([0-9a-zA-Z]+)/$', media),
 
     url(r'^login$', login),
     url(r'^logout$', logout),
