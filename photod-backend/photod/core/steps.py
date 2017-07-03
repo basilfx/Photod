@@ -650,5 +650,5 @@ class AutoTag(Step):
             _add_tag("localized")
 
         # Classify as panorama when an image (or vidoe) is very wide.
-        if media_file.aspect_ratio > 3:
+        if media_file.aspect_ratio and media_file.aspect_ratio > 3:
             _add_tag("panorama")
