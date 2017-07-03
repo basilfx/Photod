@@ -337,7 +337,6 @@ class VideoStripStep(Step):
             (128 * frames, 128),
             (256 * frames, 256),
             (512 * frames, 512),
-            (768 * frames, 768)
         ]
 
         filmstrips = []
@@ -399,7 +398,8 @@ class ThumbnailStep(Step):
             (128, 128),
             (256, 256),
             (512, 512),
-            (768, 768)
+            (1024, 1024),
+            (2048, 2048)
         ]
 
         image = Image.open(media_file.path)
