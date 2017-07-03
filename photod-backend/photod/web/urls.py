@@ -4,9 +4,9 @@ from photod.web.views import index, login, logout, media, thumbnail, filmstrip
 
 
 urlpatterns = [
-    url(r'^media/([0-9a-zA-Z]+)/filmstrip/([0-9a-zA-Z]+)/$', filmstrip),
-    url(r'^media/([0-9a-zA-Z]+)/thumbnail/([0-9a-zA-Z]+)/$', thumbnail),
-    url(r'^media/([0-9a-zA-Z]+)/$', media),
+    url(r'^mediafiles/([0-9a-zA-Z]+)/filmstrips/([0-9a-zA-Z]+)/$', filmstrip),
+    url(r'^mediafiles/([0-9a-zA-Z]+)/thumbnails/([0-9a-zA-Z]+)/$', thumbnail),
+    url(r'^mediafiles/([0-9a-zA-Z]+)/$', media),
 
     url(r'^login$', login),
     url(r'^logout$', logout),
