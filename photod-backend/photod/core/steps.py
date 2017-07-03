@@ -1,6 +1,8 @@
 from PIL import Image
 
 from django.db import IntegrityError
+from django.conf import settings
+from django.contrib.gis.geos import Point
 
 from photod.core import models
 from photod.core.dependencies import Node, get_batches
@@ -15,12 +17,23 @@ import itertools
 import colorific
 import exifread
 import logging
+import numpy
+import json
 import time
+import cv2
 import os
 import av
 
 # Logger instance
 logger = logging.getLogger(__name__)
+
+
+def get_cache_path(media_file, basename):
+    """
+    Helper to generate path to cache file.
+    """
+
+    return os.path.join("cache", str(media_file.id), basename)
 
 
 class StepMeta(type):
@@ -128,7 +141,9 @@ class Step(object, metaclass=StepMeta):
         """
 
         for dependency in getattr(self.Meta, 'depends', []):
-            if dependency not in [step.name for step in media_file.steps.all()]:
+            steps = [step.name for step in media_file.steps.all()]
+
+            if dependency not in steps:
                 return False
 
         return True
@@ -170,7 +185,12 @@ class PathStep(Step):
 
             while path:
                 paths.append(path)
-                path, _ = os.path.split(path)
+                new_path, _ = os.path.split(path)
+
+                if new_path == path:
+                    break
+
+                path = new_path
 
             # In reverse order, ensure all directories exist.
             directory = None
@@ -178,7 +198,8 @@ class PathStep(Step):
             for path in reversed(paths):
                 if not directory:
                     try:
-                        directory = models.Directory.objects.get(full_path=path)
+                        directory = models.Directory.objects.get(
+                            full_path=path)
                     except models.Directory.DoesNotExist:
                         directory = models.Directory.add_root(
                             full_path=path, name=os.path.basename(path))
@@ -187,7 +208,8 @@ class PathStep(Step):
                         directory = directory.add_child(
                             full_path=path, name=os.path.basename(path))
                     except IntegrityError:
-                        directory = models.Directory.objects.get(full_path=path)
+                        directory = models.Directory.objects.get(
+                            full_path=path)
 
             return directory
 
@@ -219,6 +241,7 @@ class ExifStep(Step):
     class Meta:
         name = "exif_v1"
         accepts = ("image/jpeg", )
+        disabled = True
 
     def take(self, media_file, context):
         with open(media_file.path, "rb") as fp:
@@ -231,11 +254,13 @@ class ExifStep(Step):
 
 
 class ImageInfoStep(Step):
+    """
+    Read basic image information step.
+    """
 
     class Meta:
         name = "image_info_v1"
         accepts = ("image/*", )
-        disabled = False
 
     def take(self, media_file, context):
         with Image.open(media_file.path) as image:
@@ -245,6 +270,9 @@ class ImageInfoStep(Step):
 
 
 class VideoInfoStep(Step):
+    """
+    Read basic video information step.
+    """
 
     class Meta:
         name = "video_info_v1"
@@ -271,6 +299,11 @@ class VideoInfoStep(Step):
 
 
 class VideoStripStep(Step):
+    """
+    Generate video strip step.
+
+    The video strip is 10 frames.
+    """
 
     class Meta:
         name = "strip_v1"
@@ -295,21 +328,31 @@ class VideoStripStep(Step):
         if not image:
             return
 
-        path = os.path.join("cache", "%s_filmstrip.jpg" % media_file.id)
-        image.save(path, quality=100)
+        # relative_path = get_cache_path("filmstrip.jpg")
+        # absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+        # image.save(path, quality=100)
 
         # Create thumbnails
-        sizes = [(128 * frames, 128), (256 * frames, 256), (512 * frames, 512)]
+        sizes = [
+            (128 * frames, 128),
+            (256 * frames, 256),
+            (512 * frames, 512),
+            (768 * frames, 768)
+        ]
 
         filmstrips = []
 
         for size in sizes:
-            path = os.path.join("cache", "%s_filmstrip_%dx%d.jpg" % (
-                media_file.id, size[0], size[1]))
+            relative_path = get_cache_path(
+                media_file, "filmstrip_%dx%d.jpg" % size)
+            absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+
+            if not os.path.isdir(os.path.dirname(absolute_path)):
+                os.makedirs(os.path.dirname(absolute_path))
 
             thumbnail_image = image.copy()
             thumbnail_image.thumbnail(size)
-            thumbnail_image.save(path, quality=100)
+            thumbnail_image.save(absolute_path, quality=100)
 
             filmstrips.append(
                 models.Filmstrip(
@@ -317,7 +360,7 @@ class VideoStripStep(Step):
                     width=thumbnail_image.width,
                     height=thumbnail_image.height,
                     quality=100,
-                    path=path
+                    path=relative_path
                 )
             )
 
@@ -342,6 +385,9 @@ class VideoStripStep(Step):
 
 
 class ThumbnailStep(Step):
+    """
+    Generate image thumbnail step.
+    """
 
     class Meta:
         name = "thumbnailer_v1"
@@ -349,26 +395,35 @@ class ThumbnailStep(Step):
         depends = ("image_info_v1", )
 
     def take(self, media_file, context):
-        sizes = [(128, 128), (256, 256), (512, 512)]
+        sizes = [
+            (128, 128),
+            (256, 256),
+            (512, 512),
+            (768, 768)
+        ]
 
         image = Image.open(media_file.path)
 
         thumbnails = []
 
         for size in sizes:
-            path = os.path.join("cache", "%s_thumbnail_%dx%d.jpg" % (
-                media_file.id, size[0], size[1]))
+            relative_path = get_cache_path(
+                media_file, "thumbnail_%dx%d.jpg" % size)
+            absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
+
+            if not os.path.isdir(os.path.dirname(absolute_path)):
+                os.makedirs(os.path.dirname(absolute_path))
 
             thumbnail_image = image.copy()
             thumbnail_image.thumbnail(size)
-            thumbnail_image.save(path, quality=100)
+            thumbnail_image.save(absolute_path, quality=100)
 
             thumbnails.append(
                 models.Thumbnail(
                     width=thumbnail_image.width,
                     height=thumbnail_image.height,
                     quality=100,
-                    path=path
+                    path=relative_path
                 )
             )
 
@@ -376,6 +431,9 @@ class ThumbnailStep(Step):
 
 
 class FaceDetectionStep(Step):
+    """
+    Detect faces step.
+    """
 
     class Meta:
         name = "face_detection_v1"
@@ -400,6 +458,9 @@ class FaceDetectionStep(Step):
 
 
 class OcrStep(Step):
+    """
+    Text recognition step.
+    """
 
     class Meta:
         name = "ocr_v1"
@@ -440,6 +501,9 @@ class OcrStep(Step):
 
 
 class ColorPaletteStep(Step):
+    """
+    Dominant color palette step.
+    """
 
     class Meta:
         name = "color_palette_v1"
@@ -460,7 +524,99 @@ class ColorPaletteStep(Step):
         )
 
 
+class LocationStep(Step):
+    """
+    Image localization step.
+    """
+
+    class Meta:
+        name = "location_v1"
+        accepts = ("image/*", )
+
+    def take(self, media_file, context):
+        with open(media_file.path, "rb") as fp:
+            exif_data = exifread.process_file(fp)
+
+            lat, lon = self.get_exif_location(exif_data)
+
+            if lat and lon:
+                media_file.locations.add(
+                    models.Location(
+                        point=Point(lon, lat)
+                    ), bulk=False
+                )
+
+    def get_exif_location(self, exif_data):
+        """
+        Returns the latitude and longitude, if available, from the provided
+        `exif_data` (obtained through get_exif_data above).
+        """
+
+        def _to_degress(value):
+            d = float(value.values[0].num) / float(value.values[0].den)
+            m = float(value.values[1].num) / float(value.values[1].den)
+            s = float(value.values[2].num) / float(value.values[2].den)
+
+            return d + (m / 60.0) + (s / 3600.0)
+
+        lat = None
+        lon = None
+
+        gps_latitude = exif_data.get('GPS GPSLatitude')
+        gps_latitude_ref = exif_data.get('GPS GPSLatitudeRef')
+        gps_longitude = exif_data.get('GPS GPSLongitude')
+        gps_longitude_ref = exif_data.get('GPS GPSLongitudeRef')
+
+        if gps_latitude and gps_latitude_ref and gps_longitude and gps_longitude_ref:
+            lat = _to_degress(gps_latitude)
+            if gps_latitude_ref.values[0] != 'N':
+                lat = 0 - lat
+
+            lon = _to_degress(gps_longitude)
+            if gps_longitude_ref.values[0] != 'E':
+                lon = 0 - lon
+
+        return lat, lon
+
+
+class HistogramStep(Step):
+    """
+    Generate a histogram step.
+
+    A histogram is generated for each individual channel.
+    """
+
+    class Meta:
+        name = "histogram_v1"
+        accepts = ("image/*", )
+
+    def take(self, media_file, context):
+        image = cv2.imread(media_file.path)
+
+        histograms = []
+        color = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
+        names = ["red", "green", "blue"]
+
+        for ch, col in enumerate(color):
+            hist_item = cv2.calcHist([image], [ch], None, [256], [0, 255])
+
+            cv2.normalize(hist_item, hist_item, 0, 255, cv2.NORM_MINMAX)
+            hist = numpy.int32(numpy.around(hist_item))
+
+            histograms.append(
+                models.Histogram(
+                    channel=names[ch],
+                    data=json.dumps(hist.reshape(256).tolist())
+                )
+            )
+
+        media_file.histograms.add(*histograms, bulk=False)
+
+
 class AutoTag(Step):
+    """
+    Autotag step.
+    """
 
     class Meta:
         name = "auto_tag_v1"
@@ -486,3 +642,13 @@ class AutoTag(Step):
 
         if faces_count > 0:
             _add_tag("faces:%d" % faces_count)
+
+        # Add tag if it has a geo tag.
+        locations_count = media_file.locations.all().count()
+
+        if locations_count > 0:
+            _add_tag("localized")
+
+        # Classify as panorama when an image (or vidoe) is very wide.
+        if media_file.aspect_ratio > 3:
+            _add_tag("panorama")

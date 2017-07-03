@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.gis.db import models as gis_models
+from django.conf import settings
 
 from treebeard.mp_tree import MP_Node
 
@@ -96,7 +97,7 @@ class Palette(models.Model):
 
 
 class Location(models.Model):
-    media_file = models.ForeignKey("MediaFile")
+    media_file = models.ForeignKey("MediaFile", related_name="locations")
 
     point = gis_models.PointField()
 
@@ -138,3 +139,22 @@ class Album(MP_Node):
 class Directory(MP_Node):
     full_path = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
+
+
+class View(models.Model):
+    media_file = models.ForeignKey("MediaFile", related_name="views")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="views")
+
+    count = models.IntegerField(default=0)
+
+
+class Star(models.Model):
+    media_file = models.ForeignKey("MediaFile", related_name="stars")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="stars")
+
+
+class Histogram(models.Model):
+    media_file = models.ForeignKey("MediaFile", related_name="histograms")
+
+    channel = models.CharField(max_length=32)
+    data = models.CharField(max_length=4096)
