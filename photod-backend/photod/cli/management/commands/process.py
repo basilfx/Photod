@@ -9,6 +9,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         for media_file in MediaFile.objects.all():
+            self.stdout.write(self.style.SUCCESS(
+                'Processing "%s".' % media_file.path))
+
             for step in Step.iter_pipeline():
                 if step.process(media_file, {}):
                     media_file.save()

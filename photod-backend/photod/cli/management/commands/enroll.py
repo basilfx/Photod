@@ -47,7 +47,10 @@ class Command(BaseCommand):
             return False
 
         # Retrieve mime type.
-        mime_type = magic.from_file(file_path, mime=True)
+        try:
+            mime_type = magic.from_file(file_path, mime=True)
+        except:
+            mime_type = None
 
         if not mime_type:
             return False
