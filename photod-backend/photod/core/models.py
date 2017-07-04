@@ -114,6 +114,7 @@ class Thumbnail(models.Model):
     media_file = models.ForeignKey("MediaFile", related_name="thumbnails")
 
     path = models.CharField(max_length=255)
+    mime_type = models.CharField(max_length=255)
 
     width = models.IntegerField()
     height = models.IntegerField()
@@ -124,6 +125,7 @@ class Filmstrip(models.Model):
     media_file = models.ForeignKey("MediaFile", related_name="filmstrips")
 
     path = models.CharField(max_length=255)
+    mime_type = models.CharField(max_length=255)
 
     frames = models.IntegerField()
 

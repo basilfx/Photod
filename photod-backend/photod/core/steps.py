@@ -395,11 +395,20 @@ class ThumbnailStep(Step):
 
     def take(self, media_file, context):
         sizes = [
-            (128, 128),
             (256, 256),
             (512, 512),
             (1024, 1024),
             (2048, 2048)
+        ]
+
+        formats = [
+            ("webp", "image/webp"),
+            ("jpg", "image/jpeg")
+        ]
+
+        qualities = [
+            100,
+            60
         ]
 
         image = Image.open(media_file.path)
@@ -407,25 +416,31 @@ class ThumbnailStep(Step):
         thumbnails = []
 
         for size in sizes:
-            relative_path = get_cache_path(
-                media_file, "thumbnail_%dx%d.jpg" % size)
-            absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
-
-            if not os.path.isdir(os.path.dirname(absolute_path)):
-                os.makedirs(os.path.dirname(absolute_path))
-
             thumbnail_image = image.copy()
             thumbnail_image.thumbnail(size)
-            thumbnail_image.save(absolute_path, quality=100)
 
-            thumbnails.append(
-                models.Thumbnail(
-                    width=thumbnail_image.width,
-                    height=thumbnail_image.height,
-                    quality=100,
-                    path=relative_path
-                )
-            )
+            for quality in qualities:
+                for extension, mime_type in formats:
+                    relative_path = get_cache_path(
+                        media_file, "thumbnail_%dx%d@%d.%s" % (
+                            size, quality, extension))
+                    absolute_path = os.path.join(
+                        settings.MEDIA_ROOT, relative_path)
+
+                    if not os.path.isdir(os.path.dirname(absolute_path)):
+                        os.makedirs(os.path.dirname(absolute_path))
+
+                    thumbnail_image.save(absolute_path, quality=quality)
+
+                    thumbnails.append(
+                        models.Thumbnail(
+                            width=thumbnail_image.width,
+                            height=thumbnail_image.height,
+                            mime_type=mime_type,
+                            quality=quality,
+                            path=relative_path
+                        )
+                    )
 
         media_file.thumbnails.add(*thumbnails, bulk=False)
 
