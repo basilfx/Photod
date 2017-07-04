@@ -26,6 +26,9 @@ class MediaFile(models.Model):
     height = models.IntegerField(null=True)
     aspect_ratio = models.FloatField(null=True)
 
+    orientation = models.IntegerField(null=True)
+    flip = models.NullBooleanField()
+
 
 class Step(models.Model):
     name = models.CharField(max_length=255, unique=True)

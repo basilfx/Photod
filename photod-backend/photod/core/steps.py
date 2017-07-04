@@ -240,7 +240,7 @@ class ExifStep(Step):
 
     class Meta:
         name = "exif_v1"
-        accepts = ("image/jpeg", )
+        accepts = ("image/jpeg", "image/tiff")
         disabled = True
 
     def take(self, media_file, context):
@@ -539,14 +539,14 @@ class ColorPaletteStep(Step):
         )
 
 
-class LocationStep(Step):
+class ImageLocationStep(Step):
     """
     Image localization step.
     """
 
     class Meta:
         name = "location_v1"
-        accepts = ("image/*", )
+        accepts = ("image/jpeg", "image/tiff")
 
     def take(self, media_file, context):
         with open(media_file.path, "rb") as fp:
@@ -582,7 +582,8 @@ class LocationStep(Step):
         gps_longitude = exif_data.get('GPS GPSLongitude')
         gps_longitude_ref = exif_data.get('GPS GPSLongitudeRef')
 
-        if gps_latitude and gps_latitude_ref and gps_longitude and gps_longitude_ref:
+        if gps_latitude and gps_latitude_ref and \
+                gps_longitude and gps_longitude_ref:
             lat = _to_degress(gps_latitude)
             if gps_latitude_ref.values[0] != 'N':
                 lat = 0 - lat
@@ -628,6 +629,50 @@ class HistogramStep(Step):
         media_file.histograms.add(*histograms, bulk=False)
 
 
+class ImageRotationStep(Step):
+    """
+    Image rotation step.
+    """
+
+    class Meta:
+        name = "image_rotation_v2"
+        accepts = ("image/jpeg", "image/tiff")
+
+    def take(self, media_file, context):
+        with open(media_file.path, "rb") as fp:
+            exif_data = exifread.process_file(fp)
+
+            if "Image Orientation" in exif_data:
+                value = exif_data["Image Orientation"].values[0]
+
+                if value == 1:
+                    media_file.orientation = 0
+                    media_file.flip = False
+                elif value == 2:
+                    media_file.orientation = 0
+                    media_file.flip = True
+                elif value == 3:
+                    media_file.orientation = 180
+                    media_file.flip = False
+                elif value == 4:
+                    media_file.orientation = 180
+                    media_file.flip = True
+                elif value == 5:
+                    media_file.orientation = 90
+                    media_file.flip = True
+                elif value == 6:
+                    media_file.orientation = 90
+                    media_file.flip = False
+                elif value == 7:
+                    media_file.orientation = 270
+                    media_file.flip = True
+                elif value == 8:
+                    media_file.orientation = 270
+                    media_file.flip = False
+                else:
+                    logger.warn("Unknown orientation value: %s", value)
+
+
 class AutoTag(Step):
     """
     Autotag step.
@@ -656,7 +701,7 @@ class AutoTag(Step):
         faces_count = media_file.faces.all().count()
 
         if faces_count > 0:
-            _add_tag("faces:%d" % faces_count)
+            _add_tag("faces")
 
         # Add tag if it has a geo tag.
         locations_count = media_file.locations.all().count()
@@ -665,5 +710,5 @@ class AutoTag(Step):
             _add_tag("localized")
 
         # Classify as panorama when an image (or vidoe) is very wide.
-        if media_file.aspect_ratio and media_file.aspect_ratio > 3:
+        if media_file.aspect_ratio and media_file.aspect_ratio > 2:
             _add_tag("panorama")
