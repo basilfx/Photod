@@ -435,7 +435,7 @@ class ThumbnailStep(Step):
                 for extension, mime_type in formats:
                     relative_path = get_cache_path(
                         media_file, "thumbnail_%dx%d@%d.%s" % (
-                            size, quality, extension))
+                            size[0], size[1], quality, extension))
                     absolute_path = os.path.join(
                         settings.MEDIA_ROOT, relative_path)
 
