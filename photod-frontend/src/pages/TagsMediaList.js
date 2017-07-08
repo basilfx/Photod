@@ -100,8 +100,8 @@ export default graphql(MediaFilesQuery, {
                         cursor: mediaFiles.pageInfo.endCursor,
                     },
                     updateQuery: (previousResult, { fetchMoreResult }) => {
-                        const newEdges = fetchMoreResult.data.mediaFiles.edges;
-                        const pageInfo = fetchMoreResult.data.mediaFiles.pageInfo;
+                        const newEdges = fetchMoreResult.mediaFiles.edges;
+                        const pageInfo = fetchMoreResult.mediaFiles.pageInfo;
 
                         return {
                             mediaFiles: {

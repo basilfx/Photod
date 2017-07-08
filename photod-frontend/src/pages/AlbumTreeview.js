@@ -178,8 +178,8 @@ const ApolloAlbumTreeView = graphql(DirectoriesQuery, {
                         cursor: albums.pageInfo.endCursor,
                     },
                     updateQuery: (previousResult, { fetchMoreResult }) => {
-                        const newEdges = fetchMoreResult.data.albums.edges;
-                        const pageInfo = fetchMoreResult.data.albums.pageInfo;
+                        const newEdges = fetchMoreResult.albums.edges;
+                        const pageInfo = fetchMoreResult.albums.pageInfo;
 
                         return {
                             albums: {

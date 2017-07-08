@@ -132,8 +132,8 @@ export default graphql(TagsQuery, {
                         cursor: tags.pageInfo.endCursor,
                     },
                     updateQuery: (previousResult, { fetchMoreResult }) => {
-                        const newEdges = fetchMoreResult.data.tags.edges;
-                        const pageInfo = fetchMoreResult.data.tags.pageInfo;
+                        const newEdges = fetchMoreResult.tags.edges;
+                        const pageInfo = fetchMoreResult.tags.pageInfo;
 
                         return {
                             tags: {

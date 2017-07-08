@@ -126,8 +126,8 @@ export default graphql(PersonsQuery, {
                         cursor: persons.pageInfo.endCursor,
                     },
                     updateQuery: (previousResult, { fetchMoreResult }) => {
-                        const newEdges = fetchMoreResult.data.persons.edges;
-                        const pageInfo = fetchMoreResult.data.persons.pageInfo;
+                        const newEdges = fetchMoreResult.persons.edges;
+                        const pageInfo = fetchMoreResult.persons.pageInfo;
 
                         return {
                             persons: {

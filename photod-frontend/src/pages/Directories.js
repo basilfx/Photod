@@ -117,8 +117,8 @@ export default graphql(DirectoriesQuery, {
                         cursor: directories.pageInfo.endCursor,
                     },
                     updateQuery: (previousResult, { fetchMoreResult }) => {
-                        const newEdges = fetchMoreResult.data.directories.edges;
-                        const pageInfo = fetchMoreResult.data.directories.pageInfo;
+                        const newEdges = fetchMoreResult.directories.edges;
+                        const pageInfo = fetchMoreResult.directories.pageInfo;
 
                         return {
                             directories: {
