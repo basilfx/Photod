@@ -16,6 +16,8 @@ import threading
 import itertools
 import colorific
 import exifread
+import platform
+import datetime
 import logging
 import numpy
 import json
@@ -34,6 +36,17 @@ def get_cache_path(media_file, basename):
     """
 
     return os.path.join("cache", str(media_file.id), basename)
+
+
+def get_creation_date(path):
+    if platform.system() == 'Windows':
+        return os.path.getctime(path)
+    else:
+        stat = os.stat(path)
+        try:
+            return stat.st_birthtime
+        except AttributeError:
+            return stat.st_mtime
 
 
 class StepMeta(type):
@@ -634,7 +647,7 @@ class ImageRotationStep(Step):
     """
 
     class Meta:
-        name = "image_rotation_v2"
+        name = "image_rotation_v1"
         accepts = ("image/jpeg", "image/tiff")
 
     def take(self, media_file, context):
@@ -672,6 +685,43 @@ class ImageRotationStep(Step):
                     logger.warn("Unknown orientation value: %s", value)
 
 
+class RecordDateStep(Step):
+    """
+    Date of recording step.
+    """
+
+    class Meta:
+        name = "record_date_v1"
+        accepts = ("image/jpeg", "image/tiff")
+
+    def take(self, media_file, context):
+        with open(media_file.path, "rb") as fp:
+            exif_data = exifread.process_file(fp)
+
+            if "EXIF DateTimeOriginal" in exif_data:
+                media_file.recorded = datetime.datetime.strptime(str(
+                    exif_data['EXIF DateTimeOriginal']), '%Y:%m:%d %H:%M:%S')
+            elif "EXIF DateTimeDigitized" in exif_data:
+                media_file.recorded = datetime.datetime.strptime(str(
+                    exif_data['EXIF DateTimeDigitized']), '%Y:%m:%d %H:%M:%S')
+
+
+class CreationDateStep(Step):
+    """
+    Date of creation, if record date was not set.
+    """
+
+    class Meta:
+        name = "creation_date_v1"
+        accepts = ("*/*", )
+        depends = ("record_date_v1", )
+
+    def take(self, media_file, context):
+        if not media_file.recorded:
+            return datetime.datetime.fromtimestamp(
+                get_creation_date(media_file.path))
+
+
 class AutoTag(Step):
     """
     Autotag step.
@@ -680,7 +730,12 @@ class AutoTag(Step):
     class Meta:
         name = "auto_tag_v1"
         accepts = ("*/*", )
-        after = ("face_detection_v1", )
+        after = (
+            "face_detection_v1",
+            "location_v1",
+            "file_info_v1",
+            "creation_date_v1",
+        )
 
     def take(self, media_file, context):
         def _add_tag(label):
@@ -708,6 +763,12 @@ class AutoTag(Step):
         if locations_count > 0:
             _add_tag("localized")
 
-        # Classify as panorama when an image (or vidoe) is very wide.
-        if media_file.aspect_ratio and media_file.aspect_ratio > 2:
+        # Classify as panorama when an image (or vidoe) is very wide or
+        # extra tall.
+        if media_file.aspect_ratio and (
+                media_file.aspect_ratio < 0.25 or media_file.aspect_ratio > 2):
             _add_tag("panorama")
+
+        # Add a year tag.
+        if media_file.recorded:
+            _add_tag(str(media_file.recorded.year))

@@ -4,8 +4,10 @@ from django.conf import settings
 
 from treebeard.mp_tree import MP_Node
 
+from django_extensions.db.models import TimeStampedModel
 
-class MediaFile(models.Model):
+
+class MediaFile(TimeStampedModel, models.Model):
     path = models.CharField(max_length=255)
     mime_type = models.CharField(max_length=255)
     digest = models.CharField(max_length=255)
@@ -28,6 +30,8 @@ class MediaFile(models.Model):
 
     orientation = models.IntegerField(null=True)
     flip = models.NullBooleanField()
+
+    recorded = models.DateTimeField(null=True)
 
 
 class Step(models.Model):
@@ -138,10 +142,16 @@ class Filmstrip(models.Model):
 
 
 class Album(MP_Node):
+    class Meta:
+        ordering = ["name"]
+
     name = models.CharField(max_length=255)
 
 
 class Directory(MP_Node):
+    class Meta:
+        ordering = ["full_path"]
+
     full_path = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
 
