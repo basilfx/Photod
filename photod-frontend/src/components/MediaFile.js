@@ -41,6 +41,7 @@ type MediaFileParser = {
     height: number,
     frames: number,
     label: any,
+    orientation: number,
 };
 
 type State = {
@@ -120,15 +121,19 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
     }
 
     componentDidMount() {
-        this.image.addEventListener('mouseover', this.handleMouseOver);
-        this.image.addEventListener('mouseout', this.handleMouseOut);
-        this.image.addEventListener('dblclick', this.handleDoubleClick);
+        this.container.addEventListener('mouseover', this.handleMouseOver);
+        this.container.addEventListener('mouseout', this.handleMouseOut);
+        this.container.addEventListener('dblclick', this.handleDoubleClick);
+        window.addEventListener('resize', this.handleResize);
+
+        this.handleResize();
     }
 
     componentWillUnmount() {
-        this.image.removeEventListener('mouseover', this.handleMouseOver);
-        this.image.removeEventListener('mouseout', this.handleMouseOut);
-        this.image.removeEventListener('dblclick', this.handleDoubleClick);
+        this.container.removeEventListener('mouseover', this.handleMouseOver);
+        this.container.removeEventListener('mouseout', this.handleMouseOut);
+        this.container.removeEventListener('dblclick', this.handleDoubleClick);
+        window.removeEventListener('resize', this.handleResize);
     }
 
     @autobind handleMouseOver() {
@@ -155,6 +160,22 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
         });
     }
 
+    @autobind handleResize() {
+        const info = this.parseMediaFile();
+
+        if (info.orientation === 90 || info.orientation === 270) {
+            const rect = this.container.getClientRects();
+
+            this.image.style.transform = `rotate(${info.orientation}deg)`;
+            this.image.style.transformOrigin = `${rect[0].width / 2}px`;
+            this.image.style.width = `${rect[0].height}px`;
+            this.image.style.height = `${rect[0].width}px`;
+
+            this.image.parentNode.style.width = `${rect[0].width}px`;
+            this.image.parentNode.style.height = `${rect[0].height}px`;
+        }
+    }
+
     /**
      * Render the media file as an image component.
      *
@@ -177,6 +198,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
             width: mediaFile.width || 0,
             height: mediaFile.height || 0,
             frames: 1,
+            orientation: mediaFile.orientation || 0,
             label: (
                 <span>
                     <Icon icon='image' /> {mediaFile.width}x{mediaFile.height}, {filesize(mediaFile.fileSize)}, {mediaFile.faces.edges.length} faces
@@ -207,6 +229,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
             width: filmstrips[0].node.width / filmstrips[0].node.frames,
             height: filmstrips[0].node.height,
             frames: filmstrips[0].node.frames,
+            orientation: 0,
             label: <span />,
         };
     }
@@ -223,6 +246,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
             width: 0,
             height: 0,
             frames: 1,
+            orientation: 0,
             label: <span />,
         };
     }
@@ -233,30 +257,41 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
     render() {
         const info = this.parseMediaFile();
 
+        // Swap width and height depending on orientation.
+        let width = info.width;
+        let height = info.height;
+
+        if (info.orientation === 90 || info.orientation === 270) {
+            width = info.height;
+            height = info.width;
+        }
+
         return (
-            <div ref={element => { this.image = element; }} className='uk-card uk-card-default uk-card-hover' style={{
-                flexGrow: `${info.width / info.height * 100}`,
-                flexBasis: `${info.width * this.props.height / info.height}px`,
+            <div ref={element => { this.container = element; }} className='uk-card uk-card-default uk-card-hover' style={{
+                flexGrow: `${width / height * 100}`,
+                flexBasis: `${width * this.props.height / height}px`,
                 maxHeight: `${this.props.height * 2}px`,
-                maxWidth: `${this.props.height * 2 * (info.width / info.height)}px`,
+                maxWidth: `${this.props.height * 2 * (width / height)}px`,
                 margin: `8px`,
                 backgroundColor: info.backgroundColor,
             }}>
-                <span style={{
-                    display: 'block',
-                    paddingBottom: `${info.height / info.width * 100}%`,
+                <div style={{
+                    paddingBottom: `${height / width * 100}%`,
                 }} />
                 <div className='uk-transition-toggle tm-mediafile' style={{
                     position: 'absolute',
-                    verticalAlign: 'bottom',
                     top: '0',
                     width: '100%',
                     height: '100%',
-                    borderRadius: '2px',
-                    background: `url(${info.src})`,
-                    backgroundSize: 'cover',
-                    backgroundPositionX: `${100 * (this.state.frame % info.frames)}%`,
+                    overflow: 'hidden',
                 }}>
+                    <div ref={element => { this.image = element; }} style={{
+                        background: `url(${info.src})`,
+                        backgroundSize: 'cover',
+                        backgroundPositionX: `${100 * (this.state.frame % info.frames)}%`,
+                        width: '100%',
+                        height: '100%',
+                    }} />
                     <div className='uk-transition-slide-bottom uk-overlay uk-light uk-position-bottom uk-padding-small uk-text-small'>
                         {info.label}
                     </div>
@@ -275,6 +310,7 @@ MediaFile.fragment = gql`
         fileSize,
         width,
         height,
+        orientation,
         faces {
             edges {
                 node {
