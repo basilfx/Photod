@@ -12,6 +12,12 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(
                 'Processing "%s".' % media_file.path))
 
-            for step in Step.iter_pipeline():
-                if step.process(media_file, {}):
-                    media_file.save()
+            try:
+                for step in Step.iter_pipeline():
+                    step.process(media_file, {})
+
+                # Save changes.
+                media_file.save()
+            except:
+                self.stdout.write(self.style.ERROR(
+                    'Errors during processing of "%s".' % media_file.path))
