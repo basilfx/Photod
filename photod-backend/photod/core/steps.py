@@ -334,7 +334,6 @@ class VideoStripStep(Step):
 
         # Create thumbnails
         sizes = [
-            (128 * frames, 128),
             (256 * frames, 256),
             (512 * frames, 512),
         ]
