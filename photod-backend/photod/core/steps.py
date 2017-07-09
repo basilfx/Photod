@@ -748,16 +748,19 @@ class RecordDateStep(Step):
         if not exif:
             return
 
-        if "EXIF DateTimeOriginal" in exif:
-            media_file.recorded = datetime.datetime.strptime(str(
-                exif['EXIF DateTimeOriginal']), '%Y:%m:%d %H:%M:%S')
-        elif "EXIF DateTimeDigitized" in exif:
-            media_file.recorded = datetime.datetime.strptime(str(
-                exif['EXIF DateTimeDigitized']), '%Y:%m:%d %H:%M:%S')
+        try:
+            if "EXIF DateTimeOriginal" in exif:
+                media_file.recorded = datetime.datetime.strptime(str(
+                    exif['EXIF DateTimeOriginal']), '%Y:%m:%d %H:%M:%S')
+            elif "EXIF DateTimeDigitized" in exif:
+                media_file.recorded = datetime.datetime.strptime(str(
+                    exif['EXIF DateTimeDigitized']), '%Y:%m:%d %H:%M:%S')
 
-        if media_file.recorded and not media_file.recorded.tzinfo:
-            media_file.recorded = media_file.recorded.replace(
-                tzinfo=tzlocal.get_localzone())
+            if media_file.recorded and not media_file.recorded.tzinfo:
+                media_file.recorded = media_file.recorded.replace(
+                    tzinfo=tzlocal.get_localzone())
+        except ValueError:
+            pass
 
 
 class CreationDateStep(Step):
