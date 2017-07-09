@@ -19,7 +19,9 @@ import exifread
 import platform
 import datetime
 import logging
+import tzlocal
 import numpy
+import pytz
 import json
 import time
 import cv2
@@ -755,6 +757,10 @@ class RecordDateStep(Step):
             media_file.recorded = datetime.datetime.strptime(str(
                 exif['EXIF DateTimeDigitized']), '%Y:%m:%d %H:%M:%S')
 
+        if media_file.recorded and not media_file.recorded.tzinfo:
+            media_file.recorded = media_file.recorded.replace(
+                tzinfo=tzlocal.get_localzone())
+
 
 class CreationDateStep(Step):
     """
@@ -781,7 +787,7 @@ class CreationDateStep(Step):
             except AttributeError:
                 timestamp = stat.st_mtime
 
-        return datetime.datetime.fromtimestamp(timestamp)
+        return datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
 
 
 class AutoTag(Step):
