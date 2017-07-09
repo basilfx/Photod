@@ -13,11 +13,17 @@ class Command(BaseCommand):
                 'Processing "%s".' % media_file.path))
 
             try:
+                context = {}
+
                 for step in Step.iter_pipeline():
-                    step.process(media_file, {})
+                    step.process(media_file, context)
+
+                for step in Step.iter_pipeline():
+                    step.cleanup(media_file, context)
 
                 # Save changes.
                 media_file.save()
             except:
                 self.stdout.write(self.style.ERROR(
                     'Errors during processing of "%s".' % media_file.path))
+                raise

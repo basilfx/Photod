@@ -38,17 +38,6 @@ def get_cache_path(media_file, basename):
     return os.path.join("cache", str(media_file.id), basename)
 
 
-def get_creation_date(path):
-    if platform.system() == 'Windows':
-        return os.path.getctime(path)
-    else:
-        stat = os.stat(path)
-        try:
-            return stat.st_birthtime
-        except AttributeError:
-            return stat.st_mtime
-
-
 class StepMeta(type):
     def __new__(cls, clsname, superclasses, attributedict):
         """
@@ -175,6 +164,63 @@ class Step(object, metaclass=StepMeta):
 
         raise NotImplementedError
 
+    def cleanup(self, media_file, context):
+        """
+        Perform optional cleanup after processing.
+        """
+
+        pass
+
+
+class ResourceStep(Step):
+    """
+    Generic step to include lazy loading of resources that may be shared by
+    multiple steps.
+
+    This step is always taken, to ensure the resources are available.
+    """
+
+    class Meta:
+        name = "resource_step_v1"
+        accepts = ("*/*", )
+
+    def is_taken(self, media_file):
+        return False
+
+    def take(self, media_file, context):
+        # Exif data.
+        def _exif():
+            if "_exif" not in context:
+                with open(media_file.path, "rb") as fp:
+                    context["_exif"] = exifread.process_file(fp)
+            return context["_exif"]
+        context["exif"] = _exif
+
+        # Stat data.
+        def _stat():
+            if "_stat" not in context:
+                context["_stat"] = os.stat(media_file.path)
+            return context["_stat"]
+        context["stat"] = _stat
+
+        # Pillow image.
+        def _image():
+            if "_image" not in context:
+                context["_image"] = Image.open(media_file.path)
+            return context["_image"]
+        context["image"] = _image
+
+        # PyAV container.
+        def _container():
+            if "_container" not in context:
+                context["_container"] = av.open(media_file.path, "rb")
+            return context["_container"]
+        context["container"] = _container
+
+    def cleanup(self, media_file, context):
+        if "_image" in context:
+            context["_image"].close()
+
 
 class PathStep(Step):
     """
@@ -239,31 +285,15 @@ class FileInfoStep(Step):
     class Meta:
         name = "file_info_v1"
         accepts = ("*/*", )
+        depends = ("resource_step_v1", )
 
     def take(self, media_file, context):
-        stat = os.stat(media_file.path)
+        stat = context["stat"]()
+
+        if not stat:
+            return
 
         media_file.file_size = stat.st_size
-
-
-class ExifStep(Step):
-    """
-    Read EXIF data step.
-    """
-
-    class Meta:
-        name = "exif_v1"
-        accepts = ("image/jpeg", "image/tiff")
-        disabled = True
-
-    def take(self, media_file, context):
-        with open(media_file.path, "rb") as fp:
-            tags = exifread.process_file(fp)
-
-            if tags:
-                media_file.exif = {
-                    tag: str(tags[tag]) for tag in tags.keys()
-                }
 
 
 class ImageInfoStep(Step):
@@ -274,12 +304,17 @@ class ImageInfoStep(Step):
     class Meta:
         name = "image_info_v1"
         accepts = ("image/*", )
+        depends = ("resource_step_v1", )
 
     def take(self, media_file, context):
-        with Image.open(media_file.path) as image:
-            media_file.width = image.width
-            media_file.height = image.height
-            media_file.aspect_ratio = image.width / image.height
+        image = context["image"]()
+
+        if not image:
+            return
+
+        media_file.width = image.width
+        media_file.height = image.height
+        media_file.aspect_ratio = image.width / image.height
 
 
 class VideoInfoStep(Step):
@@ -290,16 +325,17 @@ class VideoInfoStep(Step):
     class Meta:
         name = "video_info_v1"
         accepts = ("video/*", )
+        depends = ("resource_step_v1", )
 
     def take(self, media_file, context):
-        result = {
-            "streams": []
-        }
-
-        container = av.open(media_file.path, "rb")
+        container = context["container"]()
 
         if not container:
             return
+
+        result = {
+            "streams": []
+        }
 
         media_file.streams.add(
             *(models.Stream(
@@ -321,10 +357,10 @@ class VideoStripStep(Step):
     class Meta:
         name = "strip_v1"
         accepts = ("video/*", )
-        depends = ("video_info_v1", )
+        depends = ("video_info_v1", "resource_step_v1")
 
     def take(self, media_file, context):
-        container = av.open(media_file.path, "rb")
+        container = context["container"]()
 
         if not container:
             return
@@ -340,10 +376,6 @@ class VideoStripStep(Step):
 
         if not image:
             return
-
-        # relative_path = get_cache_path("filmstrip.jpg")
-        # absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
-        # image.save(path, quality=100)
 
         # Create thumbnails
         sizes = [
@@ -403,9 +435,14 @@ class ThumbnailStep(Step):
     class Meta:
         name = "thumbnailer_v1"
         accepts = ("image/*", )
-        depends = ("image_info_v1", )
+        depends = ("image_info_v1", "resource_step_v1")
 
     def take(self, media_file, context):
+        image = context["image"]()
+
+        if not image:
+            return
+
         sizes = [
             (256, 256),
             (512, 512),
@@ -422,8 +459,6 @@ class ThumbnailStep(Step):
             100,
             60
         ]
-
-        image = Image.open(media_file.path)
 
         thumbnails = []
 
@@ -465,13 +500,15 @@ class FaceDetectionStep(Step):
     class Meta:
         name = "face_detection_v1"
         accepts = ("image/*", )
-        depends = ("image_info_v1", )
+        depends = ("image_info_v1", "resource_step_v1")
 
     def take(self, media_file, context):
-        result = []
+        image = context["image"]()
 
-        image = face_recognition.load_image_file(media_file.path)
-        faces = face_recognition.face_locations(image)
+        if not image:
+            return
+
+        faces = face_recognition.face_locations(numpy.array(image))
 
         media_file.faces.add(
             *(models.Face(
@@ -492,13 +529,18 @@ class OcrStep(Step):
     class Meta:
         name = "ocr_v1"
         accepts = ("image/*", )
-        depends = ("image_info_v1", )
+        depends = ("image_info_v1", "resource_step_v1")
 
     def take(self, media_file, context):
+        image = context["image"]()
+
+        if not image:
+            return
+
         texts = []
 
         with PyTessBaseAPI() as api:
-            api.SetImageFile(media_file.path)
+            api.SetImage(image)
 
             boxes = api.GetComponentImages(RIL.TEXTLINE, True)
 
@@ -559,19 +601,22 @@ class ImageLocationStep(Step):
     class Meta:
         name = "location_v1"
         accepts = ("image/jpeg", "image/tiff")
+        depends = ("resource_step_v1", )
 
     def take(self, media_file, context):
-        with open(media_file.path, "rb") as fp:
-            exif_data = exifread.process_file(fp)
+        exif = context["exif"]()
 
-            lat, lon = self.get_exif_location(exif_data)
+        if not exif:
+            return
 
-            if lat and lon:
-                media_file.locations.add(
-                    models.Location(
-                        point=Point(lon, lat)
-                    ), bulk=False
-                )
+        lat, lon = self.get_exif_location(exif)
+
+        if lat and lon:
+            media_file.locations.add(
+                models.Location(
+                    point=Point(lon, lat)
+                ), bulk=False
+            )
 
     def get_exif_location(self, exif_data):
         """
@@ -649,40 +694,43 @@ class ImageRotationStep(Step):
     class Meta:
         name = "image_rotation_v1"
         accepts = ("image/jpeg", "image/tiff")
+        depends = ("resource_step_v1", )
 
     def take(self, media_file, context):
-        with open(media_file.path, "rb") as fp:
-            exif_data = exifread.process_file(fp)
+        exif = context["exif"]()
 
-            if "Image Orientation" in exif_data:
-                value = exif_data["Image Orientation"].values[0]
+        if not exif:
+            return
 
-                if value == 1:
-                    media_file.orientation = 0
-                    media_file.flip = False
-                elif value == 2:
-                    media_file.orientation = 0
-                    media_file.flip = True
-                elif value == 3:
-                    media_file.orientation = 180
-                    media_file.flip = False
-                elif value == 4:
-                    media_file.orientation = 180
-                    media_file.flip = True
-                elif value == 5:
-                    media_file.orientation = 90
-                    media_file.flip = True
-                elif value == 6:
-                    media_file.orientation = 90
-                    media_file.flip = False
-                elif value == 7:
-                    media_file.orientation = 270
-                    media_file.flip = True
-                elif value == 8:
-                    media_file.orientation = 270
-                    media_file.flip = False
-                else:
-                    logger.warn("Unknown orientation value: %s", value)
+        if "Image Orientation" in exif:
+            value = exif["Image Orientation"].values[0]
+
+            if value == 1:
+                media_file.orientation = 0
+                media_file.flip = False
+            elif value == 2:
+                media_file.orientation = 0
+                media_file.flip = True
+            elif value == 3:
+                media_file.orientation = 180
+                media_file.flip = False
+            elif value == 4:
+                media_file.orientation = 180
+                media_file.flip = True
+            elif value == 5:
+                media_file.orientation = 90
+                media_file.flip = True
+            elif value == 6:
+                media_file.orientation = 90
+                media_file.flip = False
+            elif value == 7:
+                media_file.orientation = 270
+                media_file.flip = True
+            elif value == 8:
+                media_file.orientation = 270
+                media_file.flip = False
+            else:
+                logger.warn("Unknown orientation value: %s", value)
 
 
 class RecordDateStep(Step):
@@ -695,15 +743,17 @@ class RecordDateStep(Step):
         accepts = ("image/jpeg", "image/tiff")
 
     def take(self, media_file, context):
-        with open(media_file.path, "rb") as fp:
-            exif_data = exifread.process_file(fp)
+        exif = context["exif"]()
 
-            if "EXIF DateTimeOriginal" in exif_data:
-                media_file.recorded = datetime.datetime.strptime(str(
-                    exif_data['EXIF DateTimeOriginal']), '%Y:%m:%d %H:%M:%S')
-            elif "EXIF DateTimeDigitized" in exif_data:
-                media_file.recorded = datetime.datetime.strptime(str(
-                    exif_data['EXIF DateTimeDigitized']), '%Y:%m:%d %H:%M:%S')
+        if not exif:
+            return
+
+        if "EXIF DateTimeOriginal" in exif:
+            media_file.recorded = datetime.datetime.strptime(str(
+                exif['EXIF DateTimeOriginal']), '%Y:%m:%d %H:%M:%S')
+        elif "EXIF DateTimeDigitized" in exif:
+            media_file.recorded = datetime.datetime.strptime(str(
+                exif['EXIF DateTimeDigitized']), '%Y:%m:%d %H:%M:%S')
 
 
 class CreationDateStep(Step):
@@ -714,12 +764,24 @@ class CreationDateStep(Step):
     class Meta:
         name = "creation_date_v1"
         accepts = ("*/*", )
-        depends = ("record_date_v1", )
+        depends = ("record_date_v1", "resource_step_v1")
 
     def take(self, media_file, context):
-        if not media_file.recorded:
-            return datetime.datetime.fromtimestamp(
-                get_creation_date(media_file.path))
+        if media_file.recorded:
+            return
+
+        # Get the file creation time, using the best method available.
+        if platform.system() == "Windows":
+            timestamp = os.path.getctime(path)
+        else:
+            stat = context["stat"]()
+
+            try:
+                timestamp = stat.st_birthtime
+            except AttributeError:
+                timestamp = stat.st_mtime
+
+        return datetime.datetime.fromtimestamp(timestamp)
 
 
 class AutoTag(Step):
