@@ -66,7 +66,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
      */
     static defaultProps = {
         margin: 4,
-        height: 192,
+        height: 240,
     }
 
     /**
@@ -252,8 +252,8 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
             <div ref={element => { this.container = element; }} className='uk-card uk-card-default uk-card-hover' style={{
                 flexGrow: `${width / height * 100}`,
                 flexBasis: `${width * this.props.height / height}px`,
-                maxHeight: `${this.props.height * 2}px`,
-                maxWidth: `${this.props.height * 2 * (width / height)}px`,
+                maxHeight: `${this.props.height}px`,
+                maxWidth: `${this.props.height * (width / height)}px`,
                 margin: `8px`,
                 backgroundColor: info.backgroundColor,
             }}>
