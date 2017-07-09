@@ -335,9 +335,7 @@ class VideoInfoStep(Step):
         if not container:
             return
 
-        result = {
-            "streams": []
-        }
+        media_file.duration = container.duration
 
         media_file.streams.add(
             *(models.Stream(

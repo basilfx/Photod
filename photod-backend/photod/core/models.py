@@ -28,6 +28,8 @@ class MediaFile(TimeStampedModel, models.Model):
     height = models.IntegerField(null=True)
     aspect_ratio = models.FloatField(null=True)
 
+    duration = models.IntegerField(null=True)
+
     orientation = models.IntegerField(null=True)
     flip = models.NullBooleanField()
 
