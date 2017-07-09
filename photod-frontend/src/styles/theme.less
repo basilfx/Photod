@@ -1,3 +1,5 @@
+@import "shift.less";
+
 /* Columns */
 .tm-page {
     height: 100vh;
@@ -120,6 +122,17 @@
     transition: box-shadow 0.1s ease-in-out;
 }
 
+.tm-mediafile-animate-5:hover {
+    animation: bg-shift-5 2.5s infinite step-end;
+}
+
+.tm-mediafile-animate-10:hover {
+    animation: bg-shift-10 5s infinite step-end;
+}
+
+.tm-mediafile-animate-20:hover {
+    animation: bg-shift-10 10s infinite step-end;
+}
 
 .tm-breadcrumb {
     font-size: 24px;

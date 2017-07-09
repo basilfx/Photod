@@ -61,8 +61,6 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
 
     image: HTMLDivElement;
 
-    timer: number;
-
     /**
      * @inheritdoc
      */
@@ -121,8 +119,6 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
     }
 
     componentDidMount() {
-        this.container.addEventListener('mouseover', this.handleMouseOver);
-        this.container.addEventListener('mouseout', this.handleMouseOut);
         this.container.addEventListener('dblclick', this.handleDoubleClick);
         window.addEventListener('resize', this.handleResize);
 
@@ -130,22 +126,8 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
     }
 
     componentWillUnmount() {
-        this.container.removeEventListener('mouseover', this.handleMouseOver);
-        this.container.removeEventListener('mouseout', this.handleMouseOut);
         this.container.removeEventListener('dblclick', this.handleDoubleClick);
         window.removeEventListener('resize', this.handleResize);
-    }
-
-    @autobind handleMouseOver() {
-        this.timer = setInterval(() => this.setState({
-            frame: this.state.frame + 1,
-        }), 500);
-    }
-
-    @autobind handleMouseOut() {
-        if (this.timer) {
-            clearTimeout(this.timer);
-        }
     }
 
     @autobind handleDoubleClick() {
@@ -285,10 +267,9 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
                     height: '100%',
                     overflow: 'hidden',
                 }}>
-                    <div ref={element => { this.image = element; }} style={{
+                    <div ref={element => { this.image = element; }} className={ info.frames ? `tm-mediafile-animate-${info.frames}` : ''} style={{
                         background: `url(${info.src})`,
                         backgroundSize: 'cover',
-                        backgroundPositionX: `${100 * (this.state.frame % info.frames)}%`,
                         width: '100%',
                         height: '100%',
                     }} />
@@ -311,6 +292,8 @@ MediaFile.fragment = gql`
         width,
         height,
         orientation,
+        recorded,
+        created,
         faces {
             edges {
                 node {
