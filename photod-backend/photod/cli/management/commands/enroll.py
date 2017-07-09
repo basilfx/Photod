@@ -60,7 +60,7 @@ class Command(BaseCommand):
 
         with open(file_path, "rb") as fp:
             while True:
-                data = fp.read(hash_instance.block_size)
+                data = fp.read(8192)
 
                 if not data:
                     break
