@@ -8,9 +8,9 @@ from django_extensions.db.models import TimeStampedModel
 
 
 class MediaFile(TimeStampedModel, models.Model):
-    path = models.CharField(max_length=255)
-    mime_type = models.CharField(max_length=255)
-    digest = models.CharField(max_length=255)
+    path = models.CharField(max_length=255, db_index=True)
+    mime_type = models.CharField(max_length=255, db_index=True)
+    digest = models.CharField(max_length=255, db_index=True)
 
     version = models.IntegerField(default=0)
 
@@ -35,7 +35,7 @@ class MediaFile(TimeStampedModel, models.Model):
 
 
 class Step(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True, db_index=True)
 
 
 class MediaFileStep(models.Model):
@@ -52,7 +52,7 @@ class Tag(models.Model):
     class Meta:
         ordering = ["label"]
 
-    label = models.CharField(max_length=255, unique=True)
+    label = models.CharField(max_length=255, unique=True, db_index=True)
 
 
 class Face(models.Model):
@@ -152,7 +152,7 @@ class Directory(MP_Node):
     class Meta:
         ordering = ["full_path"]
 
-    full_path = models.CharField(max_length=255, unique=True)
+    full_path = models.CharField(max_length=255, unique=True, db_index=True)
     name = models.CharField(max_length=255)
 
 
