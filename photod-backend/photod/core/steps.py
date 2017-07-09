@@ -785,7 +785,8 @@ class CreationDateStep(Step):
             except AttributeError:
                 timestamp = stat.st_mtime
 
-        return datetime.datetime.fromtimestamp(timestamp, tz=pytz.UTC)
+        media_file.recorded = datetime.datetime.fromtimestamp(
+            timestamp, tz=pytz.UTC)
 
 
 class AutoTag(Step):

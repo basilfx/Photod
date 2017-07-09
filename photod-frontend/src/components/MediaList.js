@@ -43,9 +43,10 @@ export default class MediaList extends React.Component<DefaultProps, Props, void
     };
 
     getGroup(mediaFile) {
-        const timestamp = mediaFile.recorded ? mediaFile.recorded : mediaFile.created;
-
-        return moment.tz(timestamp, window.getApplicationTimezone()).format("YYYY-MM-DD");
+        return moment.tz(
+            mediaFile.recorded,
+            window.getApplicationTimezone()
+        ).format("YYYY-MM-DD");
     }
 
     * renderMediaFiles(): any {
@@ -56,7 +57,7 @@ export default class MediaList extends React.Component<DefaultProps, Props, void
                 const group = this.getGroup(edge.node);
 
                 if (group !== lastGroup) {
-                    yield <div key={`group-${group}`} className="uk-text-lead uk-width-1-1">{group}</div>;
+                    yield <div key={`group-${group}`} className='uk-text-lead uk-width-1-1'>{group}</div>;
 
                     lastGroup = group;
                 }

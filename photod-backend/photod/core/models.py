@@ -8,6 +8,9 @@ from django_extensions.db.models import TimeStampedModel
 
 
 class MediaFile(TimeStampedModel, models.Model):
+    class Meta:
+        ordering = ["recorded"]
+
     path = models.CharField(max_length=255, db_index=True)
     mime_type = models.CharField(max_length=255, db_index=True)
     digest = models.CharField(max_length=255, db_index=True)
