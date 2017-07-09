@@ -114,7 +114,7 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, State> {
         }
 
         return (
-            <List>
+            <List className='tm-treeview'>
                 {this.props.directories && this.props.directories.edges.map(edge =>
                     <ListItem key={edge.node.id}>
                         <span style={{ whiteSpace: 'nowrap' }}>

@@ -114,7 +114,7 @@ class AlbumTreeView extends React.Component<DefaultProps, Props, State> {
         }
 
         return (
-            <List>
+            <List className='tm-treeview'>
                 {this.props.albums && this.props.albums.edges.map(edge =>
                     <ListItem key={edge.node.id}>
                         <a onClick={() => this.handleClick(edge.node.id)}>
