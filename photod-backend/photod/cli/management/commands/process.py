@@ -23,7 +23,8 @@ class Command(BaseCommand):
 
                 # Save changes.
                 media_file.save()
+            except KeyboardInterrupt:
+                raise
             except:
                 self.stdout.write(self.style.ERROR(
                     'Errors during processing of "%s".' % media_file.path))
-                raise
