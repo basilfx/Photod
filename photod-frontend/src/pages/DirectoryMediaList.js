@@ -93,12 +93,14 @@ export default graphql(MediaFilesQuery, {
             hasNextPage: mediaFiles ? mediaFiles.pageInfo.hasNextPage : false,
             loadMoreEntries: () => {
                 return fetchMore({
-                    query: MediaFilesQuery,
                     variables: {
                         cursor: mediaFiles.pageInfo.endCursor,
-                        directoryId: props.directoryId,
                     },
                     updateQuery: (previousResult, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) {
+                            return previousResult;
+                        }
+
                         const newEdges = fetchMoreResult.mediaFiles.edges;
                         const pageInfo = fetchMoreResult.mediaFiles.pageInfo;
 

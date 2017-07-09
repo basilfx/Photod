@@ -121,11 +121,14 @@ export default graphql(PersonsQuery, {
             hasNextPage: persons ? persons.pageInfo.hasNextPage : false,
             loadMoreEntries: () => {
                 return fetchMore({
-                    query: PersonsQuery,
                     variables: {
                         cursor: persons.pageInfo.endCursor,
                     },
                     updateQuery: (previousResult, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) {
+                            return previousResult;
+                        }
+
                         const newEdges = fetchMoreResult.persons.edges;
                         const pageInfo = fetchMoreResult.persons.pageInfo;
 

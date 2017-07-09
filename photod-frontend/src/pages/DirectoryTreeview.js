@@ -146,7 +146,7 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, State> {
 
 const DirectoriesQuery = gql`
     query Directories($parentId: ID, $cursor: String) {
-        directories(first: 25, after: $cursor, parentId: $parentId) {
+        directories(first: 100, after: $cursor, parentId: $parentId) {
             edges {
                 node {
                     id
@@ -181,6 +181,10 @@ const ApolloDirectoryTreeview = graphql(DirectoriesQuery, {
                         cursor: directories.pageInfo.endCursor,
                     },
                     updateQuery: (previousResult, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) {
+                            return previousResult;
+                        }
+
                         const newEdges = fetchMoreResult.directories.edges;
                         const pageInfo = fetchMoreResult.directories.pageInfo;
 

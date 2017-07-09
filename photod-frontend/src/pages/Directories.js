@@ -111,12 +111,14 @@ export default graphql(DirectoriesQuery, {
             hasNextPage: directories && directories.pageInfo.hasNextPage,
             loadMoreEntries: (parentId) => {
                 return fetchMore({
-                    // query: DirectoriesQuery,
                     variables: {
-                        parentId,
                         cursor: directories.pageInfo.endCursor,
                     },
                     updateQuery: (previousResult, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) {
+                            return previousResult;
+                        }
+
                         const newEdges = fetchMoreResult.directories.edges;
                         const pageInfo = fetchMoreResult.directories.pageInfo;
 

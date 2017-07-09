@@ -104,7 +104,7 @@ class Tags extends React.Component<DefaultProps, Props, void> {
 
 const TagsQuery = gql`
     query MediaFiles($cursor: String) {
-        tags(first: 25, after: $cursor) {
+        tags(first: 100, after: $cursor) {
             edges {
                 node {
                     id
@@ -127,11 +127,14 @@ export default graphql(TagsQuery, {
             hasNextPage: tags ? tags.pageInfo.hasNextPage : false,
             loadMoreEntries: () => {
                 return fetchMore({
-                    query: TagsQuery,
                     variables: {
                         cursor: tags.pageInfo.endCursor,
                     },
                     updateQuery: (previousResult, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) {
+                            return previousResult;
+                        }
+
                         const newEdges = fetchMoreResult.tags.edges;
                         const pageInfo = fetchMoreResult.tags.pageInfo;
 
