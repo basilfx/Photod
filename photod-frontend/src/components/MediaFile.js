@@ -8,6 +8,7 @@ import Icon from 'ui/Icon';
 
 import Lightbox from './Lightbox';
 
+import duration from 'format-duration';
 import filesize from 'filesize';
 
 import gql from 'graphql-tag';
@@ -212,7 +213,11 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
             height: filmstrips[0].node.height,
             frames: filmstrips[0].node.frames,
             orientation: 0,
-            label: <span />,
+            label: (
+                <span>
+                    <Icon icon='video-camera' /> {duration(mediaFile.duration / 1000)}, {filesize(mediaFile.fileSize)}
+                </span>
+            )
         };
     }
 
@@ -291,6 +296,7 @@ MediaFile.fragment = gql`
         fileSize,
         width,
         height,
+        duration,
         orientation,
         recorded,
         created,
