@@ -8,6 +8,8 @@ import VisibilitySensor from 'react-visibility-sensor';
 
 import MediaFile from './MediaFile';
 
+import moment from 'moment-timezone';
+
 /**
  * Type declaration for Props.
  */
@@ -41,7 +43,9 @@ export default class MediaList extends React.Component<DefaultProps, Props, void
     };
 
     getGroup(mediaFile) {
-        return 'group';
+        const timestamp = mediaFile.recorded ? mediaFile.recorded : mediaFile.created;
+
+        return moment.tz(timestamp, window.getApplicationTimezone()).format("YYYY-MM-DD");
     }
 
     * renderMediaFiles(): any {

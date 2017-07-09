@@ -1,3 +1,6 @@
+{% load tz %}
+{% get_current_timezone as TIME_ZONE %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -40,6 +43,15 @@
                 {% else %}
                     return null;
                 {% endif %}
+            }
+
+            /**
+             * Callback for returning the application-wide timezone.
+             *
+             * @return {string} Application timezone.
+             */
+            function getApplicationTimezone() {
+                return '{{ TIME_ZONE|safe }}';
             }
         </script>
     </head>
