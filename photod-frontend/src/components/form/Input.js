@@ -69,8 +69,9 @@ export default class Input extends React.Component {
             props.value = value;
         }
 
+        const type = this.props.type === 'checkbox' ? 'uk-checkbox' : 'uk-input';
         const formGroup = this.context.formGroup;
-        const newClassName = `uk-input ${formGroup && formGroup.state.errors ? 'uk-form-danger' : ''} ${className}`;
+        const newClassName = `${type} ${formGroup && formGroup.state.errors ? 'uk-form-danger' : ''} ${className}`;
 
         return (
             <Validatable errorHelp={errorHelp} getValue={this.getValue} name={name} validate={validate}>

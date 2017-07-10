@@ -103,7 +103,7 @@ export default class Login extends React.Component<DefaultProps, Props, void> {
                         <Form ref={element => { this.form = element; }} onValidSubmit={this.handleValidSubmit}>
                             <div className='uk-margin'>
                                 <FormGroup>
-                                    <Input className='uk-input uk-form-large' type='text' name='username' placeholder='Username' validate='required' errorHelp={{ required: 'Username is required.' }} />
+                                    <Input className='uk-input uk-form-large' type='text' name='username' placeholder='Username' autoComplete='off' autoCorrect='off' autoCapitalize='off' validate='required' errorHelp={{ required: 'Username is required.' }} />
                                 </FormGroup>
                             </div>
                             <div className='uk-margin'>
@@ -117,7 +117,7 @@ export default class Login extends React.Component<DefaultProps, Props, void> {
                                 </button>
                             </div>
                             <div className='uk-margin uk-text-small'>
-                                <label className='uk-float-left'><Input className='uk-checkbox' type='checkbox' name='remember' /> Remember Me</label>
+                                <label className='uk-float-left'><Input type='checkbox' name='remember' /> Remember Me</label>
                                 {false && <a className='uk-float-right uk-link uk-link-muted' href='#'>Forgot Password?</a>}
                             </div>
                         </Form>
