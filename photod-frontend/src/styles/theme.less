@@ -21,7 +21,13 @@
 /* Rows */
 .tm-body {
     display: flex;
-    flex-direction: row;
+
+    @media (min-width: 600px) {
+        flex-direction: row;
+    }
+    @media (max-width: 600px) {
+        flex-direction: column;
+    }
 
     width: 100vw;
 }
@@ -38,15 +44,32 @@
 
 /* Menu */
 .tm-sidebar-left {
-    display: flex;
-    flex-direction: row;
+    @media (min-width: 600px) {
+        display: flex;
+        flex-direction: row;
+    }
 }
 .tm-sidebar-left-menu {
     order: 1;
+
+    .tm-menu {
+        @media (min-width: 600px) {
+            flex-direction: column;
+        }
+        @media (max-width: 600px) {
+            flex-direction: row;
+        }
+    }
 }
 .tm-sidebar-left-panel {
     order: 1;
-    width: 300px;
+
+    @media (min-width: 600px) {
+        width: 300px;
+    }
+    @media (max-width: 600px) {
+        width: 100vw;
+    }
 }
 
 /* Borders */
@@ -57,10 +80,17 @@
     border-top: 1px solid #e5e5e5;
 }
 .tm-sidebar-left-panel {
-    border-right: 1px solid #e5e5e5;
+    @media (min-width: 600px) {
+        border-right: 1px solid #e5e5e5;
+    }
 }
 .tm-sidebar-left-menu {
-    border-right: 1px solid #e5e5e5;
+    @media (min-width: 600px) {
+        border-right: 1px solid #e5e5e5;
+    }
+    @media (max-width: 600px) {
+        border-bottom: 1px solid #e5e5e5;
+    }
 }
 .tm-sidebar-right {
     border-left: 1px solid #e5e5e5;
@@ -73,6 +103,10 @@
 .tm-content {
     // background-color: #cccccc;
     background-color: #ffffff;
+
+    @media (min-width: 600px) {
+        .uk-overflow-auto;
+    }
 }
 
 
@@ -85,7 +119,9 @@
         // background-color: #232323;
 
         /* Black borders */
-        border-bottom: 1px solid #e5e5e5;
+        @media (min-width: 600px) {
+            border-bottom: 1px solid #e5e5e5;
+        }
 
         a {
             color: #2761fc;
@@ -93,15 +129,19 @@
     }
 
     li:not(:first-child).uk-active {
-        border-top: 1px solid #e5e5e5;
+        @media (min-width: 600px) {
+            border-top: 1px solid #e5e5e5;
+        }
     }
 
     /* Remove border from active item */
     &[data-panel="true"] {
         li.uk-active {
-            /* Mask border on the right */
-            border-right: 1px solid #ffffff;
-            margin-right: -1px;
+            @media (min-width: 600px) {
+                /* Mask border on the right */
+                border-right: 1px solid #ffffff;
+                margin-right: -1px;
+            }
         }
     }
 }
@@ -139,6 +179,12 @@
 
     * > * {
         font-size:24px;
+    }
+
+    @media (max-width: 600px) {
+        li:not(:first-child) {
+            display: none;
+        }
     }
 }
 

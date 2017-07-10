@@ -97,7 +97,7 @@ export default class Menu extends React.Component<DefaultProps, Props, void> {
      */
     render() {
         return (
-            <Iconnav direction='vertical' className='uk-text-center uk-margin-remove'>
+            <Iconnav className='uk-text-center uk-margin-remove tm-menu'>
                 {this.renderMenu()}
             </Iconnav>
         );

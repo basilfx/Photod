@@ -58,7 +58,7 @@ export default class Template extends React.Component<DefaultProps, Props, void>
                 <main className="tm-body">
                     {this.props.sidebarLeft}
 
-                    <article className="uk-height-1-1 uk-overflow-auto tm-content">
+                    <article className="uk-height-1-1 tm-content">
                         {this.props.children}
                     </article>
 
