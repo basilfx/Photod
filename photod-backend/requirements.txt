@@ -1,13 +1,16 @@
 av>=0.3.3
+celery-4.0.2
 colorific>=0.3
 colormath>=2.1.1
 Cython>=0.25.2
 django-debug-toolbar>=1.6
 django-extensions>=1.7.6
 django-filter>=1.0.4
+django-haystack>=2.6.1
 django-sendfile>=0.3.11
 django-treebeard>=4.1.2
 django>=1.11.2
+elasticsearch>=5.4.0
 ExifRead>=2.1.2
 face_recognition>=0.1.14
 graphene-django>=1.2.1

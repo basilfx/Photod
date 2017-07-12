@@ -8,6 +8,24 @@ ENABLE_DEBUG_TOOLBAR = True
 ENABLE_SENTRY = False
 
 
+# Haystack search engine configuration.
+# http://django-haystack.readthedocs.io/en/stable/
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
+
+
+# Celery message queue configuration.
+# http://docs.celeryproject.org/en/stable/
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_TASK_ALWAYS_EAGER = False
+
+
 # Django Debug Toolbar
 # https://django-debug-toolbar.readthedocs.io/en/stable/
 

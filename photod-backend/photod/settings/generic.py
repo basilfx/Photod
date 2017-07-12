@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'treebeard',
     'django_extensions',
     'django_filters',
+    'haystack',
+    'celery',
     # 'corsheaders',
 
     'photod.core',
