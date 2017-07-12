@@ -1,5 +1,5 @@
 av>=0.3.3
-celery-4.0.2
+celery>=4.0.2
 colorific>=0.3
 colormath>=2.1.1
 Cython>=0.25.2
