@@ -10,7 +10,6 @@ django-haystack>=2.6.1
 django-sendfile>=0.3.11
 django-treebeard>=4.1.2
 django>=1.11.2
-elasticsearch>=5.4.0
 ExifRead>=2.1.2
 face_recognition>=0.1.14
 graphene-django>=1.2.1
