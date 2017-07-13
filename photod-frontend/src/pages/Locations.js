@@ -70,8 +70,8 @@ export default class Locations extends React.Component<DefaultProps, Props, void
             >
                 <Map center={[51.98510, 5.89872]} zoom={9} className='uk-height-1-1'>
                     <TileLayer
-                        attribution={`© <a href="${document.location.protocol}//osm.org/copyright">OpenStreetMap</a> contributors`}
-                        url={`${document.location.protocol}//{s}.tile.osm.org/{z}/{x}/{y}.png`}
+                        attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url={`${document.location.protocol}//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`}
                     />
                 </Map>
             </Main>
