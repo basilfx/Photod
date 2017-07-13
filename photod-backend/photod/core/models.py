@@ -7,6 +7,13 @@ from treebeard.mp_tree import MP_Node
 from django_extensions.db.models import TimeStampedModel
 
 
+MEDIA_FILE_STEP_RESULTS = (
+    ("success", "Success"),
+    ("skipped", "Skipped"),
+    ("failed", "Failed"),
+)
+
+
 class MediaFile(TimeStampedModel, models.Model):
     class Meta:
         ordering = ["recorded"]
@@ -63,13 +70,14 @@ class MediaFileStep(models.Model):
     media_file = models.ForeignKey("MediaFile")
 
     duration = models.FloatField()
+    result = models.CharField(max_length=32, choices=MEDIA_FILE_STEP_RESULTS)
 
     def __str__(self):
         """
         Instance string representation.
         """
-        return "%s on %s (%.2f seconds)" % (
-            self.step.name, self.media_file.path, self.duration)
+        return "%s on %s (%s, %.2f seconds)" % (
+            self.step.name, self.media_file.path, self.result, self.duration)
 
 
 class Tag(models.Model):

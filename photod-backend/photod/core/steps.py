@@ -87,6 +87,8 @@ class Step(object, metaclass=StepMeta):
         Process the media file.
         """
 
+        result = "skipped"
+
         logger.info(
             "Processing media file '%s' with step %s.", media_file, self)
 
@@ -107,17 +109,27 @@ class Step(object, metaclass=StepMeta):
             return
 
         start = time.time()
-        self.take(media_file, context)
+        try:
+            self.take(media_file, context)
+            result = "success"
+        except KeyboardInterrupt:
+            raise
+        except Exception as e:
+            logger.exception(
+                "Error while processing step '%s' on media file '%s'.",
+                self.name, media_file.path)
+            result = "failed"
         end = time.time()
 
         step, _ = models.Step.objects.get_or_create(name=self.Meta.name)
 
         media_file_step, created = models.MediaFileStep.objects.get_or_create(
             media_file=media_file, step=step,
-            defaults={"duration": (end - start)})
+            defaults={"duration": (end - start), "result": result})
 
         if not created:
             media_file_step.duration = (end - start)
+            media_file_step.result = result
             media_file_step.save()
 
         return media_file
