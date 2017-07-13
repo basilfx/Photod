@@ -13,8 +13,7 @@ import SidebarLeft from 'components/SidebarLeft';
 import Menu from 'components/Menu';
 import AlphaList from 'components/AlphaList';
 
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
+import { gql, graphql } from 'react-apollo';
 
 import { fromGlobalId } from 'graphql-relay';
 

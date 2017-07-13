@@ -12,8 +12,7 @@ import FontAwesome from 'ui/FontAwesome';
 import List from 'ui/List';
 import ListItem from 'ui/ListItem';
 
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
+import { gql, graphql } from 'react-apollo';
 
 import { fromGlobalId } from 'graphql-relay';
 

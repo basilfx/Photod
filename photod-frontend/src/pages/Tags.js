@@ -15,8 +15,7 @@ import AlphaList from 'components/AlphaList';
 
 import TagsMediaList from './TagsMediaList';
 
-import { graphql } from 'react-apollo';
-import gql from 'graphql-tag';
+import { gql, graphql } from 'react-apollo';
 
 /**
  * Type declaration for Props.

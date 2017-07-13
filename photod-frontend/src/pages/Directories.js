@@ -13,8 +13,7 @@ import Menu from 'components/Menu';
 import DirectoryTreeview from './DirectoryTreeview';
 import DirectoryMediaList from './DirectoryMediaList';
 
-// import { graphql } from 'react-apollo';
-// import gql from 'graphql-tag';
+// import { gql, graphql } from 'react-apollo';
 
 /**
  * Type declaration for Props.
