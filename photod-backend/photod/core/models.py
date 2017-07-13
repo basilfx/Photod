@@ -38,9 +38,21 @@ class MediaFile(TimeStampedModel, models.Model):
 
     recorded = models.DateTimeField(null=True)
 
+    def __str__(self):
+        """
+        Instance string representation.
+        """
+        return "%s (%s)" % (self.path, self.mime_type)
+
 
 class Step(models.Model):
     name = models.CharField(max_length=255, unique=True, db_index=True)
+
+    def __str__(self):
+        """
+        Instance string representation.
+        """
+        return self.name
 
 
 class MediaFileStep(models.Model):
@@ -52,12 +64,25 @@ class MediaFileStep(models.Model):
 
     duration = models.FloatField()
 
+    def __str__(self):
+        """
+        Instance string representation.
+        """
+        return "%s on %s (%.2f seconds)" % (
+            self.step.name, self.media_file.path, self.duration)
+
 
 class Tag(models.Model):
     class Meta:
         ordering = ["label"]
 
     label = models.CharField(max_length=255, unique=True, db_index=True)
+
+    def __str__(self):
+        """
+        Instance string representation.
+        """
+        return self.label
 
 
 class Face(models.Model):
@@ -95,6 +120,12 @@ class Person(models.Model):
 
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        """
+        Instance string representation.
+        """
+        return self.name
+
 
 class Palette(models.Model):
     class Meta:
@@ -106,6 +137,19 @@ class Palette(models.Model):
     prominence = models.FloatField()
 
     classified_color = models.CharField(max_length=64)
+
+    def __str__(self):
+        """
+        Instance string representation.
+        """
+        return "%s (%s)" % (self.color, self.classified_color)
+
+
+class Histogram(models.Model):
+    media_file = models.ForeignKey("MediaFile", related_name="histograms")
+
+    channel = models.CharField(max_length=32)
+    data = models.CharField(max_length=4096)
 
 
 class Location(models.Model):
@@ -152,6 +196,12 @@ class Album(MP_Node):
 
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        """
+        Instance string representation.
+        """
+        return self.name
+
 
 class Directory(MP_Node):
     class Meta:
@@ -159,6 +209,12 @@ class Directory(MP_Node):
 
     full_path = models.CharField(max_length=255, unique=True, db_index=True)
     name = models.CharField(max_length=255)
+
+    def __str__(self):
+        """
+        Instance string representation.
+        """
+        return self.full_path
 
 
 class View(models.Model):
@@ -171,10 +227,3 @@ class View(models.Model):
 class Star(models.Model):
     media_file = models.ForeignKey("MediaFile", related_name="stars")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="stars")
-
-
-class Histogram(models.Model):
-    media_file = models.ForeignKey("MediaFile", related_name="histograms")
-
-    channel = models.CharField(max_length=32)
-    data = models.CharField(max_length=4096)
