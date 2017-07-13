@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_filters',
     'haystack',
+    'haystackbrowser',
     'celery',
     # 'corsheaders',
 
