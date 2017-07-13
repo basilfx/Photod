@@ -1,7 +1,6 @@
 from django.urls import reverse
 
-from photod.core import models
-from photod.web.views import thumbnail, media, filmstrip
+from haystack.query import SearchQuerySet
 
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django import DjangoObjectType
@@ -9,6 +8,9 @@ from graphene_django import DjangoObjectType
 from graphene import relay
 
 from graphql_relay.node.node import from_global_id
+
+from photod.core import models
+from photod.web.views import thumbnail, media, filmstrip
 
 import graphene
 import django_filters
@@ -127,6 +129,31 @@ class MediaFile(DjangoObjectType):
         return reverse(media, args=[self.id])
 
 
+class SearchResult(graphene.ObjectType):
+    model = graphene.String()
+    pk = graphene.ID()
+    score = graphene.Float()
+    text = graphene.String()
+
+
+class Search(graphene.Mutation):
+    class Input:
+        query = graphene.String()
+
+    results = graphene.List(SearchResult)
+
+    @staticmethod
+    def mutate(root, args, context, info):
+        results = SearchQuerySet().filter(content=args.get("query"))
+
+        return Search(results=[
+            SearchResult(
+                model=result.model_name, pk=result.pk, score=result.score,
+                text=str(result.object)
+            ) for result in results
+        ])
+
+
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
 
@@ -151,4 +178,9 @@ class Query(graphene.ObjectType):
 
         return models.Directory.get_root_nodes()
 
-schema = graphene.Schema(query=Query)
+
+class Mutation(graphene.ObjectType):
+    search = Search.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
