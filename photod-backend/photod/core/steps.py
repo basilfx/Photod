@@ -117,7 +117,7 @@ class Step(object, metaclass=StepMeta):
         except Exception as e:
             logger.exception(
                 "Error while processing step '%s' on media file '%s'.",
-                self.name, media_file.path)
+                self.Meta.name, media_file)
             result = "failed"
         end = time.time()
 
