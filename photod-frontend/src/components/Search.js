@@ -115,8 +115,8 @@ class Search extends React.Component<DefaultProps, Props, State> {
                     width: '100vw',
                     height: '100vh',
                     backgroundColor: '#ffffff',
-                    top: '80px',
-                    zIndex: '1000',
+                    top: '81px',
+                    zIndex: '2000',
                 }}>
                     <ul>
                         {this.state.results.map(result => (
