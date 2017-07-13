@@ -8,8 +8,8 @@ class MediaFileIndex(indexes.SearchIndex, indexes.Indexable):
         document=True, use_template=True,
         template_name="search/media_file.txt")
 
-    recorded = indexes.DateTimeField(model_attr='recorded')
-    location = indexes.LocationField()
+    recorded = indexes.DateTimeField(model_attr="recorded", null=True)
+    location = indexes.LocationField(null=True)
 
     def get_model(self):
         return MediaFile
