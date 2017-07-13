@@ -18,7 +18,7 @@ class MediaFileIndex(indexes.SearchIndex, indexes.Indexable):
         location = instance.locations.first()
 
         if location:
-            return location.point
+            return "%s,%s" % (location.point.y, location.point.x)
 
 
 class TagIndex(indexes.SearchIndex, indexes.Indexable):
