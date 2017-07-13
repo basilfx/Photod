@@ -15,7 +15,9 @@ import { Map, TileLayer } from 'react-leaflet';
 import Leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-Leaflet.Icon.Default.imagePath = '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.3/images/';
+Leaflet.Icon.Default.imagePath = '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.1.0/images/';
+
+window.Leaflet = Leaflet;
 
 /**
  * Type declaration for Props.
@@ -68,8 +70,8 @@ export default class Locations extends React.Component<DefaultProps, Props, void
             >
                 <Map center={[51.98510, 5.89872]} zoom={9} className='uk-height-1-1'>
                     <TileLayer
-                        attribution="&amp;copy <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                        url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+                        attribution='&amp;copy <a href=&quot;//osm.org/copyright&quot;>OpenStreetMap</a> contributors'
+                        url='//{s}.tile.osm.org/{z}/{x}/{y}.png'
                     />
                 </Map>
             </Main>
