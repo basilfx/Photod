@@ -9,9 +9,16 @@ class MediaFileIndex(indexes.SearchIndex, indexes.Indexable):
         template_name="search/media_file.txt")
 
     recorded = indexes.DateTimeField(model_attr='recorded')
+    location = indexes.LocationField()
 
     def get_model(self):
         return MediaFile
+
+    def prepare_location(self, instance):
+        location = instance.locations.first()
+
+        if location:
+            return location.point
 
 
 class TagIndex(indexes.SearchIndex, indexes.Indexable):
