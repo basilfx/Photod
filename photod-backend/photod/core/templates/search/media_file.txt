@@ -1,0 +1,3 @@
+{{ object.path }}
+{{ object.mime_type }}
+{% if object.width and object.height %}{{ object.width }}x{{ object.height }}{% endif %}
