@@ -4,9 +4,15 @@ import autobind from 'autobind-decorator';
 
 import React from 'react';
 
+import List from 'ui/List';
+import ListItem from 'ui/ListItem';
 import Icon from 'ui/Icon';
 
 import { gql, graphql } from 'react-apollo';
+
+import LRU from 'lru-cache';
+
+import { throttle } from 'lodash';
 
 /**
  * Type declaration for a list of SearchResults.
@@ -59,30 +65,46 @@ class Search extends React.Component<DefaultProps, Props, State> {
     constructor(props) {
         super(props);
 
+        this.cache = new LRU(100);
+
         this.state = {
             results: null,
         };
+
+        this.search = throttle(this.props.search, 200);
     }
 
     componentDidMount() {
-        this.input.addEventListener('keypress', this.handleKeyPress);
+        this.input.addEventListener('keyup', this.handleKeyUp);
     }
 
     componentWillUnmount() {
-        this.input.removeEventListener('keypress', this.handleKeyPress);
+        this.input.removeEventListener('keyup', this.handleKeyUp);
     }
 
-    @autobind async handleKeyPress() {
+    @autobind async handleKeyUp() {
+        const value = this.input.value.trim();
+
         if (this.input.value) {
             let response;
 
-            try {
-                response = await this.props.search(this.input.value);
+            // Check if the result is in the cache.
+            if (this.cache.has(value)) {
+                response = this.cache.get(value);
             }
-            catch (error) {
-                return;
+            else {
+                try {
+                    response = await this.search(value);
+                }
+                catch (error) {
+                    return;
+                }
             }
 
+            // Put it back in the queue (this makes it most recently used).
+            this.cache.set(value, response);
+
+            // Update state.
             this.setState({
                 results: response.data.search.results,
             });
@@ -118,13 +140,13 @@ class Search extends React.Component<DefaultProps, Props, State> {
                     top: '81px',
                     zIndex: '2000',
                 }}>
-                    <ul>
+                    <List>
                         {this.state.results.map(result => (
-                            <li>
+                            <ListItem className='uk-padding-small'>
                                 {result.model} - {result.text} - {result.score}
-                            </li>
+                            </ListItem>
                         ))}
-                    </ul>
+                    </List>
                 </div>}
             </div>
         );

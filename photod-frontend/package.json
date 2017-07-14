@@ -81,6 +81,7 @@
     "less": "^2.7.2",
     "less-loader": "^4.0.4",
     "lodash": "*",
+    "lru-cache": "^4.1.1",
     "moment": "*",
     "moment-timezone": "*",
     "normalize-wheel": "*",

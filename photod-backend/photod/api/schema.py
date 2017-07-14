@@ -1,6 +1,7 @@
 from django.urls import reverse
 
 from haystack.query import SearchQuerySet
+from haystack.inputs import AutoQuery
 
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django import DjangoObjectType
@@ -144,7 +145,13 @@ class Search(graphene.Mutation):
 
     @staticmethod
     def mutate(root, args, context, info):
-        results = SearchQuerySet().filter(content=args.get("query"))
+        query = args.get("query", "").strip()
+
+        # Perform the query if there is one.
+        if query:
+            results = SearchQuerySet().filter(content=AutoQuery(query))[:25]
+        else:
+            results = []
 
         return Search(results=[
             SearchResult(
