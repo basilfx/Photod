@@ -54,7 +54,7 @@ export default class List extends React.Component<DefaultProps, Props, void> {
     render() {
         const className = `uk-list ${this.props.large ? 'uk-list-large' : ''} ${this.props.divider ? 'uk-list-divider' : ''} ${this.props.className}`;
         const props = {
-            className,
+            className: className.trim(),
         };
 
         return React.createElement(

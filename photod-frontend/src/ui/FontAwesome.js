@@ -51,7 +51,7 @@ export default class FontAwesome extends React.Component<DefaultProps, Props, vo
     render() {
         const className = `fa fa-${this.props.icon} fa-${String(this.props.size)} ${this.props.className}`;
         const props = {
-            className,
+            className: className.trim(),
         };
 
         return React.createElement(

@@ -52,7 +52,7 @@ export default class Template extends React.Component<DefaultProps, Props, void>
         const className = `uk-navbar-${String(this.props.position)} ${this.props.className}`;
 
         const props = {
-            className,
+            className: className.trim(),
         };
 
         return React.createElement(

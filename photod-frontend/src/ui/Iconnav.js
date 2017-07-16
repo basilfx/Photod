@@ -53,7 +53,7 @@ export default class Iconnav extends React.Component<DefaultProps, Props, void> 
     render() {
         const className = `uk-iconnav uk-iconnav-${String(this.props.direction)} ${this.props.className}`;
         const props = {
-            className,
+            className: className.trim(),
         };
 
         return React.createElement(

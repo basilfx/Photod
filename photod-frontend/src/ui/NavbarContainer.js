@@ -47,7 +47,7 @@ export default class NavbarContainer extends React.Component<DefaultProps, Props
         const className = `uk-navbar-container ${this.props.className}`;
         const props = {
             'data-uk-navbar': true,
-            className,
+            className: className.trim(),
         };
 
         return React.createElement(

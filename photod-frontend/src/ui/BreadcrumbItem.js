@@ -46,7 +46,7 @@ export default class BreadcrumbItem extends React.Component<DefaultProps, Props,
     render() {
         const className = `${this.props.className}`;
         const props = {
-            className,
+            className: className.trim(),
         };
 
         return React.createElement(

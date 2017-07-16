@@ -49,7 +49,7 @@ export default class IconnavItem extends React.Component<DefaultProps, Props, vo
     render() {
         const className = `${this.props.active ? 'uk-active' : ''} ${this.props.className}`;
         const props = {
-            className,
+            className: className.trim(),
         };
 
         return React.createElement(

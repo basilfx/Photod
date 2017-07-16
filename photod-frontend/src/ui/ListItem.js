@@ -46,7 +46,7 @@ export default class ListItem extends React.Component<DefaultProps, Props, void>
     render() {
         const className = `${this.props.className}`;
         const props = {
-            className,
+            className: className.trim(),
         };
 
         return React.createElement(

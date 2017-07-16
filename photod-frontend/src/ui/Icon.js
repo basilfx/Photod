@@ -51,7 +51,7 @@ export default class Icon extends React.Component<DefaultProps, Props, void> {
     render() {
         const className = `${this.props.className}`;
         const props = {
-            className,
+            className: className.trim(),
 
             'data-uk-icon': `icon: ${this.props.icon}; ratio: ${String(this.props.size)}`,
         };
