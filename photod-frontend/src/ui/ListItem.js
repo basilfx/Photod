@@ -10,6 +10,7 @@ import type { ComponentClass } from './types';
  * Type declaration for Props.
  */
 type Props = {
+    active?: boolean,
     children?: any,
     className: string,
     componentClass?: ComponentClass,
@@ -19,6 +20,7 @@ type Props = {
  * Type declaration for DefaultProps.
  */
 type DefaultProps = {
+    active: boolean,
     className: string,
     componentClass: ComponentClass,
 };
@@ -36,6 +38,7 @@ export default class ListItem extends React.Component<DefaultProps, Props, void>
      * @inheritdoc
      */
     static defaultProps = {
+        active: false,
         className: '',
         componentClass: 'li',
     };
@@ -44,7 +47,7 @@ export default class ListItem extends React.Component<DefaultProps, Props, void>
      * @inheritdoc
      */
     render() {
-        const className = `${this.props.className}`;
+        const className = `${this.props.active ? 'uk-active' : ''} ${this.props.className}`;
         const props = {
             className: className.trim(),
         };

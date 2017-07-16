@@ -62,6 +62,7 @@ class Tags extends React.Component<DefaultProps, Props, void> {
         if (this.props.tags) {
             for (const edge of this.props.tags) {
                 yield {
+                    key: edge.node.label,
                     label: edge.node.label,
                     component: <Link to={`/tags/${edge.node.label}`}>{edge.node.label}</Link>,
                 };
@@ -91,7 +92,7 @@ class Tags extends React.Component<DefaultProps, Props, void> {
                 sidebarLeft={
                     <SidebarLeft
                         menu={<Menu selectedKey='tags' />}
-                        panel={<AlphaList items={Array.from(this.renderItems())} onLastItem={this.onLastItem} />}
+                        panel={<AlphaList items={Array.from(this.renderItems())} selectedKey={this.props.tag} onLastItem={this.onLastItem} />}
                     />
                 }
             >

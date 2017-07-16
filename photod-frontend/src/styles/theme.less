@@ -146,13 +146,6 @@
     }
 }
 
-.tm-sidebar-left-panel {
-    li.tm-list-item:hover {
-        color: #c6c6c6;
-        background-color: #1f3b84;
-    }
-}
-
 /*.tm-menu {
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
 }*/
@@ -191,5 +184,34 @@
 .tm-treeview {
     ul {
         padding-left: 15px;
+    }
+}
+
+.tm-list {
+    .tm-list-group {
+        .uk-margin-remove;
+        .uk-padding-small;
+        .uk-text-lead;
+    }
+
+    .tm-list-item {
+        .uk-margin-remove;
+        .uk-padding-small;
+
+        &.uk-active {
+            background-color: #2761fc;
+            color: white;
+
+            a {
+                color: white;
+            }
+        }
+    }
+
+    .tm-list-counter {
+        .uk-margin-remove;
+        .uk-padding-small;
+        .uk-text-lead;
+        .uk-text-center;
     }
 }

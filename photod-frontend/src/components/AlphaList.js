@@ -20,6 +20,7 @@ type AlphaListItem = {
  */
 type Props = {
     items: Array<AlphaListItem>,
+    selectedKey?: string,
     onLastItem?: () => void,
     showCount?: boolean,
 };
@@ -74,16 +75,22 @@ export default class AlphaList extends React.Component<DefaultProps, Props, void
             const group = this.getGroup(item);
 
             if (lastGroup !== group) {
-                yield <ListItem key={`group-${group}`} className='uk-padding-small uk-text-lead'>{group}</ListItem>;
+                yield <ListItem key={`group-${group}`} className='tm-list-group'>{group}</ListItem>;
 
                 lastGroup = group;
             }
 
-            yield <ListItem key={`item-${item.key ? item.key : item.label}`} className='uk-padding-small tm-list-item'>{item.component}</ListItem>;
+            yield <ListItem
+                key={`item-${item.key ? item.key : item.label}`}
+                active={item.key === this.props.selectedKey}
+                className='tm-list-item'
+            >
+                {item.component}
+            </ListItem>;
         }
 
         if (this.props.showCount) {
-            yield <ListItem key='counter' className='uk-padding-small uk-text-lead uk-text-center'>{this.props.items.length} items</ListItem>;
+            yield <ListItem key='counter' className='tm-list-counter'>{this.props.items.length} items</ListItem>;
         }
     }
 
@@ -93,7 +100,7 @@ export default class AlphaList extends React.Component<DefaultProps, Props, void
     render() {
         return (
             <div>
-                <List>
+                <List className='tm-list'>
                     {Array.from(this.renderListItems())}
                 </List>
                 {this.props.onLastItem && <div style={{ height: '50vh', marginTop: '-50vh' }}>
