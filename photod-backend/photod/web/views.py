@@ -82,7 +82,8 @@ def media(request, media_file_id):
     media_file = get_object_or_404(MediaFile, id=media_file_id)
 
     return sendfile(
-        request, os.path.join(settings.MEDIA_ROOT, media_file.path))
+        request, os.path.join(settings.MEDIA_ROOT, media_file.path),
+        mimetype=media_file.mime_type)
 
 
 @login_required
@@ -94,7 +95,9 @@ def thumbnail(request, media_file_id, thumbnail_id):
     thumbnail = get_object_or_404(
         Thumbnail, media_file_id=media_file_id, id=thumbnail_id)
 
-    return sendfile(request, os.path.join(settings.MEDIA_ROOT, thumbnail.path))
+    return sendfile(
+        request, os.path.join(settings.MEDIA_ROOT, thumbnail.path),
+        mimetype=thumbnail.mime_type)
 
 
 @login_required
@@ -106,4 +109,6 @@ def filmstrip(request, media_file_id, filmstrip_id):
     filmstrip = get_object_or_404(
         Filmstrip, media_file_id=media_file_id, id=filmstrip_id)
 
-    return sendfile(request, os.path.join(settings.MEDIA_ROOT, filmstrip.path))
+    return sendfile(
+        request, os.path.join(settings.MEDIA_ROOT, filmstrip.path),
+        mimetype=filmstrip.mime_type)
