@@ -8,6 +8,12 @@ ENABLE_DEBUG_TOOLBAR = True
 ENABLE_SENTRY = False
 
 
+# Sendfile configuration
+# https://github.com/johnsensible/django-sendfile
+
+SENDFILE_BACKEND = "sendfile.backends.development"
+
+
 # Haystack search engine configuration.
 # http://django-haystack.readthedocs.io/en/stable/
 
