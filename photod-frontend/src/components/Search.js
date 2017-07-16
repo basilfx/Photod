@@ -141,8 +141,8 @@ class Search extends React.Component<DefaultProps, Props, State> {
                     zIndex: '2000',
                 }}>
                     <List>
-                        {this.state.results.map(result => (
-                            <ListItem className='uk-padding-small'>
+                        {this.state.results.map((result, index) => (
+                            <ListItem key={index} className='uk-padding-small'>
                                 {result.model} - {result.text} - {result.score}
                             </ListItem>
                         ))}
