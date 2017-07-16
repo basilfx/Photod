@@ -17,10 +17,9 @@
         <link rel="manifest" href="{% static 'manifest.json' %}">
         <link rel="mask-icon" color="#5bbad5" href="{% static 'safari-pinned-tab.svg' %}">
 
-
         <title>Photod</title>
 
-        {% if settings.STYLE_URL %}
+        {% if settings.WEBPACK_STYLE_URL %}
             <link type="text/css" rel="stylesheet" href="{{ settings.WEBPACK_STYLE_URL }}?{{ settings.WEBPACK_VERSION }}">
         {% endif %}
 
