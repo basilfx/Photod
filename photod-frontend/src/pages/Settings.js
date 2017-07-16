@@ -13,6 +13,10 @@ import SidebarLeft from 'components/SidebarLeft';
 import Menu from 'components/Menu';
 import MenuList from 'components/MenuList';
 
+import About from 'pages/settings/About';
+import Interface from 'pages/settings/Interface';
+import Statistics from 'pages/settings/Statistics';
+
 /**
  * Type declaration for Props.
  */
@@ -43,6 +47,18 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
         page: 'interface',
     };
 
+    renderPage() {
+        if (this.props.page === 'interface') {
+            return <Interface />;
+        }
+        else if (this.props.page === 'statistics') {
+            return <Statistics />;
+        }
+        else if (this.props.page === 'about') {
+            return <About />;
+        }
+    }
+
     /**
      * @inheritdoc
      */
@@ -55,14 +71,17 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
 
         const menuItems = [
             {
+                key: 'interface',
                 label: 'User interface',
                 component: <Link to={'/settings/interface'}>User Interface</Link>,
             },
             {
+                key: 'statistics',
                 label: 'Statistics',
                 component: <Link to={'/settings/statistics'}>Statistics</Link>,
             },
             {
+                key: 'about',
                 label: 'About',
                 component: <Link to={'/settings/about'}>About</Link>,
             },
@@ -74,7 +93,7 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
                 sidebarLeft={
                     <SidebarLeft
                         menu={<Menu selectedKey='settings' />}
-                        panel={<MenuList items={menuItems} showCount={false} />}
+                        panel={<MenuList items={menuItems} selectedKey={this.props.page} showCount={false} />}
                     />
                 }
             />
