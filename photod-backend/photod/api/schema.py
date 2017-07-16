@@ -117,7 +117,9 @@ class Directory(DjangoObjectType):
         return self.get_children_count()
 
     def resolve_media_files_count(self, args, context, info):
-        return self.media_files.all().count()
+        return models.MediaFile.objects.filter(
+            directory__path__startswith=self.path
+        ).count()
 
 
 class Thumbnail(DjangoObjectType):
