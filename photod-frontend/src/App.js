@@ -35,7 +35,7 @@ export default class App extends React.Component {
                     <Route exact path='/tags/:tag?' component={
                         ({ match }) => <Tags key='tags' tag={match.params.tag} />
                     } />
-                    <Route exact path='/people/:id' component={
+                    <Route exact path='/people/:id?' component={
                         ({ match }) => <People key='people' id={toGlobalId('Person', match.params.id)} />
                     } />
                     <Route exact path='/locations' component={
