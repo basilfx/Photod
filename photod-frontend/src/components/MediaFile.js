@@ -247,10 +247,11 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
             <div ref={element => { this.container = element; }} className='uk-card uk-card-default uk-card-hover' style={{
                 flexGrow: `${width / height * 100}`,
                 flexBasis: `${width * this.props.height / height}px`,
-                maxHeight: `${this.props.height}px`,
-                maxWidth: `${this.props.height * (width / height)}px`,
-                margin: `8px`,
+                maxHeight: `${this.props.height * 1.25}px`,
+                maxWidth: `${this.props.height * 1.25 * (width / height)}px`,
                 backgroundColor: info.backgroundColor,
+                marginRight: '16px',
+                marginBottom: '16px',
             }}>
                 <div style={{
                     paddingBottom: `${height / width * 100}%`,
