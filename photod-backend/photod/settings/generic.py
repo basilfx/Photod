@@ -129,8 +129,13 @@ STATIC_URL = '/static/'
 
 # Application
 
-BUNDLE_URL = 'http://localhost:8000/bundle.js'
-STYLE_URL = False
+WEBPACK_BUNDLE_URL = 'http://localhost:8000/bundle.js'
+WEBPACK_STYLE_URL = False
+
+try:
+    from .build import WEBPACK_VERSION
+except ImportError:
+    WEBPACK_VERSION = 'v1'
 
 
 # Graphene

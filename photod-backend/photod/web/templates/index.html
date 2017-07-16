@@ -21,7 +21,7 @@
         <title>Photod</title>
 
         {% if settings.STYLE_URL %}
-            <link type="text/css" rel="stylesheet" href="{{ settings.STYLE_URL }}">
+            <link type="text/css" rel="stylesheet" href="{{ settings.WEBPACK_STYLE_URL }}?{{ settings.WEBPACK_VERSION }}">
         {% endif %}
 
         <script type="text/javascript">
@@ -65,6 +65,6 @@
     </head>
     <body>
         <div id="react"></section>
-        <script type="text/javascript" src="{{ settings.BUNDLE_URL }}"></script>
+        <script type="text/javascript" src="{{ settings.WEBPACK_BUNDLE_URL }}?{{ settings.WEBPACK_VERSION }}"></script>
     </body>
 </html>
