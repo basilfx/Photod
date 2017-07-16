@@ -60,6 +60,8 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
 
     props: Props;
 
+    container: HTMLDivElement;
+
     image: HTMLDivElement;
 
     /**
@@ -154,8 +156,10 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
             this.image.style.width = `${rect[0].height}px`;
             this.image.style.height = `${rect[0].width}px`;
 
-            this.image.parentNode.style.width = `${rect[0].width}px`;
-            this.image.parentNode.style.height = `${rect[0].height}px`;
+            if (this.image.parentNode) {
+                this.image.parentNode.style.width = `${rect[0].width}px`;
+                this.image.parentNode.style.height = `${rect[0].height}px`;
+            }
         }
     }
 
@@ -166,14 +170,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
      */
     parseImage(): MediaFileParser {
         const mediaFile = this.props.mediaFile;
-
-        const thumbnails = mediaFile.thumbnails.edges
-            .filter(
-                edge => edge.node.height >= this.props.height
-            )
-            .sort(
-                (a, b) => a.node.height - b.node.height
-            );
+        const thumbnails = mediaFile.thumbnails.edges;
 
         return {
             src: thumbnails.length ? thumbnails[0].node.url : this.props.mediaFile.url,
@@ -197,14 +194,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
      */
     parseVideo(): MediaFileParser {
         const mediaFile = this.props.mediaFile;
-
-        const filmstrips = mediaFile.filmstrips.edges
-            .filter(
-                edge => edge.node.height >= this.props.height
-            )
-            .sort(
-                (a, b) => a.node.height - b.node.height
-            );
+        const filmstrips = mediaFile.filmstrips.edges;
 
         return {
             src: filmstrips.length ? filmstrips[0].node.url : require('images/filmstrip.svg'),
@@ -290,27 +280,27 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
 
 MediaFile.fragment = gql`
     fragment MediaFileFragment on MediaFile {
-        id,
-        url,
-        mimeType,
-        fileSize,
-        width,
-        height,
-        duration,
-        orientation,
-        recorded,
-        created,
+        id
+        url
+        mimeType
+        fileSize
+        width
+        height
+        duration
+        orientation
+        recorded
+        created
         faces {
             edges {
                 node {
-                    id,
-                    x1,
-                    y1,
-                    x2,
-                    y2,
+                    id
+                    x1
+                    y1
+                    x2
+                    y2
                     person {
-                          id,
-                          name,
+                          id
+                          name
                     }
                 }
             }
@@ -318,23 +308,26 @@ MediaFile.fragment = gql`
         palette(first: 1) {
             edges {
                 node {
-                    color,
-                    prominence,
+                    id
+                    color
+                    prominence
                 }
             }
         }
-        thumbnails(minHeight: $minHeight) {
+        thumbnails(profile: $profile, first: 1) {
             edges {
                 node {
+                    id
                     width
                     height
                     url
                 }
             }
         }
-        filmstrips(minHeight: $minHeight) {
+        filmstrips(profile: $profile, first: 1) {
             edges {
                 node {
+                    id
                     width
                     height
                     url

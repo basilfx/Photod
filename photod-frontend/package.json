@@ -66,6 +66,7 @@
     "@meadow/redux-ensure-fsa": "*",
     "apollo-client": "^1.7.0",
     "autobind-decorator": "^2.1.0",
+    "bowser": "^1.7.1",
     "chainable-check": "*",
     "fbjs": "^0.8.12",
     "filesize": "^3.5.10",

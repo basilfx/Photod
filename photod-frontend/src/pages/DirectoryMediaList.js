@@ -9,6 +9,8 @@ import MediaFile from 'components/MediaFile';
 
 import { gql, graphql } from 'react-apollo';
 
+import profile from 'profile';
+
 /**
  * Type declaration for Props.
  */
@@ -63,7 +65,7 @@ class DirectoryMediaList extends React.Component<DefaultProps, Props, void> {
 }
 
 const MediaFilesQuery = gql`
-    query MediaFiles($cursor: String, $directoryId: ID, $minHeight: Float) {
+    query MediaFiles($cursor: String, $directoryId: ID, $profile: String) {
         mediaFiles(first: 25, after: $cursor, directoryId: $directoryId) {
             edges {
                 node {
@@ -83,6 +85,11 @@ export default graphql(MediaFilesQuery, {
     options: (props) => ({
         variables: {
             directoryId: props.directoryId,
+            profile: JSON.stringify({
+                height: 192,
+                quality: profile.quality,
+                mimeType: profile.mimeTypes,
+            }),
         },
     }),
     props({ data: { loading, mediaFiles, fetchMore } }) {

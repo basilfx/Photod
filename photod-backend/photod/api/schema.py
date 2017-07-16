@@ -1,4 +1,5 @@
 from django.urls import reverse
+from django.db.models import IntegerField, Case, Value, When
 
 from haystack.query import SearchQuerySet
 from haystack.inputs import AutoQuery
@@ -15,6 +16,41 @@ from photod.web.views import thumbnail, media, filmstrip
 
 import graphene
 import django_filters
+import json
+
+
+class ProfileFilter(django_filters.Filter):
+    def filter(self, queryset, value):
+        profile = json.loads(value)
+
+        annotations = {}
+        orderings = []
+
+        # Perform greater-than-equal lookup on width, height and quality.
+        for field in ("width", "height", "quality"):
+            if field in profile:
+                annotations["%s_ordered" % field] = Case(
+                    When(**{
+                        ("%s__gte" % field): profile[field], "then": Value(0)
+                    }),
+                    default=Value(1),
+                    output_field=IntegerField()
+                )
+                orderings += ["%s_ordered" % field, field]
+
+        # Perform inclusion of MIME type.
+        if "mimeType" in profile:
+            annotations["mime_type_ordered"] = Case(
+                *[
+                    When(mime_type=mime_type, then=Value(index))
+                    for index, mime_type in enumerate(profile["mimeType"])
+                ],
+                default=Value(len(profile["mimeType"])),
+                output_field=IntegerField()
+            )
+            orderings += ["mime_type_ordered"]
+
+        return queryset.annotate(**annotations).order_by(*orderings)
 
 
 class MediaFileFilter(django_filters.FilterSet):
@@ -31,19 +67,17 @@ class MediaFileFilter(django_filters.FilterSet):
 class ThumbnailFilter(django_filters.FilterSet):
     class Meta:
         model = models.Thumbnail
-        fields = ["width", "height", "min_width", "min_height"]
+        fields = ["profile"]
 
-    min_width = django_filters.NumberFilter(name='width', lookup_expr='gte')
-    min_height = django_filters.NumberFilter(name='height', lookup_expr='gte')
+    profile = ProfileFilter()
 
 
 class FilmstripFilter(django_filters.FilterSet):
     class Meta:
         model = models.Filmstrip
-        fields = ["width", "height", "min_width", "min_height"]
+        fields = ["profile"]
 
-    min_width = django_filters.NumberFilter(name='width', lookup_expr='gte')
-    min_height = django_filters.NumberFilter(name='height', lookup_expr='gte')
+    profile = ProfileFilter()
 
 
 class Tag(DjangoObjectType):
