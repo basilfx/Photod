@@ -226,6 +226,9 @@ class Directory(MP_Node):
 
 
 class View(models.Model):
+    class Meta:
+        unique_together = ("media_file", "user")
+
     media_file = models.ForeignKey("MediaFile", related_name="views")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="views")
 
@@ -233,5 +236,8 @@ class View(models.Model):
 
 
 class Star(models.Model):
+    class Meta:
+        unique_together = ("media_file", "user")
+
     media_file = models.ForeignKey("MediaFile", related_name="stars")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="stars")
