@@ -85,7 +85,7 @@ class People extends React.Component<DefaultProps, Props, void> {
                 sidebarLeft={
                     <SidebarLeft
                         menu={<Menu selectedKey='people' />}
-                        panel={<AlphaList items={Array.from(this.renderItems())} onLastItem={this.onLastItem} />}
+                        panel={<AlphaList items={Array.from(this.renderItems())} selectedKey={this.props.id} onLastItem={this.onLastItem} />}
                     />
                 }
             >
