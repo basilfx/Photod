@@ -9,6 +9,8 @@ import MediaFile from 'components/MediaFile';
 
 import { gql, graphql } from 'react-apollo';
 
+import profile from 'profile';
+
 /**
  * Type declaration for Props.
  */
@@ -63,7 +65,7 @@ class TagsMediaList extends React.Component<DefaultProps, Props, void> {
 }
 
 const MediaFilesQuery = gql`
-    query MediaFiles($cursor: String, $tag: String, $minHeight: Float) {
+    query MediaFiles($cursor: String, $tag: String, $profile: String) {
         mediaFiles(first: 25, after: $cursor, tag: $tag) {
             edges {
                 node {
@@ -83,6 +85,11 @@ export default graphql(MediaFilesQuery, {
     options: (props) => ({
         variables: {
             tag: props.tag,
+            profile: JSON.stringify({
+                height: 192,
+                quality: profile.quality,
+                mimeType: profile.mimeTypes,
+            }),
         },
     }),
     props({ data: { loading, mediaFiles, fetchMore } }) {
