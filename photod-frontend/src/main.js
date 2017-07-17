@@ -10,6 +10,8 @@ import App from './App';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 
+import configureStore from 'modules/configureStore';
+
 /*
  * Create a GraphQL client for data communication.
  */
@@ -29,7 +31,7 @@ const client = new ApolloClient({
  * Create the global store that stores the application state. Components will
  * subscribe to data and changes that relate to this store.
  */
-const store = null; // configureStore();
+const store = configureStore();
 
 /*
  * Export React for the debugging tools.

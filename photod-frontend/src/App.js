@@ -15,7 +15,53 @@ import NotFound from 'pages/NotFound';
 
 import { toGlobalId } from 'graphql-relay';
 
-export default class App extends React.Component {
+/**
+ * Type declaration for Props.
+ */
+type Props = {};
+
+/**
+ * Type declaration for DefaultProps.
+ */
+type DefaultProps = {};
+
+/**
+ * Type declaration for State.
+ */
+type State = {};
+
+/**
+ * The component.
+ */
+export default class App extends React.Component<DefaultProps, Props, State> {
+    /**
+     * @inheritdoc
+     */
+    props: Props;
+
+    /**
+     * @inheritdoc
+     */
+    state: State;
+
+    /**
+     * @inheritdoc
+     */
+    static defaultProps = {};
+
+    /**
+     * @inheritdoc
+     */
+    constructor(props: Props) {
+        super(props);
+
+        // This state is used by the pages below, to store their state.
+        this.state = {};
+    }
+
+    /**
+     * @inheritdoc
+     */
     render() {
         return (
             <Router>
@@ -27,22 +73,22 @@ export default class App extends React.Component {
                     } />
 
                     <Route exact name='directories' path='/directories/:id?' component={
-                        ({ match }) => <Directories key='directories' id={toGlobalId('Directory', match.params.id)} />
+                        ({ match }) => <Directories key='directories' parent={this} id={toGlobalId('Directory', match.params.id)} />
                     } />
                     <Route exact path='/albums/:id?' component={
-                        ({ match }) => <Albums key='albums' id={toGlobalId('Album', match.params.id)} />
+                        ({ match }) => <Albums key='albums' parent={this} id={toGlobalId('Album', match.params.id)} />
                     } />
                     <Route exact path='/tags/:tag?' component={
-                        ({ match }) => <Tags key='tags' tag={match.params.tag} />
+                        ({ match }) => <Tags key='tags' parent={this} tag={match.params.tag} />
                     } />
                     <Route exact path='/people/:id?' component={
-                        ({ match }) => <People key='people' id={toGlobalId('Person', match.params.id)} />
+                        ({ match }) => <People key='people' parent={this} id={toGlobalId('Person', match.params.id)} />
                     } />
                     <Route exact path='/locations' component={
-                        ({ match }) => <Locations key='locations' />
+                        ({ match }) => <Locations key='locations' parent={this} />
                     } />
                     <Route exact path='/settings/:page?' component={
-                        ({ match }) => <Settings key='settings' page={match.params.page} />
+                        ({ match }) => <Settings key='settings' parent={this} page={match.params.page} />
                     } />
 
                     <Route component={NotFound} />

@@ -19,6 +19,7 @@ import DirectoryMediaList from './DirectoryMediaList';
  * Type declaration for Props.
  */
 type Props = {
+    parent: React.Component<*, *, *>,
     id?: string,
 };
 
@@ -67,7 +68,9 @@ export default class Directories extends React.Component<DefaultProps, Props, vo
                 sidebarLeft={
                     <SidebarLeft
                         menu={<Menu selectedKey='directories' />}
-                        panel={<div className='uk-padding-small'><DirectoryTreeview directoryId={this.props.id} /></div>}
+                        panel={<div className='uk-padding-small'>
+                            <DirectoryTreeview parent={this.props.parent} directoryId={this.props.id} />
+                        </div>}
                     />
                 }
             >
