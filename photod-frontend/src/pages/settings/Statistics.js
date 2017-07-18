@@ -4,6 +4,8 @@
 
 import React from 'react';
 
+import profile from 'profile';
+
 /**
  * Type declaration for Props.
  */
@@ -39,7 +41,19 @@ export default class Statistics extends React.Component<DefaultProps, Props, voi
      */
     render() {
         return (
-            null
+            <div className='uk-padding-small'>
+                <p className='uk-text-lead'>Current profile</p>
+
+                <dl class='uk-description-list'>
+                    <dt>Minimal quality</dt>
+                    <dd>{profile.quality}</dd>
+                </dl>
+
+                <dl class='uk-description-list'>
+                    <dt>Preferred MIME-types</dt>
+                    <dd>{profile.mimeTypes.join(', ')}</dd>
+                </dl>
+            </div>
         );
     }
 }

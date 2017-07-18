@@ -57,6 +57,9 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
         else if (this.props.page === 'about') {
             return <About />;
         }
+        else {
+            return null;
+        }
     }
 
     /**
@@ -96,7 +99,9 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
                         panel={<MenuList items={menuItems} selectedKey={this.props.page} showCount={false} />}
                     />
                 }
-            />
+            >
+                {this.renderPage()}
+            </Main>
         );
     }
 }
