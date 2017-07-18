@@ -28,7 +28,7 @@ type Props = {
  * Type declaration for DefaultProps.
  */
 type DefaultProps = {
-    page: string,
+
 };
 
 /**
@@ -44,7 +44,7 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
      * @inheritdoc
      */
     static defaultProps = {
-        page: 'interface',
+
     };
 
     renderPage() {
