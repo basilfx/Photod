@@ -471,8 +471,8 @@ class ThumbnailStep(Step):
         ]
 
         formats = [
-            ("webp", "image/webp"),
-            ("jpg", "image/jpeg")
+            ("webp", "RGBA", "image/webp"),
+            ("jpg", "RGB", "image/jpeg")
         ]
 
         qualities = [
@@ -486,8 +486,11 @@ class ThumbnailStep(Step):
             thumbnail_image = image.copy()
             thumbnail_image.thumbnail(size)
 
-            for quality in qualities:
-                for extension, mime_type in formats:
+            for extension, mode, mime_type in formats:
+                if thumbnail_image.mode != mode:
+                    thumbnail_image = thumbnail_image.convert(mode)
+
+                for quality in qualities:
                     relative_path = get_cache_path(
                         media_file, "thumbnail_%dx%d@%d.%s" % (
                             size[0], size[1], quality, extension))
@@ -530,6 +533,9 @@ class FaceDetectionStep(Step):
 
         if (image.width * image.height) > (6000 * 6000):
             return
+
+        if image.mode not in ('RGB', ):
+            image = image.convert('RGB')
 
         faces = face_recognition.face_locations(numpy.array(image))
 
