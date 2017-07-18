@@ -185,6 +185,8 @@ class Thumbnail(models.Model):
     height = models.IntegerField()
     quality = models.IntegerField()
 
+    file_size = models.IntegerField(null=True)
+
 
 class Filmstrip(models.Model):
     media_file = models.ForeignKey("MediaFile", related_name="filmstrips")
@@ -197,6 +199,8 @@ class Filmstrip(models.Model):
     width = models.IntegerField()
     height = models.IntegerField()
     quality = models.IntegerField()
+
+    file_size = models.IntegerField(null=True)
 
 
 class Album(MP_Node):

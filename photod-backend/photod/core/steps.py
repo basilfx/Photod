@@ -405,29 +405,51 @@ class VideoStripStep(Step):
             (512 * frames, 512),
         ]
 
+        formats = [
+            ("webp", "RGBA", "image/webp"),
+            ("jpg", "RGB", "image/jpeg")
+        ]
+
+        qualities = [
+            100,
+            60
+        ]
+
         filmstrips = []
 
         for size in sizes:
-            relative_path = get_cache_path(
-                media_file, "filmstrip_%dx%d.jpg" % size)
-            absolute_path = os.path.join(settings.MEDIA_ROOT, relative_path)
-
-            if not os.path.isdir(os.path.dirname(absolute_path)):
-                os.makedirs(os.path.dirname(absolute_path))
-
             thumbnail_image = image.copy()
             thumbnail_image.thumbnail(size)
-            thumbnail_image.save(absolute_path, quality=100)
 
-            filmstrips.append(
-                models.Filmstrip(
-                    frames=frames,
-                    width=thumbnail_image.width,
-                    height=thumbnail_image.height,
-                    quality=100,
-                    path=relative_path
-                )
-            )
+            for extension, mode, mime_type in formats:
+                if thumbnail_image.mode != mode:
+                    thumbnail_image = thumbnail_image.convert(mode)
+
+                for quality in qualities:
+                    relative_path = get_cache_path(
+                        media_file, "filmstrip_%dx%d@%d.%s" % (
+                            size[0], size[1], quality, extension))
+                    absolute_path = os.path.join(
+                        settings.MEDIA_ROOT, relative_path)
+
+                    if not os.path.isdir(os.path.dirname(absolute_path)):
+                        os.makedirs(os.path.dirname(absolute_path))
+
+                    thumbnail_image = image.copy()
+                    thumbnail_image.thumbnail(size)
+                    thumbnail_image.save(absolute_path, quality=100)
+
+                    filmstrips.append(
+                        models.Filmstrip(
+                            frames=frames,
+                            width=thumbnail_image.width,
+                            height=thumbnail_image.height,
+                            quality=quality,
+                            mime_type=mime_type,
+                            path=relative_path,
+                            file_size=os.stat(absolute_path).st_size
+                        )
+                    )
 
         media_file.filmstrips.add(*filmstrips, bulk=False)
 
@@ -510,7 +532,8 @@ class ThumbnailStep(Step):
                             height=thumbnail_image.height,
                             mime_type=mime_type,
                             quality=quality,
-                            path=relative_path
+                            path=relative_path,
+                            file_size=os.stat(absolute_path).st_size
                         )
                     )
 
