@@ -7,6 +7,8 @@ DEBUG = True
 ENABLE_DEBUG_TOOLBAR = True
 ENABLE_SENTRY = False
 
+MAPZEN_API_KEY = None
+
 
 # Sendfile configuration
 # https://github.com/johnsensible/django-sendfile

@@ -164,6 +164,7 @@ class Location(models.Model):
     media_file = models.ForeignKey("MediaFile", related_name="locations")
 
     point = gis_models.PointField()
+    geocode = models.CharField(max_length=8192, null=True)
 
 
 class Stream(models.Model):

@@ -20,3 +20,4 @@ Pillow>=4.1.1
 python-magic>=0.4.13
 tesserocr>=2.2.1
 tzlocal>=1.4
+-e git+https://github.com/basilfx/python-mapzen.git#egg=mapzen

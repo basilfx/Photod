@@ -10,6 +10,8 @@ from photod.core.utils.color_classifier import Classifier
 
 from tesserocr import PyTessBaseAPI, RIL
 
+from mapzen.api import MapzenAPI
+
 import face_recognition
 import threading
 
@@ -682,6 +684,49 @@ class ImageLocationStep(Step):
                 lon = 0 - lon
 
         return lat, lon
+
+
+class GeocodeStep(Step):
+    """
+    Add geocode information.
+    """
+
+    class Meta:
+        name = "geocode_v1"
+        accepts = ("*/*", )
+        after = ("location_v1", )
+
+    def __init__(self):
+        self.api = MapzenAPI(settings.MAPZEN_API_KEY)
+
+    def take(self, media_file, context):
+        locations = media_file.locations.all()
+
+        if not locations:
+            return
+
+        for location in locations:
+            lat = location.point.y
+            lon = location.point.x
+
+            try:
+                response = self.api.reverse(lat, lon)
+            except:
+                continue
+
+            features = [
+                feature for feature in response["features"]
+                if feature["type"] == "Feature"
+            ]
+            features.sort(key=lambda x: -1 * x["properties"]["confidence"])
+
+            try:
+                feature = features[0]
+            except IndexError:
+                continue
+
+            location.geocode = json.dumps(feature)
+            location.save()
 
 
 class HistogramStep(Step):
