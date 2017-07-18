@@ -1,6 +1,6 @@
 from haystack import indexes
 
-from photod.core.models import MediaFile, Tag, Person
+from photod.core.models import MediaFile, Tag, Person, Album, Directory
 
 
 class MediaFileIndex(indexes.SearchIndex, indexes.Indexable):
@@ -35,3 +35,19 @@ class PersonIndex(indexes.SearchIndex, indexes.Indexable):
 
     def get_model(self):
         return Person
+
+
+class AlbumIndex(indexes.SearchIndex, indexes.Indexable):
+    text = indexes.EdgeNgramField(
+        document=True, use_template=True, template_name="search/album.txt")
+
+    def get_model(self):
+        return Album
+
+
+class DirectoryIndex(indexes.SearchIndex, indexes.Indexable):
+    text = indexes.CharField(
+        document=True, use_template=True, template_name="search/directory.txt")
+
+    def get_model(self):
+        return Directory
