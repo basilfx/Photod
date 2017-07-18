@@ -19,6 +19,7 @@ import exifread
 import platform
 import datetime
 import logging
+import hashlib
 import tzlocal
 import numpy
 import pytz
@@ -35,9 +36,16 @@ logger = logging.getLogger(__name__)
 def get_cache_path(media_file, basename):
     """
     Helper to generate path to cache file.
+
+    To prevent too many directories in the cache directory, the first three
+    digest of the media file ID is taken.
     """
 
-    return os.path.join("cache", str(media_file.id), basename)
+    hash_instance = hashlib.sha256()
+    hash_instance.update(str(media_file.id).encode("ascii"))
+    digest = hash_instance.hexdigest()
+
+    return os.path.join("cache", digest[:3], str(media_file.id), basename)
 
 
 class StepMeta(type):
