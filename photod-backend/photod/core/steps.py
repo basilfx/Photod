@@ -694,24 +694,19 @@ class HistogramStep(Step):
     class Meta:
         name = "histogram_v1"
         accepts = ("image/*", )
+        depends = ("resource_step_v1", )
 
     def take(self, media_file, context):
-        image = cv2.imread(media_file.path)
+        image = context["image"]()
 
         histograms = []
-        color = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
-        names = ["red", "green", "blue"]
+        histogram = image.histogram()
 
-        for ch, col in enumerate(color):
-            hist_item = cv2.calcHist([image], [ch], None, [256], [0, 255])
-
-            cv2.normalize(hist_item, hist_item, 0, 255, cv2.NORM_MINMAX)
-            hist = numpy.int32(numpy.around(hist_item))
-
+        for index, channel in enumerate(image.mode):
             histograms.append(
                 models.Histogram(
-                    channel=names[ch],
-                    data=json.dumps(hist.reshape(256).tolist())
+                    channel=channel,
+                    data=json.dumps(histogram[index * 256:(index + 1) * 256])
                 )
             )
 
@@ -773,6 +768,7 @@ class RecordDateStep(Step):
     class Meta:
         name = "record_date_v1"
         accepts = ("image/jpeg", "image/tiff")
+        depends = ("resource_step_v1", )
 
     def take(self, media_file, context):
         exif = context["exif"]()
