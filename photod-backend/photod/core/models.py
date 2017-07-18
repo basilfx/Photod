@@ -199,10 +199,9 @@ class Filmstrip(models.Model):
 
 
 class Album(MP_Node):
-    class Meta:
-        ordering = ["name"]
-
     name = models.CharField(max_length=255)
+
+    node_order_by = ['name']
 
     def __str__(self):
         """
@@ -212,11 +211,10 @@ class Album(MP_Node):
 
 
 class Directory(MP_Node):
-    class Meta:
-        ordering = ["full_path"]
-
     full_path = models.CharField(max_length=255, unique=True, db_index=True)
     name = models.CharField(max_length=255)
+
+    node_order_by = ['full_path']
 
     def __str__(self):
         """
