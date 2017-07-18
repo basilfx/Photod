@@ -528,6 +528,9 @@ class FaceDetectionStep(Step):
         if not image:
             return
 
+        if (image.width * image.height) > (6000 * 6000):
+            return
+
         faces = face_recognition.face_locations(numpy.array(image))
 
         media_file.faces.add(
@@ -555,6 +558,9 @@ class OcrStep(Step):
         image = context["image"]()
 
         if not image:
+            return
+
+        if (image.width * image.height) > (6000 * 6000):
             return
 
         texts = []
