@@ -22,7 +22,7 @@ class MediaFile(TimeStampedModel, models.Model):
     mime_type = models.CharField(max_length=255, db_index=True)
     digest = models.CharField(max_length=255, db_index=True)
 
-    version = models.IntegerField(default=0)
+    version = models.IntegerField(default=1)
 
     steps = models.ManyToManyField(
         "Step", through="MediaFileStep", related_name="media_files")
@@ -71,6 +71,7 @@ class MediaFileStep(models.Model):
 
     duration = models.FloatField()
     result = models.CharField(max_length=32, choices=MEDIA_FILE_STEP_RESULTS)
+    version = models.IntegerField(default=1)
 
     def __str__(self):
         """
