@@ -145,7 +145,30 @@ GRAPHENE = {
     'SCHEMA': 'photod.api.schema.schema'
 }
 
-# AUTH_USER_MODEL = 'core.User'
+
+# Logging setup
+# https://docs.djangoproject.com/en/1.11/topics/logging/
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'ERROR'),
+        },
+        'photod': {
+            'handlers': ['console'],
+            'level': os.getenv('PHOTOD_LOG_LEVEL', 'ERROR'),
+        }
+    },
+}
+
 
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
