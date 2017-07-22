@@ -40,7 +40,7 @@ class Command(BaseCommand):
             help='Force processing of successfull steps.')
 
     def handle(self, *args, **options):
-        queue = multiprocessing.Queue(maxsize=options["workers"])
+        queue = multiprocessing.Queue(maxsize=1)
         workers = [
             multiprocessing.Process(
                 target=worker, args=(queue, options["force"]))
