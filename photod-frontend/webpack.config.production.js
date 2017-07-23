@@ -3,8 +3,10 @@ const webpack = require('webpack');
 
 const CompressionPlugin = require('compression-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const BabiliPlugin = require('babili-webpack-plugin');
 
 module.exports = {
+    devtool: false,
     entry: config.entry,
     module: {
         rules: config.module.rules.filter(
@@ -16,12 +18,13 @@ module.exports = {
             minimize: true,
             debug: false,
         }),
-        new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.EnvironmentPlugin([
             'NODE_ENV',
         ]),
         new webpack.NoEmitOnErrorsPlugin(),
+        new webpack.optimize.OccurrenceOrderPlugin(),
         new ExtractTextPlugin('style.css'),
+        new BabiliPlugin(),
         new CompressionPlugin(),
     ],
     output: {

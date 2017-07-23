@@ -35,7 +35,7 @@
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-react": "^7.1.0",
     "eslint-plugin-standard": "^3.0.1",
-    "extract-text-webpack-plugin": "^2.1.2",
+    "extract-text-webpack-plugin": "^3.0.0",
     "file-loader": "^0.11.2",
     "flow-bin": "^0.49.1",
     "flow-typed": "^2.0.0",
@@ -57,15 +57,15 @@
     "redux-devtools": "*",
     "sass-loader": "*",
     "style-loader": "^0.18.2",
-    "uglify-es": "^3.0.22",
     "url-loader": "^0.5.9",
-    "webpack": "^2.0.0",
-    "webpack-dev-server": "^2.5.0"
+    "webpack": "^3.0.0",
+    "webpack-dev-server": "^2.6.0"
   },
   "dependencies": {
     "@meadow/redux-ensure-fsa": "*",
     "apollo-client": "^1.7.0",
     "autobind-decorator": "^2.1.0",
+    "babili-webpack-plugin": "^0.1.2",
     "bowser": "^1.7.1",
     "chainable-check": "*",
     "fbjs": "^0.8.12",
