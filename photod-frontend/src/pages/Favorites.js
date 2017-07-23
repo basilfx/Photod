@@ -62,12 +62,6 @@ export default class Favorites extends React.Component<DefaultProps, Props, void
      * @inheritdoc
      */
     render() {
-        const trail = [
-            {
-                label: 'Favorites',
-            },
-        ];
-
         const menuItems = [
             {
                 key: 'starred',
@@ -80,6 +74,20 @@ export default class Favorites extends React.Component<DefaultProps, Props, void
                 component: <Link to={'/favorites/views'}>Views</Link>,
             },
         ];
+        
+        const trail = [
+            {
+                label: 'Favorites',
+            },
+        ];
+
+        if (this.props.page) {
+            const menuItem = menuItems.find(menuItem => menuItem.key === this.props.page);
+
+            if (menuItem) {
+                trail.push(menuItem);
+            }
+        }
 
         return (
             <Main

@@ -66,12 +66,6 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
      * @inheritdoc
      */
     render() {
-        const trail = [
-            {
-                label: 'Settings',
-            },
-        ];
-
         const menuItems = [
             {
                 key: 'interface',
@@ -89,6 +83,20 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
                 component: <Link to={'/settings/about'}>About</Link>,
             },
         ];
+
+        const trail = [
+            {
+                label: 'Settings',
+            },
+        ];
+
+        if (this.props.page) {
+            const menuItem = menuItems.find(menuItem => menuItem.key === this.props.page);
+
+            if (menuItem) {
+                trail.push(menuItem);
+            }
+        }
 
         return (
             <Main
