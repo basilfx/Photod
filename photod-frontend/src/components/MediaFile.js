@@ -256,14 +256,14 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
                 <div style={{
                     paddingBottom: `${height / width * 100}%`,
                 }} />
-                <div className='uk-transition-toggle tm-mediafile' style={{
+                <div className='uk-transition-toggle' style={{
                     position: 'absolute',
                     top: '0',
                     width: '100%',
                     height: '100%',
                     overflow: 'hidden',
                 }}>
-                    <div ref={element => { this.image = element; }} className={ info.frames ? `tm-mediafile-animate-${info.frames}` : ''} style={{
+                    <div ref={element => { this.image = element; }} className={`tm-mediafile - ${info.frames ? `tm-mediafile-animate-${info.frames}` : ''}`} style={{
                         background: `url(${info.src})`,
                         backgroundSize: 'cover',
                         width: '100%',
