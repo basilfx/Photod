@@ -6,12 +6,13 @@ import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-d
 
 import Albums from 'pages/Albums';
 import Directories from 'pages/Directories';
+import Favorites from 'pages/Favorites';
 import Locations from 'pages/Locations';
 import Login from 'pages/Login';
+import NotFound from 'pages/NotFound';
 import People from 'pages/People';
 import Settings from 'pages/Settings';
 import Tags from 'pages/Tags';
-import NotFound from 'pages/NotFound';
 
 import { toGlobalId } from 'graphql-relay';
 
@@ -67,6 +68,9 @@ export default class App extends React.Component<DefaultProps, Props, State> {
                     } />
                     <Route exact path='/albums/:id?' component={
                         ({ match }) => <Albums key='albums' id={toGlobalId('Album', match.params.id)} />
+                    } />
+                    <Route exact path='/favorites/:page?' component={
+                        ({ match }) => <Favorites key='favorites' page={match.params.page} />
                     } />
                     <Route exact path='/tags/:tag?' component={
                         ({ match }) => <Tags key='tags' tag={match.params.tag} />

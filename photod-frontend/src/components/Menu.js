@@ -58,6 +58,12 @@ export default class Menu extends React.Component<DefaultProps, Props, void> {
                 to: '/albums',
             },
             {
+                key: 'favorites',
+                label: 'Favorites',
+                icon: 'heart',
+                to: '/favorites',
+            },
+            {
                 key: 'people',
                 label: 'People',
                 icon: 'users',

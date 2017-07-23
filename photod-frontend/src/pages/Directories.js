@@ -19,7 +19,6 @@ import DirectoryMediaList from './DirectoryMediaList';
  * Type declaration for Props.
  */
 type Props = {
-    parent: React.Component<*, *, *>,
     id?: string,
 };
 
