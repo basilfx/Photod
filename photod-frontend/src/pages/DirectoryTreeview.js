@@ -20,7 +20,6 @@ import { fromGlobalId } from 'graphql-relay';
 
 import { toggle } from 'modules/application/directories/actions';
 
-
 /**
  * Type declaration for Props.
  */
@@ -50,11 +49,6 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
      * @inheritdoc
      */
     props: Props;
-
-    /**
-     * @inheritdoc
-     */
-    state: State;
 
     /**
      * @inheritdoc
@@ -117,17 +111,17 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
 
                             &nbsp;
 
-                            <Link to={`/directories/${fromGlobalId(edge.node.id).id}`} onDoubleClick={() => this.handleClick(edge.node.id)}>
+                            <Link to={`/directories/${fromGlobalId(edge.node.id).id}`} onDoubleClick={() => this.handleClick(edge.node.id)} title={edge.node.fullPath}>
                                 {edge.node.name}
                             </Link>
 
                             &nbsp;
 
-                            ({edge.node.mediaFilesCount})
+                            ({edge.node.totalMediaFilesCount})
                         </span>
 
                         {edge.node.childrenCount > 0 && this.props.expanded[edge.node.id] &&
-                            <ReduxDirectoryTreeView parent={this.props.parent} parentId={edge.node.id} directoryId={this.props.directoryId} />
+                            <ReduxDirectoryTreeView parentId={edge.node.id} directoryId={this.props.directoryId} />
                         }
                     </ListItem>
                 )}
@@ -138,15 +132,17 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
 }
 
 const DirectoriesQuery = gql`
-    query Directories($parentId: ID, $cursor: String) {
-        directories(first: 100, after: $cursor, parentId: $parentId) {
+    query Directories($parentId: ID, $cursor: String, $collapse: Boolean) {
+        directories(first: 100, after: $cursor, parentId: $parentId, collapse: $collapse) {
             edges {
                 node {
                     id
-                    path
+                    fullPath
                     name
                     childrenCount
+                    totalChildrenCount
                     mediaFilesCount
+                    totalMediaFilesCount
                 }
             }
             pageInfo {
@@ -161,6 +157,7 @@ const ApolloDirectoryTreeview = graphql(DirectoriesQuery, {
     options: (props) => ({
         variables: {
             parentId: props.parentId,
+            collapse: true,
         },
     }),
     props({ data: { loading, directories, fetchMore } }) {

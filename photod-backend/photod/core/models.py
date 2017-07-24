@@ -6,6 +6,7 @@ from treebeard.mp_tree import MP_Node
 
 from django_extensions.db.models import TimeStampedModel
 
+import os
 
 MEDIA_FILE_STEP_RESULTS = (
     ("success", "Success"),
@@ -227,6 +228,51 @@ class Directory(MP_Node):
         Instance string representation.
         """
         return self.full_path
+
+    @staticmethod
+    def collapse(children):
+        """
+        Collapse child nodes until the next child node has more than one
+        children. For example:
+
+        - A
+          - B
+            - C
+              - D
+              - E
+
+        Will become:
+
+        - A/../C
+          - D
+          - E
+        """
+
+        first_children = children
+
+        while True:
+            if len(children) == 1:
+                next_children = children[0].get_children()
+
+                if len(next_children) == 1:
+                    children = next_children
+                else:
+                    break
+            else:
+                break
+
+        if first_children is not children:
+            result = []
+
+            for child in children:
+                child.name = os.path.join(
+                    first_children[0].name, "...", child.name)
+
+                result.append(child)
+
+            return result
+
+        return children
 
 
 class View(models.Model):

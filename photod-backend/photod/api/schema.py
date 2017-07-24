@@ -111,13 +111,28 @@ class Directory(DjangoObjectType):
         model = models.Directory
         interfaces = (relay.Node, )
 
+    children = DjangoFilterConnectionField(lambda: Directory)
+
     children_count = graphene.Int()
+    total_children_count = graphene.Int()
     media_files_count = graphene.Int()
+    total_media_files_count = graphene.Int()
+
+    def resolve_children(self, args, context, info):
+        return self.get_children()
 
     def resolve_children_count(self, args, context, info):
         return self.get_children_count()
 
+    def resolve_total_children_count(self, args, context, info):
+        return models.Directory.objects.filter(
+            path__startswith=self.path
+        ).count()
+
     def resolve_media_files_count(self, args, context, info):
+        return self.media_files.all().count()
+
+    def resolve_total_media_files_count(self, args, context, info):
         return models.MediaFile.objects.filter(
             directory__path__startswith=self.path
         ).count()
@@ -217,19 +232,27 @@ class Query(graphene.ObjectType):
 
     albums = DjangoFilterConnectionField(Album)
     directories = DjangoFilterConnectionField(
-        Directory, parent_id=graphene.ID())
+        Directory, parent_id=graphene.ID(), collapse=graphene.Boolean())
 
     me = graphene.Field(User)
 
     def resolve_directories(self, args, context, info):
         parent_id = args.get('parent_id')
+        collapse = args.get('collapse')
 
-        if parent_id:
-            _, parent_id = from_global_id(parent_id)
+        def _retrieve(parent_id):
+            if parent_id:
+                _, parent_id = from_global_id(parent_id)
 
-            return models.Directory.objects.get(id=parent_id).get_children()
+                return models.Directory.objects.get(id=parent_id) \
+                    .get_children()
 
-        return models.Directory.get_root_nodes()
+            return models.Directory.get_root_nodes()
+
+        if collapse:
+            return models.Directory.collapse(_retrieve(parent_id))
+        else:
+            return _retrieve(parent_id)
 
     def resolve_me(self, args, context, info):
         return context.user
