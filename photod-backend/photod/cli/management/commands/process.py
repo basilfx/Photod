@@ -90,7 +90,7 @@ class Command(BaseCommand):
 
         # Schedule a job one by one.
         if options["incremental"]:
-            media_files = MediaFile.objects.filter(path__isnull=True)
+            media_files = MediaFile.objects.filter(directory__isnull=True)
         else:
             media_files = MediaFile.objects.all()
 
