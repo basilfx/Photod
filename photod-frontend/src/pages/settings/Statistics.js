@@ -6,12 +6,16 @@ import React from 'react';
 
 import profile from 'profile';
 
+import { gql, graphql } from 'react-apollo';
+
 /**
  * Type declaration for Props.
  */
 type Props = {
     loading: boolean,
-    jobs?: Object
+    jobs?: Object,
+    hasNextPage: boolean,
+    loadMoreEntries: () => void;
 };
 
 /**
@@ -24,7 +28,7 @@ type DefaultProps = {
 /**
  * The component.
  */
-export default class Statistics extends React.Component<DefaultProps, Props, void> {
+class Statistics extends React.Component<DefaultProps, Props, void> {
     /**
      * @inheritdoc
      */
@@ -42,22 +46,27 @@ export default class Statistics extends React.Component<DefaultProps, Props, voi
             return null;
         }
 
-        if (!this.props.jobs.edges) {
+        if (!this.props.jobs.length) {
             return <p>No active jobs.</p>
         }
 
         const jobs = [];
 
-        for (const job of this.props.jobs.edges) {
+        for (const edge of this.props.jobs) {
             jobs.push(
-                <dl key={job.id} className='uk-description-list'>
-                    <dt>{job.node.title}</dt>
+                <dl key={edge.node.id} className='uk-description-list'>
+                    <dt>{edge.node.title}</dt>
                     <dd>
-                        <progress className='uk-progress' value={job.node.progress} max='100' style={{ maxWidth: '33%' }} />
+                        <div className='uk-flex'>
+                            <progress className='uk-progress' value={edge.node.progress} max={edge.node.items} style={{ maxWidth: '33%' }} />
+                            <span style={{ lineHeight: '15px' }}>&nbsp; {Math.round(edge.node.progress / edge.node.items * 100)}%</span>
+                        </div>
                     </dd>
                 </dl>
             );
         }
+
+        return jobs;
     }
 
     /**
@@ -66,7 +75,7 @@ export default class Statistics extends React.Component<DefaultProps, Props, voi
     render() {
         return (
             <div className='uk-padding-small'>
-                <h3>Current profile</h3>
+                <h4>Current profile</h4>
 
                 <dl className='uk-description-list'>
                     <dt>Minimal quality</dt>
@@ -78,10 +87,61 @@ export default class Statistics extends React.Component<DefaultProps, Props, voi
                     <dd>{profile.mimeTypes.join(', ')}</dd>
                 </dl>
 
-                <h3>Active jobs</h3>
+                <h4>Active jobs</h4>
 
                 {this.renderJobs()}
             </div>
         );
     }
 }
+
+const StatisticsQuery = gql`
+    query MediaFiles($cursor: String) {
+        jobs(first: 100, after: $cursor) {
+            edges {
+                node {
+                    id,
+                    title,
+                    progress
+                    items
+                }
+            }
+            pageInfo {
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+`;
+
+export default graphql(StatisticsQuery, {
+    props({ data: { loading, jobs, fetchMore } }) {
+        return {
+            loading,
+            jobs: jobs ? jobs.edges : [],
+            hasNextPage: jobs ? jobs.pageInfo.hasNextPage : false,
+            loadMoreEntries: () => {
+                return fetchMore({
+                    variables: {
+                        cursor: jobs.pageInfo.endCursor,
+                    },
+                    updateQuery: (previousResult, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) {
+                            return previousResult;
+                        }
+
+                        const newEdges = fetchMoreResult.jobs.edges;
+                        const pageInfo = fetchMoreResult.jobs.pageInfo;
+
+                        return {
+                            jobs: {
+                                edges: [...previousResult.jobs.edges, ...newEdges],
+                                pageInfo,
+                            },
+                        };
+                    },
+                });
+            },
+        };
+    },
+})(Statistics);

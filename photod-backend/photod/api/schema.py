@@ -13,6 +13,7 @@ from graphene import relay
 from graphql_relay.node.node import from_global_id
 
 from photod.core import models
+from photod.cli import models as cli_models
 from photod.web.views import thumbnail, media, filmstrip
 
 import graphene
@@ -189,6 +190,12 @@ class User(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
+class Job(DjangoObjectType):
+    class Meta:
+        model = cli_models.Job
+        interfaces = (relay.Node, )
+
+
 class SearchResult(graphene.ObjectType):
     model = graphene.String()
     pk = graphene.ID()
@@ -234,6 +241,8 @@ class Query(graphene.ObjectType):
     directories = DjangoFilterConnectionField(
         Directory, parent_id=graphene.ID(), collapse=graphene.Boolean())
 
+    jobs = DjangoFilterConnectionField(Job)
+
     me = graphene.Field(User)
 
     def resolve_directories(self, args, context, info):
@@ -253,6 +262,9 @@ class Query(graphene.ObjectType):
             return models.Directory.collapse(_retrieve(parent_id))
         else:
             return _retrieve(parent_id)
+
+    def resolve_jobs(self, args, context, info):
+        return cli_models.Job.objects.filter(state="busy")
 
     def resolve_me(self, args, context, info):
         return context.user

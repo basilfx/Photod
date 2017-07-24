@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 
 from photod.core.steps import MediaFilePipeline
 from photod.core.models import MediaFile
+from photod.cli.models import Job
 
 import multiprocessing
 
@@ -10,6 +11,7 @@ import multiprocessing
 def worker(queue, force):
     db.connections.close_all()
 
+    # Prepare the pipeline instance.
     pipeline = MediaFilePipeline()
 
     while True:
@@ -19,13 +21,44 @@ def worker(queue, force):
         if media_file_id is None:
             return
 
-        # Process the media file.
+        # Retrieve the media file.
         try:
             media_file = MediaFile.objects.get(id=media_file_id)
         except MediaFile.DoesNotExist:
             continue
 
+        # Process the media file.
         pipeline.process(media_file, {}, force)
+
+
+class DjangoWorkerPool(object):
+
+    def __init__(self, count, target, args=None):
+        self.queue = multiprocessing.Queue(maxsize=1)
+        args = (self.queue, ) + (args or ())
+
+        self.workers = [
+            multiprocessing.Process(target=target, args=args)
+            for i in range(count)
+        ]
+
+    def close(self, poison_pill=None):
+        for worker in self.workers:
+            self.queue.put(poison_pill)
+
+        self.queue.close()
+
+    def start(self):
+        for worker in self.workers:
+            worker.start()
+
+    def join(self):
+        for worker in self.workers:
+            worker.join()
+
+    def close_and_join(self, poison_pill=None):
+        self.close(poison_pill)
+        self.join()
 
 
 class Command(BaseCommand):
@@ -33,40 +66,54 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
+            '--force', action='store_true', dest='force', default=False,
+            help='Force steps that have been successful.')
+        parser.add_argument(
+            '--incremental', action='store_true', dest='incremental',
+            default=False, help='Incremental update of media files.')
+        parser.add_argument(
             '--workers', action='store', dest='workers', type=int,
             default=multiprocessing.cpu_count(), help='Number of workers.')
-        parser.add_argument(
-            '--force', action='store_true', dest='force', default=False,
-            help='Force processing of successfull steps.')
 
     def handle(self, *args, **options):
-        queue = multiprocessing.Queue(maxsize=1)
-        workers = [
-            multiprocessing.Process(
-                target=worker, args=(queue, options["force"]))
-            for i in range(options["workers"])
-        ]
+        pool = DjangoWorkerPool(
+            count=options["workers"],
+            target=worker,
+            args=(options["force"], )
+        )
 
         # Start all the workers.
         self.stdout.write(self.style.SUCCESS(
             'Starting %d workers.' % options["workers"]))
 
-        for w in workers:
-            w.start()
+        pool.start()
 
         # Schedule a job one by one.
-        for media_file in MediaFile.objects.all():
+        if options["incremental"]:
+            media_files = MediaFile.objects.filter(path__isnull=True)
+        else:
+            media_files = MediaFile.objects.all()
+
+        job = Job(
+            title="Processing media files.", items=media_files.count(),
+            progress=0)
+        job.save()
+
+        for media_file in media_files:
             self.stdout.write(self.style.SUCCESS(
                 'Processing "%s".' % media_file.path))
 
-            queue.put(media_file.id, block=True)
+            pool.queue.put(media_file.id, block=True)
 
-        # Add poison pills to kill workers.
-        for w in workers:
-            queue.put(None)
+            # Update job.
+            job.progress += 1
+            job.save()
 
         # Wait for the processes to finish.
         self.stdout.write(self.style.SUCCESS('Waiting for workers to finish.'))
 
-        for w in workers:
-            w.join()
+        pool.close_and_join()
+
+        # Update job.
+        job.state = "done"
+        job.save()

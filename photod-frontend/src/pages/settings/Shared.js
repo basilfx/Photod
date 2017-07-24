@@ -10,6 +10,8 @@ import DateTime from 'components/DateTime';
 
 import profile from 'profile';
 
+import { gql, graphql } from 'react-apollo';
+
 /**
  * Type declaration for Props.
  */
