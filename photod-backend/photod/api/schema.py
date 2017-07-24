@@ -14,7 +14,7 @@ from graphql_relay.node.node import from_global_id
 
 from photod.core import models
 from photod.cli import models as cli_models
-from photod.web.views import thumbnail, media, filmstrip
+from photod.web.views import thumbnail, media, filmstrip, share
 
 import graphene
 import django_filters
@@ -190,6 +190,17 @@ class User(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
+class Share(DjangoObjectType):
+    class Meta:
+        model = models.Share
+        interfaces = (relay.Node, )
+
+    url = graphene.String()
+
+    def resolve_url(self, args, context, info):
+        return reverse(share, args=[self.token])
+
+
 class Job(DjangoObjectType):
     class Meta:
         model = cli_models.Job
@@ -240,6 +251,8 @@ class Query(graphene.ObjectType):
     albums = DjangoFilterConnectionField(Album)
     directories = DjangoFilterConnectionField(
         Directory, parent_id=graphene.ID(), collapse=graphene.Boolean())
+
+    shares = DjangoFilterConnectionField(Share)
 
     jobs = DjangoFilterConnectionField(Job)
 

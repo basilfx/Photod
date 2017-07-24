@@ -2,19 +2,21 @@ from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.http import is_safe_url
+from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth import REDIRECT_FIELD_NAME
 
-from photod.core.models import MediaFile, Thumbnail, Filmstrip
+from photod.core.models import MediaFile, Thumbnail, Filmstrip, Share
 from photod.web.forms import RememberMeAuthenticationForm
 
 from sendfile import sendfile
 
 import os
 import json
+import datetime
 
 
 @login_required
@@ -115,3 +117,24 @@ def filmstrip(request, media_file_id, filmstrip_id):
     return sendfile(
         request, os.path.join(settings.MEDIA_ROOT, filmstrip.path),
         mimetype=filmstrip.mime_type)
+
+
+def share(request, token):
+    """
+    Serve a shared file.
+
+    This view does not require login, but requires a token.
+    """
+
+    share = get_object_or_404(
+        Share,
+        Q(expires__isnull=True) | Q(expires__gt=datetime.datetime.now()),
+        token=token)
+
+    # Increment number of views.
+    share.views += 1
+    share.save()
+
+    return sendfile(
+        request, os.path.join(settings.MEDIA_ROOT, share.media_file.path),
+        mimetype=share.media_file.mime_type)

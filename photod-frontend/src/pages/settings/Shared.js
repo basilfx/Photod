@@ -1,6 +1,6 @@
 // @flow
 
-// import autobind from 'autobind-decorator';
+import autobind from 'autobind-decorator';
 
 import React from 'react';
 
@@ -12,11 +12,18 @@ import profile from 'profile';
 
 import { gql, graphql } from 'react-apollo';
 
+import { fromGlobalId } from 'graphql-relay';
+
+import UIkit from 'uikit';
+
 /**
  * Type declaration for Props.
  */
 type Props = {
-    // children?: any,
+    loading: boolean,
+    shares?: Object,
+    hasNextPage: boolean,
+    loadMoreEntries: () => void;
 };
 
 /**
@@ -29,7 +36,7 @@ type DefaultProps = {
 /**
  * The component.
  */
-export default class Shared extends React.Component<DefaultProps, Props, void> {
+class Shared extends React.Component<DefaultProps, Props, void> {
     /**
      * @inheritdoc
      */
@@ -42,24 +49,71 @@ export default class Shared extends React.Component<DefaultProps, Props, void> {
 
     };
 
-    renderRows() {
-        const row = {
-            since: '',
-            expires: '',
-        };
+    @autobind handleLink(selector) {
+        const element = document.querySelector(selector);
 
-        return (
-            <tr>
-                <td></td>
-                <td></td>
-                <td><DateTime timestamp={row.since}/></td>
-                <td><DateTime timestamp={row.expires}/></td>
-                <td>
-                    <Icon icon='link' />
-                    <Icon icon='trash' />
-                </td>
-            </tr>
-        );
+        if (element) {
+            element.select();
+
+            if (document.execCommand('copy')) {
+                UIkit.notification({
+                    message: 'Link copied to clipboard.',
+                    pos: 'bottom-left',
+                    status: 'success',
+                });
+            }
+            else {
+                UIkit.notification({
+                    message: 'Unable to copy to clipboard.',
+                    pos: 'bottom-left',
+                    status: 'danger',
+                });
+            }
+        }
+    }
+
+    renderRows() {
+        if (this.props.loading) {
+            return null;
+        }
+
+        if (!this.props.shares.length) {
+            return (
+                <tr>
+                    <td colSpan={5} className='uk-text-center'>No media files shared</td>
+                </tr>
+            );
+        }
+
+        const rows = [];
+
+        for (const edge of this.props.shares || []) {
+            rows.push(
+                <tr key={edge.node.id}>
+                    <td>{edge.node.mediaFile.path}</td>
+                    <td>{edge.node.views}</td>
+                    <td><DateTime timestamp={edge.node.created}/></td>
+                    <td><DateTime timestamp={edge.node.expires}/></td>
+                    <td>
+                        <a onClick={() => this.handleLink(`#share-${fromGlobalId(edge.node.id).id}`)}>
+                            <Icon icon='link' />
+                        </a>
+                        <Icon icon='trash' />
+
+                        <div style={{
+                            width: '1px',
+                            height: '1px',
+                            overflow: 'hidden',
+                            opacity: 0,
+                        }}>
+                            <input id={`share-${fromGlobalId(edge.node.id).id}`} value={`${window.location.origin}${edge.node.url}`} readOnly />
+                        </div>
+                    </td>
+                </tr>
+            );
+        }
+
+        return rows;
     }
 
     /**
@@ -86,3 +140,58 @@ export default class Shared extends React.Component<DefaultProps, Props, void> {
         );
     }
 }
+
+const SharedQuery = gql`
+    query Shared($cursor: String) {
+        shares(first: 100, after: $cursor) {
+            edges {
+                node {
+                    id
+                    mediaFile {
+                        path
+                    }
+                    views
+                    created
+                    expires
+                    url
+                }
+            }
+            pageInfo {
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+`;
+
+export default graphql(SharedQuery, {
+    props({ data: { loading, shares, fetchMore } }) {
+        return {
+            loading,
+            shares: shares ? shares.edges : [],
+            hasNextPage: shares ? shares.pageInfo.hasNextPage : false,
+            loadMoreEntries: () => {
+                return fetchMore({
+                    variables: {
+                        cursor: shares.pageInfo.endCursor,
+                    },
+                    updateQuery: (previousResult, { fetchMoreResult }) => {
+                        if (!fetchMoreResult) {
+                            return previousResult;
+                        }
+
+                        const newEdges = fetchMoreResult.shares.edges;
+                        const pageInfo = fetchMoreResult.shares.pageInfo;
+
+                        return {
+                            shares: {
+                                edges: [...previousResult.shares.edges, ...newEdges],
+                                pageInfo,
+                            },
+                        };
+                    },
+                });
+            },
+        };
+    },
+})(Shared);

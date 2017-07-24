@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.gis.db import models as gis_models
+from django.utils.crypto import get_random_string
 from django.conf import settings
 
 from treebeard.mp_tree import MP_Node
@@ -13,6 +14,10 @@ MEDIA_FILE_STEP_RESULTS = (
     ("skipped", "Skipped"),
     ("failed", "Failed"),
 )
+
+
+def generate_token():
+    return get_random_string(length=64)
 
 
 class MediaFile(TimeStampedModel, models.Model):
@@ -291,3 +296,16 @@ class Star(models.Model):
 
     media_file = models.ForeignKey("MediaFile", related_name="stars")
     user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="stars")
+
+
+class Share(TimeStampedModel, models.Model):
+    media_file = models.ForeignKey("MediaFile", related_name="shared")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="shared")
+
+    data = models.CharField(max_length=255, null=True)
+    token = models.CharField(
+        max_length=255, unique=True, db_index=True, default=generate_token)
+
+    views = models.IntegerField(default=0)
+
+    expires = models.DateTimeField(null=True)
