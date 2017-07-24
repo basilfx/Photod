@@ -10,7 +10,8 @@ import profile from 'profile';
  * Type declaration for Props.
  */
 type Props = {
-    // children?: any,
+    loading: boolean,
+    jobs?: Object
 };
 
 /**
@@ -36,13 +37,36 @@ export default class Statistics extends React.Component<DefaultProps, Props, voi
 
     };
 
+    renderJobs() {
+        if (this.props.loading) {
+            return null;
+        }
+
+        if (!this.props.jobs.edges) {
+            return <p>No active jobs.</p>
+        }
+
+        const jobs = [];
+
+        for (const job of this.props.jobs.edges) {
+            jobs.push(
+                <dl key={job.id} className='uk-description-list'>
+                    <dt>{job.node.title}</dt>
+                    <dd>
+                        <progress className='uk-progress' value={job.node.progress} max='100' style={{ maxWidth: '33%' }} />
+                    </dd>
+                </dl>
+            );
+        }
+    }
+
     /**
      * @inheritdoc
      */
     render() {
         return (
             <div className='uk-padding-small'>
-                <p className='uk-text-lead'>Current profile</p>
+                <h3>Current profile</h3>
 
                 <dl className='uk-description-list'>
                     <dt>Minimal quality</dt>
@@ -53,6 +77,10 @@ export default class Statistics extends React.Component<DefaultProps, Props, voi
                     <dt>Preferred MIME-types</dt>
                     <dd>{profile.mimeTypes.join(', ')}</dd>
                 </dl>
+
+                <h3>Active jobs</h3>
+
+                {this.renderJobs()}
             </div>
         );
     }
