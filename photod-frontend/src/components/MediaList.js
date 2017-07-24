@@ -42,11 +42,11 @@ export default class MediaList extends React.Component<DefaultProps, Props, void
 
     };
 
-    getGroup(mediaFile) {
+    getGroup(mediaFile: MediaFile): string {
         return moment.tz(
             mediaFile.recorded,
             window.getApplicationTimezone()
-        ).format("YYYY-MM-DD");
+        ).format('YYYY-MM-DD');
     }
 
     * renderMediaFiles(): any {
