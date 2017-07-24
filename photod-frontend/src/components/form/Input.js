@@ -54,6 +54,9 @@ export default class Input extends React.Component {
 
             return this.input.files[0];
         }
+        else if (this.props.type === 'checkbox') {
+            return this.input.checked;
+        }
 
         return this.input.value;
     }

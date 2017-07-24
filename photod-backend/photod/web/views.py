@@ -7,9 +7,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.auth.forms import AuthenticationForm
 
 from photod.core.models import MediaFile, Thumbnail, Filmstrip
+from photod.web.forms import RememberMeAuthenticationForm
 
 from sendfile import sendfile
 
@@ -40,10 +40,13 @@ def login(request):
         redirect_to = settings.LOGIN_REDIRECT_URL
 
     # Process post request
-    form = AuthenticationForm(data=request.POST or None)
+    form = RememberMeAuthenticationForm(data=request.POST or None)
 
     if request.method == "POST":
         if form.is_valid():
+            if not form.cleaned_data.get('remember'):
+                request.session.set_expiry(0)
+
             auth_login(request, form.get_user())
 
             if request.session.test_cookie_worked():
