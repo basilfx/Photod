@@ -9,3 +9,4 @@ photod-backend/cache/
 photod-backend/data/
 photod-backend/photod/settings/local.py
 photod-backend/photod/settings/build.py
+photod-backend/photod/database.db
