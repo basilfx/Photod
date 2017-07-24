@@ -20,6 +20,13 @@ type ButtonStyle =
     'link';
 
 /**
+ * Button type definitions.
+ *
+ * @see https://www.w3schools.com/tags/att_button_type.asp
+ */
+type ButtonType = 'button' | 'reset' | 'submit';
+
+/**
  * Type declaration for Props.
  */
 type Props = {
@@ -27,7 +34,8 @@ type Props = {
     className: string,
     componentClass?: ComponentClass,
     buttonStyle?: ButtonStyle,
-    onClick?: (e) => void,
+    onClick?: (Event) => void,
+    type?: ButtonType,
 };
 
 /**
@@ -37,6 +45,7 @@ type DefaultProps = {
     className: string,
     componentClass: ComponentClass,
     buttonStyle: ButtonStyle,
+    type: ButtonType,
 };
 
 /**
@@ -55,6 +64,7 @@ export default class Button extends React.Component<DefaultProps, Props, void> {
         className: '',
         componentClass: 'div',
         buttonStyle: 'default',
+        type: 'button',
     };
 
     /**
@@ -65,6 +75,7 @@ export default class Button extends React.Component<DefaultProps, Props, void> {
         const props = {
             className: className.trim(),
             onClick: this.props.onClick,
+            type: this.props.type,
         };
 
         return React.createElement(
