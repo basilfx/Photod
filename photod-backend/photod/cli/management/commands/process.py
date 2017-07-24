@@ -94,26 +94,28 @@ class Command(BaseCommand):
         else:
             media_files = MediaFile.objects.all()
 
-        job = Job(
-            title="Processing media files.", items=media_files.count(),
-            progress=0)
-        job.save()
-
-        for media_file in media_files:
-            self.stdout.write(self.style.SUCCESS(
-                'Processing "%s".' % media_file.path))
-
-            pool.queue.put(media_file.id, block=True)
-
-            # Update job.
-            job.progress += 1
+        try:
+            job = Job(
+                title="Processing media files.",
+                items=media_files.count(), progress=0)
             job.save()
 
-        # Wait for the processes to finish.
-        self.stdout.write(self.style.SUCCESS('Waiting for workers to finish.'))
+            for media_file in media_files:
+                self.stdout.write(self.style.SUCCESS(
+                    'Processing "%s".' % media_file.path))
 
-        pool.close_and_join()
+                pool.queue.put(media_file.id, block=True)
 
-        # Update job.
-        job.state = "done"
-        job.save()
+                # Update job.
+                job.progress += 1
+                job.save()
+
+            # Wait for the processes to finish.
+            self.stdout.write(
+                self.style.SUCCESS('Waiting for workers to finish.'))
+        except KeyboardInterrupt:
+            pool.close_and_join()
+        finally:
+            # Update job.
+            job.state = "done"
+            job.save()
