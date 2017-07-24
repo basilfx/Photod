@@ -78,11 +78,11 @@ export default class Header extends React.Component<DefaultProps, Props, void> {
                     </NavbarItem>
                 </Navbar>
 
-                {this.props.search && <div className="nav-overlay uk-navbar-right">
-                    <a className="uk-navbar-toggle" data-uk-toggle="target: .nav-overlay; animation: uk-animation-fade" href="#">
+                {this.props.search && <Navbar position='right' className='nav-overlay'>
+                    <a className='uk-navbar-toggle' data-uk-toggle='target: .nav-overlay; animation: uk-animation-fade' href='#'>
                         <Icon icon='search' size={1} />
                     </a>
-                </div>}
+                </Navbar>}
 
                 {this.props.search && <Search />}
             </NavbarContainer>

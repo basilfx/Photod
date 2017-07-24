@@ -15,16 +15,18 @@ type Props = {
     children?: any,
     className: string;
     componentClass?: ComponentClass,
-    position?: NavbarPosition
+    position?: NavbarPosition,
+    hidden?: boolean,
 };
 
 /**
  * Type declaration for DefaultProps.
  */
 type DefaultProps = {
-    className: string;
+    className: string,
     componentClass: ComponentClass,
-    position: NavbarPosition;
+    position: NavbarPosition,
+    hidden: boolean,
 };
 
 /**
@@ -43,6 +45,7 @@ export default class Template extends React.Component<DefaultProps, Props, void>
         className: '',
         componentClass: 'div',
         position: 'left',
+        hidden: false,
     };
 
     /**
@@ -53,6 +56,7 @@ export default class Template extends React.Component<DefaultProps, Props, void>
 
         const props = {
             className: className.trim(),
+            hidden: this.props.hidden,
         };
 
         return React.createElement(

@@ -7,6 +7,7 @@ import React from 'react';
 import List from 'ui/List';
 import ListItem from 'ui/ListItem';
 import Icon from 'ui/Icon';
+import Navbar from 'ui/Navbar';
 
 import { gql, graphql } from 'react-apollo';
 
@@ -55,6 +56,12 @@ class Search extends React.Component<DefaultProps, Props, State> {
 
     input: HTMLInputElement;
 
+    close: HTMLAnchorElement;
+
+    cache: LRU;
+
+    search: (string) => Promise<*>;
+
     /**
      * @inheritdoc
      */
@@ -76,10 +83,28 @@ class Search extends React.Component<DefaultProps, Props, State> {
 
     componentDidMount() {
         this.input.addEventListener('keyup', this.handleKeyUp);
+        this.input.addEventListener('keydown', this.handleKeyDown);
     }
 
     componentWillUnmount() {
         this.input.removeEventListener('keyup', this.handleKeyUp);
+        this.input.removeEventListener('keydown', this.handleKeyDown);
+    }
+
+    /**
+     * Handle the key down event.
+     *
+     * When the box has focus and no input, close the search bar when escape
+     * is pressed.
+     */
+    @autobind handleKeyDown(event) {
+        const value = this.input.value.trim();
+
+        if (event.keyCode === 27) {
+            if (!value) {
+                this.close.click();
+            }
+        }
     }
 
     @autobind async handleKeyUp() {
@@ -121,14 +146,14 @@ class Search extends React.Component<DefaultProps, Props, State> {
      */
     render() {
         return (
-            <div className='nav-overlay uk-navbar-left uk-flex-1' hidden>
+            <Navbar positon='left' className='nav-overlay uk-flex-1' hidden>
                 <div className='uk-navbar-item uk-width-expand'>
                     <div className='uk-search uk-search-navbar uk-width-1-1'>
                         <input ref={(element) => { this.input = element; }} className='uk-search-input' type='search' placeholder='Search...' autoFocus />
                     </div>
                 </div>
 
-                <a className='uk-navbar-toggle' data-uk-toggle='target: .nav-overlay; animation: uk-animation-fade' href='#'>
+                <a ref={(element) => {this.close = element; }} className='uk-navbar-toggle' data-uk-toggle='target: .nav-overlay; animation: uk-animation-fade' href='#'>
                     <Icon icon='close' size={1} />
                 </a>
 
@@ -148,7 +173,7 @@ class Search extends React.Component<DefaultProps, Props, State> {
                         ))}
                     </List>
                 </div>}
-            </div>
+            </Navbar>
         );
     }
 }
