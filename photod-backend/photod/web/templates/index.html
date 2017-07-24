@@ -39,20 +39,6 @@
             }
 
             /**
-             * Callback for application code to load the current user details,
-             * if the user is already signed in.
-             *
-             * @return {object|null} Current user, if signed in.
-             */
-            function getApplicationUser() {
-                {% if user %}
-                    return {{ user|safe }};
-                {% else %}
-                    return null;
-                {% endif %}
-            }
-
-            /**
              * Callback for returning the application-wide timezone.
              *
              * @return {string} Application timezone.

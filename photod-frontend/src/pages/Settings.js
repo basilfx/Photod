@@ -15,6 +15,8 @@ import MenuList from 'components/MenuList';
 
 import About from 'pages/settings/About';
 import Interface from 'pages/settings/Interface';
+import Profile from 'pages/settings/Profile';
+import Shared from 'pages/settings/Shared';
 import Statistics from 'pages/settings/Statistics';
 
 /**
@@ -57,6 +59,12 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
         else if (this.props.page === 'about') {
             return <About />;
         }
+        else if (this.props.page === 'profile') {
+            return <Profile />;
+        }
+        else if (this.props.page === 'shared') {
+            return <Shared />;
+        }
         else {
             return null;
         }
@@ -68,19 +76,29 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
     render() {
         const menuItems = [
             {
+                key: 'profile',
+                label: 'Profile',
+                component: <Link to='/settings/profile'>Profile</Link>,
+            },
+            {
                 key: 'interface',
                 label: 'User interface',
-                component: <Link to={'/settings/interface'}>User Interface</Link>,
+                component: <Link to='/settings/interface'>User Interface</Link>,
+            },
+            {
+                key: 'shared',
+                label: 'Shared',
+                component: <Link to='/settings/shared'>Shared</Link>,
             },
             {
                 key: 'statistics',
                 label: 'Statistics',
-                component: <Link to={'/settings/statistics'}>Statistics</Link>,
+                component: <Link to='/settings/statistics'>Statistics</Link>,
             },
             {
                 key: 'about',
                 label: 'About',
-                component: <Link to={'/settings/about'}>About</Link>,
+                component: <Link to='/settings/about'>About</Link>,
             },
         ];
 

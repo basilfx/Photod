@@ -1,5 +1,6 @@
 from django.urls import reverse
 from django.db.models import IntegerField, Case, Value, When
+from django.contrib.auth import get_user_model
 
 from haystack.query import SearchQuerySet
 from haystack.inputs import AutoQuery
@@ -166,6 +167,13 @@ class MediaFile(DjangoObjectType):
         return reverse(media, args=[self.id])
 
 
+class User(DjangoObjectType):
+    class Meta:
+        model = get_user_model()
+        exclude_fields = ('password', )
+        interfaces = (relay.Node, )
+
+
 class SearchResult(graphene.ObjectType):
     model = graphene.String()
     pk = graphene.ID()
@@ -211,6 +219,8 @@ class Query(graphene.ObjectType):
     directories = DjangoFilterConnectionField(
         Directory, parent_id=graphene.ID())
 
+    me = graphene.Field(User)
+
     def resolve_directories(self, args, context, info):
         parent_id = args.get('parent_id')
 
@@ -220,6 +230,9 @@ class Query(graphene.ObjectType):
             return models.Directory.objects.get(id=parent_id).get_children()
 
         return models.Directory.get_root_nodes()
+
+    def resolve_me(self, args, context, info):
+        return context.user
 
 
 class Mutation(graphene.ObjectType):
