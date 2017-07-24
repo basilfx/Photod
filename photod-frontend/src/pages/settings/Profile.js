@@ -67,7 +67,11 @@ class Profile extends React.Component<DefaultProps, Props, void> {
                 return this.props.me.username;
             }
 
-            return this.props.me.firstName;
+            return (
+                <span title={this.props.me.username}>
+                    this.props.me.firstName;
+                </span>
+            );
         };
 
         return (
