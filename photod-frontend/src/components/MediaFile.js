@@ -13,7 +13,18 @@ import filesize from 'filesize';
 
 import gql from 'graphql-tag';
 
-type MediaFileType = any;
+/**
+ * Type declaration for MediaFileType.
+ */
+type MediaFileType = {
+    mimeType: string,
+    recorded: string,
+    orientation: number,
+    width: number,
+    height: number,
+    fileSize: number,
+    duration: number
+};
 
 /**
  * Type declaration for Props.
@@ -22,6 +33,8 @@ type Props = {
     height: number,
     mediaFile: MediaFileType,
     onClick?: (MediaFileType) => void,
+    onDoubleClick?: (MediaFileType) => void,
+    selected?: boolean
 };
 
 /**
@@ -29,8 +42,15 @@ type Props = {
  */
 type DefaultProps = {
     height: number,
-    margin: number,
+    selected: boolean,
 }
+
+/**
+ * Type declaration for State.
+ */
+type State = {
+    lightbox: boolean,
+};
 
 /**
  * Type declaration for MediaFileParser.
@@ -43,11 +63,6 @@ type MediaFileParser = {
     frames: number,
     label: any,
     orientation: number,
-};
-
-type State = {
-    frame: number,
-    lightbox: boolean,
 };
 
 /**
@@ -68,8 +83,8 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
      * @inheritdoc
      */
     static defaultProps = {
-        margin: 4,
         height: 240,
+        selected: false,
     }
 
     /**
@@ -122,6 +137,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
     }
 
     componentDidMount() {
+        this.container.addEventListener('click', this.handleClick);
         this.container.addEventListener('dblclick', this.handleDoubleClick);
         window.addEventListener('resize', this.handleResize);
 
@@ -129,14 +145,21 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
     }
 
     componentWillUnmount() {
+        this.container.removeEventListener('click', this.handleClick);
         this.container.removeEventListener('dblclick', this.handleDoubleClick);
         window.removeEventListener('resize', this.handleResize);
     }
 
+    @autobind handleClick() {
+        if (this.props.onClick) {
+            this.props.onClick(this.props.mediaFile);
+        }
+    }
+
     @autobind handleDoubleClick() {
-        this.setState({
-            lightbox: true,
-        });
+        if (this.props.onDoubleClick) {
+            this.props.onDoubleClick(this.props.mediaFile);
+        }
     }
 
     @autobind handleClose() {
@@ -207,7 +230,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
                 <span>
                     <Icon icon='video-camera' /> {duration(mediaFile.duration / 1000)}, {filesize(mediaFile.fileSize)}
                 </span>
-            )
+            ),
         };
     }
 
@@ -244,15 +267,19 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
         }
 
         return (
-            <div ref={element => { this.container = element; }} className='uk-card uk-card-default uk-card-hover' style={{
-                flexGrow: `${width / height * 100}`,
-                flexBasis: `${width * this.props.height / height}px`,
-                maxHeight: `${this.props.height * 1.25}px`,
-                maxWidth: `${this.props.height * 1.25 * (width / height)}px`,
-                backgroundColor: info.backgroundColor,
-                marginRight: '16px',
-                marginBottom: '16px',
-            }}>
+            <div
+                ref={element => { this.container = element; }}
+                className={`uk-card uk-card-default uk-card-hover tm-mediafile ${this.props.selected ? 'tm-mediafile-selected' : ''}`}
+                style={{
+                    flexGrow: `${width / height * 100}`,
+                    flexBasis: `${width * this.props.height / height}px`,
+                    maxHeight: `${this.props.height * 1.25}px`,
+                    maxWidth: `${this.props.height * 1.25 * (width / height)}px`,
+                    backgroundColor: info.backgroundColor,
+                    marginRight: '16px',
+                    marginBottom: '16px',
+                }}
+            >
                 <div style={{
                     paddingBottom: `${height / width * 100}%`,
                 }} />
@@ -263,12 +290,16 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
                     height: '100%',
                     overflow: 'hidden',
                 }}>
-                    <div ref={element => { this.image = element; }} className={`tm-mediafile - ${info.frames ? `tm-mediafile-animate-${info.frames}` : ''}`} style={{
-                        background: `url(${info.src})`,
-                        backgroundSize: 'cover',
-                        width: '100%',
-                        height: '100%',
-                    }} />
+                    <div
+                        ref={element => { this.image = element; }}
+                        className={`tm-mediafile-shadow ${info.frames ? `tm-mediafile-animate-${info.frames}` : ''}`}
+                        style={{
+                            background: `url(${info.src})`,
+                            backgroundSize: 'cover',
+                            width: '100%',
+                            height: '100%',
+                        }}
+                    />
                     <div className='uk-transition-slide-bottom uk-overlay uk-light uk-position-bottom uk-padding-small uk-text-small'>
                         {info.label}
                     </div>

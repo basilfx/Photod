@@ -1,6 +1,6 @@
 // @flow
 
-// import autobind from 'autobind-decorator';
+import autobind from 'autobind-decorator';
 
 import React from 'react';
 
@@ -26,10 +26,16 @@ type DefaultProps = {
     // TODO
 };
 
+type State = {
+    selected: {
+        [string]: boolean
+    },
+};
+
 /**
  * The component.
  */
-export default class MediaList extends React.Component<DefaultProps, Props, void> {
+export default class MediaList extends React.Component<DefaultProps, Props, State> {
     /**
      * @inheritdoc
      */
@@ -38,9 +44,75 @@ export default class MediaList extends React.Component<DefaultProps, Props, void
     /**
      * @inheritdoc
      */
+    state: State;
+
+    /**
+     * @inheritdoc
+     */
     static defaultProps = {
 
     };
+
+    /**
+     * @inheritdoc
+     */
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            selected: {},
+        };
+    }
+
+    componentDidMount() {
+        window.addEventListener('keydown', this.handleKeyDown);
+        window.addEventListener('keyup', this.handleKeyUp);
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.handleKeyDown);
+        window.removeEventListener('keyup', this.handleKeyUp);
+    }
+
+    @autobind handleKeyDown(event) {
+        if (event.ctrlKey) {
+            this.ctrlKey = true;
+        }
+    }
+
+    @autobind handleKeyUp(event) {
+        this.ctrlKey = false;
+    }
+
+    @autobind handleSelect(mediaFile) {
+        if (!this.ctrlKey) {
+            this.handleDeselectAll();
+        }
+
+        this.setState({
+            selected: Object.assign({}, this.state.selected, {
+                [mediaFile.id]: true,
+            }),
+        });
+    }
+
+    @autobind handleDeselect(mediaFile) {
+        this.setState({
+            selected: Object.assign({}, this.state.selected, {
+                [mediaFile.id]: false,
+            }),
+        });
+    }
+
+    @autobind handleDeselectAll() {
+        this.setState({
+            selected: {},
+        });
+    }
+
+    @autobind handleLightbox() {
+
+    }
 
     getGroup(mediaFile: MediaFile): string {
         return moment.tz(
@@ -62,7 +134,14 @@ export default class MediaList extends React.Component<DefaultProps, Props, void
                     lastGroup = group;
                 }
 
-                yield <MediaFile key={edge.node.id} mediaFile={edge.node} />;
+                yield (
+                    <MediaFile
+                        selected={this.state.selected[edge.node.id]}
+                        key={edge.node.id}
+                        mediaFile={edge.node}
+                        onClick={this.handleSelect}
+                    />
+                );
             }
         }
     }
