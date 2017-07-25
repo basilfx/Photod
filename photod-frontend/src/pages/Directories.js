@@ -1,6 +1,6 @@
 // @flow
 
-// import autobind from 'autobind-decorator';
+import autobind from 'autobind-decorator';
 
 import React from 'react';
 
@@ -31,14 +31,20 @@ type DefaultProps = {
     // TODO
 };
 
+type State = {
+    selection?: Array<any>,
+};
+
 /**
  * The component.
  */
-export default class Directories extends React.Component<DefaultProps, Props, void> {
+export default class Directories extends React.Component<DefaultProps, Props, State> {
     /**
      * @inheritdoc
      */
     props: Props;
+
+    state: State;
 
     /**
      * @inheritdoc
@@ -46,6 +52,20 @@ export default class Directories extends React.Component<DefaultProps, Props, vo
     static defaultProps = {
 
     };
+
+    constructor(props: Props) {
+        super(props);
+
+        this.state = {
+            selection: null,
+        };
+    }
+
+    @autobind handleSelection(selection: Array<any>) {
+        this.setState({
+            selection,
+        });
+    }
 
     /**
      * @inheritdoc
@@ -80,13 +100,13 @@ export default class Directories extends React.Component<DefaultProps, Props, vo
                     <SidebarRight
                         panel={
                             <div className='uk-padding-small'>
-                                <MediaInfo />
+                                <MediaInfo mediaFiles={this.state.selection} />
                             </div>
                         }
                     />
                 }
             >
-                {this.props.id && <DirectoryMediaList directoryId={this.props.id} />}
+                {this.props.id && <DirectoryMediaList onSelection={this.handleSelection} directoryId={this.props.id} />}
             </Main>
         );
     }

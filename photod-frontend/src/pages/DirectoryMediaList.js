@@ -19,8 +19,10 @@ type Props = {
 
     loading: boolean,
     hasNextPage: boolean,
-    loadMoreEntries: () => void;
-    mediaFiles?: Object
+    loadMoreEntries: () => void,
+    mediaFiles?: Object,
+
+    onSelection?: (Array<any>) => void,
 };
 
 /**
@@ -60,7 +62,7 @@ class DirectoryMediaList extends React.Component<DefaultProps, Props, void> {
             return null;
         }
 
-        return <MediaList mediaFiles={this.props.mediaFiles} onLastItem={this.handleLastItem} />;
+        return <MediaList onSelection={this.props.onSelection} mediaFiles={this.props.mediaFiles} onLastItem={this.handleLastItem} />;
     }
 }
 

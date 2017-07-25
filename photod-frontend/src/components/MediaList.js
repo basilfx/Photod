@@ -1,5 +1,7 @@
 // @flow
 
+import bowser from 'bowser';
+
 import autobind from 'autobind-decorator';
 
 import React from 'react';
@@ -17,6 +19,7 @@ type Props = {
     mediaFiles: Object,
     groupBy?: string,
     onLastItem?: (boolean) => void;
+    onSelection?: (Array<any>) => void,
 };
 
 /**
@@ -47,6 +50,13 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
     state: State;
 
     /**
+     * Boolean to indicate whether multiple select is enabled.
+     *
+     * @type {boolean}
+     */
+    multipleSelect: boolean
+
+    /**
      * @inheritdoc
      */
     static defaultProps = {
@@ -74,40 +84,64 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
         window.removeEventListener('keyup', this.handleKeyUp);
     }
 
-    @autobind handleKeyDown(event) {
-        if (event.ctrlKey) {
-            this.ctrlKey = true;
+    @autobind handleKeyDown(event: KeyboardEvent) {
+        if ((!bowser.mac && event.ctrlKey) || (bowser.mac && event.metaKey)) {
+            this.multipleSelect = true;
         }
     }
 
-    @autobind handleKeyUp(event) {
-        this.ctrlKey = false;
+    @autobind handleKeyUp(event: KeyboardEvent) {
+        this.multipleSelect = false;
     }
 
     @autobind handleSelect(mediaFile) {
-        if (!this.ctrlKey) {
+        if (!this.multipleSelect) {
             this.handleDeselectAll();
         }
 
-        this.setState({
-            selected: Object.assign({}, this.state.selected, {
-                [mediaFile.id]: true,
-            }),
+        const selected = Object.assign({}, this.state.selected, {
+            [mediaFile.id]: true,
         });
+
+        this.setState({
+            selected,
+        });
+
+        if (this.props.onSelection) {
+            this.props.onSelection(this.props.mediaFiles.edges.filter(edge =>
+                !!selected[edge.node.id]
+            ).map(
+                edge => edge.node
+            ));
+        }
     }
 
     @autobind handleDeselect(mediaFile) {
-        this.setState({
-            selected: Object.assign({}, this.state.selected, {
-                [mediaFile.id]: false,
-            }),
+        const selected = Object.assign({}, this.state.selected, {
+            [mediaFile.id]: false,
         });
+
+        this.setState({
+            selected,
+        });
+
+        if (this.props.onSelection) {
+            this.props.onSelection(this.props.mediaFiles.edges.filter(edge =>
+                !!selected[edge.node.id]
+            ).map(
+                edge => edge.node
+            ));
+        }
     }
 
     @autobind handleDeselectAll() {
         this.setState({
             selected: {},
         });
+
+        if (this.props.onSelection) {
+            this.props.onSelection(null);
+        }
     }
 
     @autobind handleLightbox() {

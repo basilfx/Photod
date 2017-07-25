@@ -313,6 +313,8 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
 MediaFile.fragment = gql`
     fragment MediaFileFragment on MediaFile {
         id
+        path
+        name
         url
         mimeType
         fileSize

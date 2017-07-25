@@ -4,11 +4,29 @@
 
 import React from 'react';
 
+import duration from 'format-duration';
+import filesize from 'filesize';
+
+/**
+ * Type declaration for MediaFileType.
+ */
+type MediaFileType = {
+    path: string,
+    name: string,
+    mimeType: string,
+    recorded: string,
+    orientation: number,
+    width: number,
+    height: number,
+    fileSize: number,
+    duration: number
+};
+
 /**
  * Type declaration for Props.
  */
 type Props = {
-    // children?: any,
+    mediaFiles?: Array<MediaFileType>,
 };
 
 /**
@@ -38,49 +56,56 @@ export default class MediaInfo extends React.Component<DefaultProps, Props, void
      * @inheritdoc
      */
     render() {
+        if (!this.props.mediaFiles) {
+            return <h4>No media file selected.</h4>;
+        }
+
+        if (this.props.mediaFiles.length > 1) {
+            return <h4>Multiple files selected.</h4>;
+        }
+
+        const mediaFile = this.props.mediaFiles[0];
+
+        const matches = (mimeType) => true;
+
         return (
             <div>
-                <h4>DSC_1234.jpg</h4>
-
-                <dl className='uk-description-list'>
-                    <dt>Path</dt>
-                    <dd>/long/path/to/the/file/DSC_234.jpg</dd>
-                </dl>
+                <h4>{mediaFile.name}</h4>
 
                 <dl className='uk-description-list'>
                     <dt>MIME-type</dt>
-                    <dd>image/jpeg</dd>
+                    <dd>{mediaFile.mimeType}</dd>
                 </dl>
 
                 <dl className='uk-description-list'>
                     <dt>File size</dt>
-                    <dd>300mb</dd>
+                    <dd>{filesize(mediaFile.fileSize)}</dd>
                 </dl>
 
-                <dl className='uk-description-list'>
+                {matches('image/*') && <dl className='uk-description-list'>
                     <dt>Dimensions</dt>
-                    <dd>3000x1000</dd>
-                </dl>
+                    <dd>{mediaFile.width}x{mediaFile.height}</dd>
+                </dl>}
 
-                <dl className='uk-description-list'>
+                {matches('video/*') && <dl className='uk-description-list'>
                     <dt>Duration</dt>
-                    <dd>1:03</dd>
-                </dl>
+                    <dd>{duration(mediaFile.duration / 1000)}</dd>
+                </dl>}
 
-                <dl className='uk-description-list'>
+                {false && <dl className='uk-description-list'>
                     <dt>Tags</dt>
                     <dd>vidoe panorama</dd>
-                </dl>
+                </dl>}
 
-                <dl className='uk-description-list'>
+                {false && <dl className='uk-description-list'>
                     <dt>Faces</dt>
                     <dd>2 faces</dd>
-                </dl>
+                </dl>}
 
-                <dl className='uk-description-list'>
+                {false && <dl className='uk-description-list'>
                     <dt>Locations</dt>
                     <dd>3 locations</dd>
-                </dl>
+                </dl>}
             </div>
         );
     }
