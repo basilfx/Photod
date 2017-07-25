@@ -14,7 +14,7 @@ docker build . --tag photod:latest
 cp photod-backend/photod/settings/local.py.default photod-backend/photod/settings/local.py
 
 # Initial setup.
-docker run --rm -ti -u `id -u` -v `pwd`:`pwd` -w `pwd` photod:latest init
+docker run --rm -ti -e HOME=/tmp -u `id -u` -v `pwd`:`pwd` -w `pwd` photod:latest init
 docker run --rm -ti -u `id -u` -v `pwd`:`pwd` -w `pwd` photod:latest backend migrate
 docker run --rm -ti -u `id -u` -v `pwd`:`pwd` -w `pwd` photod:latest backend createsuperuser
 
@@ -23,8 +23,8 @@ docker run --rm -ti -u `id -u` -v `pwd`:`pwd` -v /path/to/media:/path/to/media -
 docker run --rm -ti -u `id -u` -v `pwd`:`pwd` -w `pwd` photod:latest backend process
 
 # Run the development servers (auto-reload).
-docker run --rm -ti -p 7000:7000 -u `id -u` -v `pwd`:`pwd` -w `pwd` photod:latest backend runserver 0:7000
-docker run --rm -ti -p 8000:8000 -u `id -u` -v `pwd`:`pwd` -w `pwd` photod:latest frontend run start
+docker run --rm -ti -p 7000:7000 -u `id -u` -v `pwd`:`pwd` -v /path/to/media:/path/to/media -w `pwd` photod:latest backend runserver 0:7000
+docker run --rm -ti -e HOME=/tmp -p 8000:8000 -u `id -u` -v `pwd`:`pwd` -w `pwd` photod:latest frontend run start
 
 # Build frontend
 docker run --rm -ti -p 8000:8000 -u `id -u` -v `pwd`:`pwd` -w `pwd` photod:latest frontend run build-production

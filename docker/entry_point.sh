@@ -18,7 +18,7 @@ fi
 # Parse option and execute action.
 case $OPTION in
     init)
-        (cd photod-frontend && python3 -m venv env && source env/bin/activate && pip install -r requirements.txt)
+        (cd photod-backend && python3 -m venv env && source env/bin/activate && pip install -r requirements.txt)
         (cd photod-frontend && yarn)
     ;;
     backend)
