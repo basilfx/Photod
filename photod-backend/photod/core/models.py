@@ -33,6 +33,7 @@ class MediaFile(TimeStampedModel, models.Model):
     steps = models.ManyToManyField(
         "Step", through="MediaFileStep", related_name="media_files")
 
+    name = models.CharField(max_length=255, null=True)
     directory = models.ForeignKey(
         "Directory", null=True, related_name="media_files")
 

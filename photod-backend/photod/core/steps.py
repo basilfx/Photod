@@ -342,6 +342,21 @@ class ResourceStep(Step):
             context["_image"].close()
 
 
+class NameStep(Step):
+    """
+    Name step.
+
+    Set the name of the media file.
+    """
+
+    class Meta:
+        pipeline = "MediaFilePipeline"
+        accepts = ("*/*", )
+
+    def process(self, media_file, context):
+        media_file.name = os.path.basename(media_file.path)
+
+
 class PathStep(Step):
     """
     Path info step.
