@@ -5,7 +5,9 @@ import sys
 
 def main():
     """
-    Take Facebook friends list in JSON format and convert it to fixture.
+    Create a fixture of Facebook friends using exported profile data.
+
+    You can use this script to bootstrap your database with persons.
     """
 
     soup = BeautifulSoup(open(sys.argv[1]), "html.parser")
@@ -24,5 +26,6 @@ def main():
         )
 
 
+# E.g. `python facebook_friends.py /path/to/facebook/export/friends.htm`
 if __name__ == "__main__":
     sys.exit(main())
