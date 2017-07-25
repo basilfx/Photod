@@ -51,19 +51,19 @@ export default class Interface extends React.Component<DefaultProps, Props, void
         return (
             <div className='uk-padding-small'>
                 <Form onValidSubmit={this.handleValidSubmit}>
-                    <h3>Menu</h3>
+                    <h4>Menu</h4>
 
                     <label>
                         <Input type='checkbox' name='autoExpand' /> Auto-expand treeview items with only one child.
                     </label>
 
-                    <h3>Media list</h3>
+                    <h4>Media list</h4>
 
                     <label>
                         <Input type='checkbox' name='hoverShadow' /> Disable shadow effect on hover.
                     </label>
 
-                    <h3>Lightbox</h3>
+                    <h4>Lightbox</h4>
 
                     <label>
                         <Input type='checkbox' name='lightBox' /> Use black background.
