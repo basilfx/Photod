@@ -8,7 +8,9 @@ import Main from 'components/Main';
 
 import Header from 'components/Header';
 import SidebarLeft from 'components/SidebarLeft';
+import SidebarRight from 'components/SidebarRight';
 import Menu from 'components/Menu';
+import MediaInfo from 'components/MediaInfo';
 
 import DirectoryTreeview from './DirectoryTreeview';
 import DirectoryMediaList from './DirectoryMediaList';
@@ -67,9 +69,20 @@ export default class Directories extends React.Component<DefaultProps, Props, vo
                 sidebarLeft={
                     <SidebarLeft
                         menu={<Menu selectedKey='directories' />}
-                        panel={<div className='uk-padding-small'>
-                            <DirectoryTreeview parent={this.props.parent} directoryId={this.props.id} />
-                        </div>}
+                        panel={
+                            <div className='uk-padding-small'>
+                                <DirectoryTreeview directoryId={this.props.id} />
+                            </div>
+                        }
+                    />
+                }
+                sidebarRight={
+                    <SidebarRight
+                        panel={
+                            <div className='uk-padding-small'>
+                                <MediaInfo />
+                            </div>
+                        }
                     />
                 }
             >

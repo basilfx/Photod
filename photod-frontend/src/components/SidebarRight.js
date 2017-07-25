@@ -40,7 +40,9 @@ export default class SidebarRight extends React.Component<DefaultProps, Props, v
     render() {
         return (
             <aside className="tm-sidebar-right">
-                {this.props.panel}
+                <div className='tm-sidebar-right-panel uk-overflow-auto'>
+                    {this.props.panel}
+                </div>
             </aside>
         );
     }

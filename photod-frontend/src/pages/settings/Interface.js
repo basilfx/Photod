@@ -57,6 +57,12 @@ export default class Interface extends React.Component<DefaultProps, Props, void
                         <Input type='checkbox' name='autoExpand' /> Auto-expand treeview items with only one child.
                     </label>
 
+                    <h3>Media list</h3>
+
+                    <label>
+                        <Input type='checkbox' name='hoverShadow' /> Disable shadow effect on hover.
+                    </label>
+
                     <h3>Lightbox</h3>
 
                     <label>
