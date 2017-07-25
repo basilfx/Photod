@@ -5,19 +5,10 @@ CONF_DIR = os.path.abspath(os.path.dirname(__file__))
 BASE_DIR = os.path.abspath(os.path.join(CONF_DIR, "../"))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
+# Application definition.
+# https://docs.djangoproject.com/en/1.11/topics/settings/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = None
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
-
-# Application definition
+DEBUG = False
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -35,7 +26,6 @@ INSTALLED_APPS = [
     'haystack',
     'haystackbrowser',
     'celery',
-    # 'corsheaders',
 
     'photod.core',
     'photod.api',
@@ -44,7 +34,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -75,62 +64,62 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'photod.wsgi.application'
 
-# Password validation
-# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
+
+# Password validation.
+# https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation'
+                '.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation'
+                '.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation'
+                '.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation'
+                '.NumericPasswordValidator',
     },
 ]
 
 
-# Database
-# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
+# Database settings.
+# https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
         'NAME': os.path.join(BASE_DIR, 'database.db'),
     }
 }
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/1.10/topics/i18n/
+# Internationalization.
+# https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.10/howto/static-files/
+# Static files (CSS, JavaScript, Images).
+# https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
 STATIC_URL = '/static/'
 
 
-# Application
+# Frontend application settings.
 
-WEBPACK_BUNDLE_URL = 'http://localhost:8000/bundle.js'
-WEBPACK_STYLE_URL = False
+WEBPACK_BUNDLE_URL = 'bundle.js'
+WEBPACK_STYLE_URL = 'style.css'
 
 try:
     from .build import WEBPACK_VERSION
@@ -138,7 +127,7 @@ except ImportError:
     WEBPACK_VERSION = 'v1'
 
 
-# Graphene
+# Graphene GraphQL settings.
 # http://docs.graphene-python.org/projects/django/en/latest/
 
 GRAPHENE = {
@@ -146,7 +135,7 @@ GRAPHENE = {
 }
 
 
-# Logging setup
+# Logging setup.
 # https://docs.djangoproject.com/en/1.11/topics/logging/
 
 LOGGING = {
@@ -170,9 +159,37 @@ LOGGING = {
 }
 
 
+# Authentication settings.
+# https://docs.djangoproject.com/en/1.11/ref/contrib/auth/
+
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
 
-# CORS_ORIGIN_ALLOW_ALL = True
 
-CSRF_COOKIE_SECURE = False
+# Sendfile configuration.
+# https://github.com/johnsensible/django-sendfile
+
+SENDFILE_BACKEND = "sendfile.backends.development"
+
+
+# Haystack search engine configuration.
+# http://django-haystack.readthedocs.io/en/stable/
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
+
+
+# Celery message queue configuration.
+# http://docs.celeryproject.org/en/stable/
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_TASK_ALWAYS_EAGER = True
+
+
+# Other settings
+
+MAPZEN_API_KEY = None
