@@ -1,10 +1,11 @@
 #!/bin/bash -e
 
 OPTION="$1"
+shift
 
 # Check if an option is specified.
 if [[ -z $OPTION ]]; then
-    echo "Usage: $0 <backend-[init|run|migrate]|frontend-[init|run|build]>"
+    echo "Usage: $0 <init|backend|frontend>"
     exit 0
 fi
 
@@ -16,32 +17,18 @@ fi
 
 # Parse option and execute action.
 case $OPTION in
-    backend-init)
-        (cd photod-frontend && source env/bin/activate && pip install -r requirements.txt)
-    ;;
-    backend-run)
-        (cd photod-backend && source env/bin/activate && ./manage.py runserver 0:7000)
-    ;;
-    backend-shell)
-        (cd photod-backend && source env/bin/activate && ./manage.py shell_plus)
-    ;;
-    backend-migrate)
-        (cd photod-backend && source env/bin/activate && ./manage.py migrate)
-    ;;
-    frontend-init)
+    init)
+        (cd photod-frontend && python3 -m venv env && source env/bin/activate && pip install -r requirements.txt)
         (cd photod-frontend && yarn)
     ;;
-    frontend-run)
-        (cd photod-frontend && yarn run start)
+    backend)
+        (cd photod-backend && source env/bin/activate && ./manage.py $@)
     ;;
-    frontend-build)
-        (cd photod-frontend && yarn run build-production)
+    frontend)
+        (cd photod-frontend && yarn $@)
     ;;
     *)
         echo "Unknown option: $OPTION"
         exit 1
     ;;
 esac
-
-# Exit successfully.
-exit 0
