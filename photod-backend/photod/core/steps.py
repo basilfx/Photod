@@ -800,6 +800,7 @@ class GeocodeStep(Step):
         pipeline = "MediaFilePipeline"
         accepts = ("*/*", )
         after = ("ImageLocationStep", )
+        enabled = settings.MAPZEN_API_KEY is not None
 
     def __init__(self):
         self.api = MapzenAPI(settings.MAPZEN_API_KEY)
