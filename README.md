@@ -8,6 +8,21 @@ This project started as a *private* alternative to Google Photos, using the late
 
 There is a backend that is based on the Django Web Framework. It also provided the command-line interface for enrolling and processing of media files. The frontend is based on Webpack, React and UIkit.
 
+A very basic mobile interface is available.
+
+## Features
+Some of the included features:
+
+* Image and video gallery.
+* Face detection and OCR.
+* Film strips previews (like YouTube).
+* Full-text search (depending on backend).
+* Geocoding (requires Mapzen API key).
+* WebP image encoding for fast image transfer, with JPEG fallback.
+* Color classification.
+* User authentication.
+* Share images using public links.
+
 ## Screenshots
 <img src="https://raw.githubusercontent.com/basilfx/Photod/master/docs/screenshots/login.png" width="256"><img src="https://raw.githubusercontent.com/basilfx/Photod/master/docs/screenshots/directories1.png" width="256"><img src="https://raw.githubusercontent.com/basilfx/Photod/master/docs/screenshots/directories2.png" width="256"><img src="https://raw.githubusercontent.com/basilfx/Photod/master/docs/screenshots/tags.png" width="256"><img src="https://raw.githubusercontent.com/basilfx/Photod/master/docs/screenshots/map.png" width="256"><img src="https://raw.githubusercontent.com/basilfx/Photod/master/docs/screenshots/search.png" width="256"><img src="https://raw.githubusercontent.com/basilfx/Photod/master/docs/screenshots/about.png" width="256">
 

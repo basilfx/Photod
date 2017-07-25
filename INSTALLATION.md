@@ -1,5 +1,5 @@
 # Installation
-This application has been tested on Ubuntu 17.04 and macOS 10.12.s
+This application has been tested on Ubuntu 17.04 and macOS 10.12.
 
 ## Development
 There are several ways to run Photod for development. During development, a separate Webpack development server will serve the `bundle.js` file via `http://localhost:8000`. The Django development server will serve via http://localhost:7000.
@@ -34,7 +34,7 @@ docker run --rm -ti -p 8000:8000 -u `id -u` -v `pwd`:`pwd` -w `pwd` photod:lates
 The recommended setup is using Nginx, uWSGI, PostgreSQL and Redis.
 
 ### Configuring Nginx
-Use the optimizations below to speed-up the transfer of resources. This will enable serving of pre-compressed GZIP files (if available) and use X-Accel to offload the uWSGI workers for transferring files.
+Use the optimizations below to speed-up the transfer of resources. This will enable serving of pre-compressed GZIP files (if available) and use `X-Accel` to offload the uWSGI workers for transferring static files.
 
 ```nginx
 server {
