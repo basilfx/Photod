@@ -1,3 +1,5 @@
+// @flow
+
 import bowser from 'bowser';
 
 /**
