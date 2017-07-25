@@ -55,7 +55,7 @@ export default class About extends React.Component<DefaultProps, Props, void> {
                 </div>
 
                 <div className='uk-margin-medium-top'>
-                    Visit project on <a href='#'>Github</a>
+                    Version 0.0.1 &mdash; Visit on <a href='#'>Github</a>
                 </div>
             </div>
         );
