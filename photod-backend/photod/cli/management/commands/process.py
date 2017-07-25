@@ -111,9 +111,12 @@ class Command(BaseCommand):
                 job.save()
 
             # Wait for the processes to finish.
-            self.stdout.write(
-                self.style.SUCCESS('Waiting for workers to finish.'))
+            self.stdout.write(self.style.SUCCESS(
+                'Waiting for workers to finish.'))
+            pool.close_and_join()
         except KeyboardInterrupt:
+            self.stdout.write(self.style.WARNING(
+                'Interrupt received, killing workers softly.'))
             pool.close_and_join()
         finally:
             # Update job.
