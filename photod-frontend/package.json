@@ -24,6 +24,7 @@
     "compression-webpack-plugin": "*",
     "css-loader": "*",
     "esdoc": "^0.5.2",
+    "esdoc-flow-plugin": "^1.0.0",
     "eslint": "^4.0.0",
     "eslint-config-semistandard": "^11.0.0",
     "eslint-config-standard": "^10.2.0",
@@ -109,6 +110,7 @@
     "start-production": "NODE_ENV=production node_modules/.bin/webpack-dev-server --config webpack.config.production.js --port 8000 --progress --hot --inline",
     "build": "NODE_ENV=production node_modules/.bin/webpack --config webpack.config.js --bail",
     "build-production": "NODE_ENV=production node_modules/.bin/webpack --config webpack.config.production.js --bail",
-    "build-schema": "apollo-codegen generate src/**/*.js --schema schema.json --target flow --output interfaces/schema.js"
+    "build-schema": "apollo-codegen generate src/**/*.js --schema schema.json --target flow --output interfaces/schema.js",
+    "build-docs": "esdoc -c esdoc.json"
   }
 }

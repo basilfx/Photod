@@ -8,5 +8,8 @@
         "doExpressions": true,
         "asyncGenerators": true,
         "exportExtensions": true
-    }
+    },
+    "plugins": [{
+        "name": "esdoc-flow-plugin"
+    }]
 }
