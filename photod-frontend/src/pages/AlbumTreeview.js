@@ -149,8 +149,6 @@ const DirectoriesQuery = gql`
                 node {
                     id
                     name
-                    childrenCount
-                    mediaFilesCount
                 }
             }
             pageInfo {
