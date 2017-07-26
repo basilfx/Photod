@@ -10,7 +10,6 @@ import Icons from 'uikit/dist/js/uikit-icons';
 // loads the Icon plugin
 UIkit.use(Icons);
 
-import 'font-awesome/scss/font-awesome.scss';
 import 'styles/main.less';
 
 /**

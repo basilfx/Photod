@@ -4,13 +4,6 @@
 
 import React from 'react';
 
-import FontAwesome from 'ui/FontAwesome';
-import Iconnav from 'ui/Iconnav';
-import IconnavItem from 'ui/IconnavItem';
-import List from 'ui/List';
-
-import IconListItem from 'components/IconListItem';
-
 /**
  * Type declaration for Props.
  */

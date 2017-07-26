@@ -6,7 +6,6 @@ import React from 'react';
 
 import VisibilitySensor from 'react-visibility-sensor';
 
-import FontAwesome from 'ui/FontAwesome';
 import List from 'ui/List';
 import ListItem from 'ui/ListItem';
 
@@ -63,7 +62,7 @@ export default class Treeview extends React.Component<DefaultProps, Props, State
 
         const result = [
             <ListItem key={`node-${node.id}`}>
-                <FontAwesome icon={node.expanded ? 'minus' : 'plus'} /> &nbsp; {node.label}
+                {node.expanded ? '-' : '+'} &nbsp; {node.label}
 
                 <List>
                     {node.children.map(node => this.renderNodes(node))}

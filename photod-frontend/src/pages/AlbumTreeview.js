@@ -8,7 +8,6 @@ import React from 'react';
 
 import { Link } from 'react-router-dom';
 
-import FontAwesome from 'ui/FontAwesome';
 import List from 'ui/List';
 import ListItem from 'ui/ListItem';
 
@@ -119,7 +118,7 @@ class AlbumTreeView extends React.Component<DefaultProps, Props, State> {
                 {this.props.albums && this.props.albums.edges.map(edge =>
                     <ListItem key={edge.node.id}>
                         <a onClick={() => this.handleClick(edge.node.id)}>
-                            <FontAwesome icon={icon(edge.node)} />
+                            Icon
                         </a>
 
                         &nbsp;
