@@ -17,18 +17,20 @@ import TagsMediaList from './TagsMediaList';
 
 import { graphql } from 'react-apollo';
 
-import gql from 'graphql-tag';
+import { createConnectionProps, fromRelay } from 'utils/graphql';
+
+import queries from './queries';
 
 /**
  * Type declaration for Props.
  */
 type Props = {
-    // children?: any,
     tag?: string,
+
     loading: boolean,
-    hasNextPage: boolean,
-    loadMoreEntries: () => void;
-    tags?: Object
+    hasNext: boolean,
+    fetchNext: () => void;
+    tags?: Array<any>
 };
 
 /**
@@ -55,20 +57,18 @@ class Tags extends React.Component<DefaultProps, Props, void> {
     };
 
     @autobind onLastItem() {
-        if (this.props.hasNextPage && !this.props.loading) {
-            this.props.loadMoreEntries();
+        if (this.props.hasNext && !this.props.loading) {
+            this.props.fetchNext();
         }
     }
 
     * renderItems() {
-        if (this.props.tags) {
-            for (const edge of this.props.tags) {
-                yield {
-                    key: edge.node.label,
-                    label: edge.node.label,
-                    component: <Link to={`/tags/${edge.node.label}`}>{edge.node.label}</Link>,
-                };
-            }
+        for (const tag of this.props.tags || []) {
+            yield {
+                key: tag.label,
+                label: tag.label,
+                component: <Link to={`/tags/${tag.label}`}>{tag.label}</Link>,
+            };
         }
     }
 
@@ -104,51 +104,6 @@ class Tags extends React.Component<DefaultProps, Props, void> {
     }
 }
 
-const TagsQuery = gql`
-    query MediaFiles($cursor: String) {
-        tags(first: 100, after: $cursor) {
-            edges {
-                node {
-                    id
-                    label
-                }
-            }
-            pageInfo {
-                endCursor
-                hasNextPage
-            }
-        }
-    }
-`;
-
-export default graphql(TagsQuery, {
-    props({ data: { loading, tags, fetchMore } }) {
-        return {
-            loading,
-            tags: tags ? tags.edges : [],
-            hasNextPage: tags ? tags.pageInfo.hasNextPage : false,
-            loadMoreEntries: () => {
-                return fetchMore({
-                    variables: {
-                        cursor: tags.pageInfo.endCursor,
-                    },
-                    updateQuery: (previousResult, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) {
-                            return previousResult;
-                        }
-
-                        const newEdges = fetchMoreResult.tags.edges;
-                        const pageInfo = fetchMoreResult.tags.pageInfo;
-
-                        return {
-                            tags: {
-                                edges: [...previousResult.tags.edges, ...newEdges],
-                                pageInfo,
-                            },
-                        };
-                    },
-                });
-            },
-        };
-    },
+export default graphql(queries.Tags, {
+    props: ({ data }) => createConnectionProps(data, 'tags', fromRelay),
 })(Tags);

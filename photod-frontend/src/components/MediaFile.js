@@ -311,7 +311,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
 }
 
 MediaFile.fragment = gql`
-    fragment MediaFileFragment on MediaFile {
+    fragment MediaFile on MediaFile {
         id
         path
         name

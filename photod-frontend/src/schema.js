@@ -18,18 +18,82 @@ export type SearchMutation = {|
 
 export type MediaFilesQueryVariables = {|
   cursor?: ?string,
+  tag?: ?string,
+  profile?: ?string,
 |};
 
 export type MediaFilesQuery = {|
-  jobs: ? {|
+  mediaFiles: ? {|
     edges:  Array< {|
       // The item at the end of the edge
       node: ? {|
         // The ID of the object.
         id: string,
-        title: string,
-        progress: ?number,
-        items: ?number,
+        path: string,
+        name: ?string,
+        url: ?string,
+        mimeType: string,
+        fileSize: ?number,
+        width: ?number,
+        height: ?number,
+        duration: ?number,
+        orientation: ?number,
+        recorded: ?any,
+        created: any,
+        faces: ? {|
+          edges:  Array< {|
+            // The item at the end of the edge
+            node: ? {|
+              // The ID of the object.
+              id: string,
+              x1: number,
+              y1: number,
+              x2: number,
+              y2: number,
+              person: ? {|
+                // The ID of the object.
+                id: string,
+                name: string,
+              |},
+            |},
+          |} >,
+        |},
+        palette: ? {|
+          edges:  Array< {|
+            // The item at the end of the edge
+            node: ? {|
+              // The ID of the object.
+              id: string,
+              color: string,
+              prominence: number,
+            |},
+          |} >,
+        |},
+        thumbnails: ? {|
+          edges:  Array< {|
+            // The item at the end of the edge
+            node: ? {|
+              // The ID of the object.
+              id: string,
+              width: number,
+              height: number,
+              url: ?string,
+            |},
+          |} >,
+        |},
+        filmstrips: ? {|
+          edges:  Array< {|
+            // The item at the end of the edge
+            node: ? {|
+              // The ID of the object.
+              id: string,
+              width: number,
+              height: number,
+              url: ?string,
+              frames: number,
+            |},
+          |} >,
+        |},
       |},
     |} >,
     pageInfo: {|
@@ -84,48 +148,6 @@ export type DirectoriesQuery = {|
         totalChildrenCount: ?number,
         mediaFilesCount: ?number,
         totalMediaFilesCount: ?number,
-      |},
-    |} >,
-    pageInfo: {|
-      // When paginating forwards, the cursor to continue.
-      endCursor: ?string,
-      // When paginating forwards, are there more items?
-      hasNextPage: boolean,
-    |},
-  |},
-|};
-
-export type ProfileQuery = {|
-  me: ? {|
-    // The ID of the object.
-    id: string,
-    // Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.
-    username: string,
-    firstName: string,
-    lastName: string,
-    lastLogin: ?any,
-    dateJoined: any,
-  |},
-|};
-
-export type SharedQueryVariables = {|
-  cursor?: ?string,
-|};
-
-export type SharedQuery = {|
-  shares: ? {|
-    edges:  Array< {|
-      // The item at the end of the edge
-      node: ? {|
-        // The ID of the object.
-        id: string,
-        mediaFile: {|
-          path: string,
-        |},
-        views: number,
-        created: any,
-        expires: ?any,
-        url: ?string,
       |},
     |} >,
     pageInfo: {|

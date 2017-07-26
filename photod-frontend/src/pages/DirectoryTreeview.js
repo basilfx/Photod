@@ -14,9 +14,11 @@ import Icon from 'ui/Icon';
 import List from 'ui/List';
 import ListItem from 'ui/ListItem';
 
-import { graphql } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
 
-import gql from 'graphql-tag';
+import { createConnectionProps, fromRelay } from 'utils/graphql';
+
+import queries from './queries';
 
 import { fromGlobalId } from 'graphql-relay';
 
@@ -27,9 +29,10 @@ import { toggle } from 'modules/application/directories/actions';
  */
 type Props = {
     loading: boolean,
-    hasNextPage: boolean,
-    loadMoreEntries: () => void,
-    directories?: Object,
+    hasNext: boolean,
+    fetchNext: () => void,
+    directories?: Array<any>,
+
     directoryId?: string,
 
     expanded: object;
@@ -60,8 +63,8 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
     };
 
     @autobind handleLastItem(visible) {
-        if (visible && this.props.hasNextPage && !this.props.loading) {
-            this.props.loadMoreEntries();
+        if (visible && !this.props.loading && this.props.hasNext) {
+            this.props.fetchNext();
         }
     }
 
@@ -81,16 +84,16 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
             );
         }
 
-        const icon = (node) => {
-            if (node.childrenCount === 0) {
-                if (node.id === this.props.directoryId) {
+        const icon = (directory) => {
+            if (directory.childrenCount === 0) {
+                if (directory.id === this.props.directoryId) {
                     return 'chevron-down';
                 }
                 else {
                     return 'chevron-right';
                 }
             }
-            else if (this.props.expanded[node.id]) {
+            else if (this.props.expanded[directory.id]) {
                 return 'minus';
             }
             else {
@@ -98,110 +101,63 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
             }
         };
 
-        if (!this.props.directories.edges.length) {
+        if (!this.props.directories.length) {
             return <span>No directories</span>;
         }
 
         return (
             <List className='tm-treeview'>
-                {this.props.directories && this.props.directories.edges.map(edge =>
-                    <ListItem key={edge.node.id}>
+                {this.props.directories && this.props.directories.map(directory =>
+                    <ListItem key={directory.id}>
                         <span style={{ whiteSpace: 'nowrap' }}>
-                            <a onClick={() => this.handleClick(edge.node.id)}>
-                                <Icon icon={icon(edge.node)} />
+                            <a onClick={() => this.handleClick(directory.id)}>
+                                <Icon icon={icon(directory)} />
                             </a>
 
                             &nbsp;
 
-                            <Link to={`/directories/${fromGlobalId(edge.node.id).id}`} onDoubleClick={() => this.handleClick(edge.node.id)} title={edge.node.fullPath}>
-                                {edge.node.name}
+                            <Link to={`/directories/${fromGlobalId(directory.id).id}`} onDoubleClick={() => this.handleClick(directory.id)} title={directory.fullPath}>
+                                {directory.name}
                             </Link>
 
                             &nbsp;
 
-                            ({edge.node.totalMediaFilesCount})
+                            ({directory.totalMediaFilesCount})
                         </span>
 
-                        {edge.node.childrenCount > 0 && this.props.expanded[edge.node.id] &&
-                            <ReduxDirectoryTreeView parentId={edge.node.id} directoryId={this.props.directoryId} />
+                        {directory.childrenCount > 0 && this.props.expanded[directory.id] &&
+                            <ApolloDirectoryTreeview parentId={directory.id} directoryId={this.props.directoryId} />
                         }
                     </ListItem>
                 )}
-                {this.props.hasNextPage && <ListItem key='sensor'><VisibilitySensor onChange={this.handleLastItem} /></ListItem>}
+                {this.props.hasNext && <ListItem key={`sensor-${this.props.directories.length}`}>
+                    <VisibilitySensor partialVisibility onChange={this.handleLastItem} />
+                </ListItem>}
             </List>
         );
     }
 }
 
-const DirectoriesQuery = gql`
-    query Directories($parentId: ID, $cursor: String, $collapse: Boolean) {
-        directories(first: 100, after: $cursor, parentId: $parentId, collapse: $collapse) {
-            edges {
-                node {
-                    id
-                    fullPath
-                    name
-                    childrenCount
-                    totalChildrenCount
-                    mediaFilesCount
-                    totalMediaFilesCount
-                }
-            }
-            pageInfo {
-                endCursor
-                hasNextPage
-            }
-        }
-    }
-`;
-
-const ApolloDirectoryTreeview = graphql(DirectoriesQuery, {
-    options: (props) => ({
-        variables: {
-            parentId: props.parentId,
-            collapse: true,
-        },
-    }),
-    props({ data: { loading, directories, fetchMore } }) {
-        return {
-            loading,
-            directories,
-            hasNextPage: directories && directories.pageInfo.hasNextPage,
-            loadMoreEntries: () => {
-                return fetchMore({
-                    variables: {
-                        cursor: directories.pageInfo.endCursor,
-                    },
-                    updateQuery: (previousResult, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) {
-                            return previousResult;
-                        }
-
-                        const newEdges = fetchMoreResult.directories.edges;
-                        const pageInfo = fetchMoreResult.directories.pageInfo;
-
-                        return {
-                            directories: {
-                                edges: [...previousResult.directories.edges, ...newEdges],
-                                pageInfo,
-                            },
-                        };
-                    },
-                });
+const ApolloDirectoryTreeview = compose(
+    graphql(queries.Directories, {
+        options: (props) => ({
+            variables: {
+                parentId: props.parentId,
+                collapse: true,
             },
-        };
-    },
-})(DirectoryTreeview);
-
-const ReduxDirectoryTreeView = connect(
-    (state, props) => ({
-        expanded: state.application.directories[props.parentId] || {},
+        }),
+        props: ({ data }) => createConnectionProps(data, 'directories', fromRelay),
     }),
-    (dispatch, props) => ({
-        toggle(childId) {
-            return dispatch(toggle(props.parentId, childId));
-        }
-    }),
-)(ApolloDirectoryTreeview);
+    connect(
+        (state, props) => ({
+            expanded: state.application.directories[props.parentId] || {},
+        }),
+        (dispatch, props) => ({
+            toggle(childId) {
+                return dispatch(toggle(props.parentId, childId));
+            },
+        })
+    )
+)(DirectoryTreeview);
 
-export default ReduxDirectoryTreeView;
+export default ApolloDirectoryTreeview;

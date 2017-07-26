@@ -73,7 +73,7 @@ const MediaFilesQuery = gql`
         mediaFiles(first: 25, after: $cursor, directoryId: $directoryId) {
             edges {
                 node {
-                    ...MediaFileFragment
+                    ...MediaFile
                 }
             }
             pageInfo {
