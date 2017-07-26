@@ -13,12 +13,19 @@
         "babel",
         "flowtype",
         "flowtype-errors",
+        "graphql",
         "import",
         "react"
     ],
     "rules": {
         /* Flowtype */
         "flowtype-errors/show-errors": "error",
+
+        /* GraphQL */
+        "graphql/template-strings": ["error", {
+            env: "apollo",
+            schemaJsonFilepath: "schema.json",
+        }],
 
         /* Overrides of Semistandard */
         "brace-style": ["error", "stroustrup", {
