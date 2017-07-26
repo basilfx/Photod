@@ -7,7 +7,9 @@ import React from 'react';
 import MediaList from 'components/MediaList';
 import MediaFile from 'components/MediaFile';
 
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+
+import gql from 'graphql-tag';
 
 import profile from 'profile';
 

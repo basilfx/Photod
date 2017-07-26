@@ -8,7 +8,9 @@ import Button from 'ui/Button';
 
 import DateTime from 'components/DateTime';
 
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+
+import gql from 'graphql-tag';
 
 /**
  * Type declaration for Props.
@@ -99,7 +101,7 @@ class Profile extends React.Component<DefaultProps, Props, void> {
 }
 
 const ProfileQuery = gql`
-    query {
+    query Profile {
         me {
             id
             username

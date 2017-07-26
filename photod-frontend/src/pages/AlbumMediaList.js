@@ -8,7 +8,9 @@ import VisibilitySensor from 'react-visibility-sensor';
 
 import MediaList from 'components/MediaList';
 
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+
+import gql from 'graphql-tag';
 
 import { fromGlobalId } from 'graphql-relay';
 

@@ -14,7 +14,9 @@ import Icon from 'ui/Icon';
 import List from 'ui/List';
 import ListItem from 'ui/ListItem';
 
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+
+import gql from 'graphql-tag';
 
 import { fromGlobalId } from 'graphql-relay';
 

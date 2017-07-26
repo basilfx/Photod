@@ -13,7 +13,9 @@ import SidebarLeft from 'components/SidebarLeft';
 import Menu from 'components/Menu';
 import AlphaList from 'components/AlphaList';
 
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+
+import gql from 'graphql-tag';
 
 import { fromGlobalId } from 'graphql-relay';
 

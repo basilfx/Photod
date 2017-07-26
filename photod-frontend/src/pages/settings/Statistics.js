@@ -6,7 +6,9 @@ import React from 'react';
 
 import profile from 'profile';
 
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
+
+import gql from 'graphql-tag';
 
 /**
  * Type declaration for Props.

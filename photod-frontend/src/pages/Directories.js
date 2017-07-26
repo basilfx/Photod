@@ -15,7 +15,9 @@ import MediaInfo from 'components/MediaInfo';
 import DirectoryTreeview from './DirectoryTreeview';
 import DirectoryMediaList from './DirectoryMediaList';
 
-// import { gql, graphql } from 'react-apollo';
+// import { graphql } from 'react-apollo';
+
+// import gql from 'graphql-tag';
 
 /**
  * Type declaration for Props.

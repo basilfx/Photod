@@ -8,9 +8,9 @@ import Icon from 'ui/Icon';
 
 import DateTime from 'components/DateTime';
 
-import profile from 'profile';
+import { graphql } from 'react-apollo';
 
-import { gql, graphql } from 'react-apollo';
+import gql from 'graphql-tag';
 
 import { fromGlobalId } from 'graphql-relay';
 
