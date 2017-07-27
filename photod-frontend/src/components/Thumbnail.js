@@ -269,7 +269,7 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, Stat
         return (
             <div
                 ref={element => { this.container = element; }}
-                className={`uk-card uk-card-default uk-card-hover tm-mediafile ${this.props.selected ? 'tm-mediafile-selected' : ''}`}
+                className={`uk-card uk-card-default uk-card-hover tm-thumbnail ${this.props.selected ? 'tm-thumbnail-selected' : ''}`}
                 style={{
                     flexGrow: `${width / height * 100}`,
                     flexBasis: `${width * this.props.height / height}px`,
@@ -292,7 +292,7 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, Stat
                 }}>
                     <div
                         ref={element => { this.image = element; }}
-                        className={`tm-mediafile-shadow ${info.frames ? `tm-mediafile-animate-${info.frames}` : ''}`}
+                        className={`tm-thumbnail-shadow ${info.frames ? `tm-thumbnail-animate-${info.frames}` : ''}`}
                         style={{
                             background: `url(${info.src})`,
                             backgroundSize: 'cover',
