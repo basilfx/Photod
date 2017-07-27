@@ -8,20 +8,26 @@ import PropTypes from 'prop-types';
 
 import uuid from 'uuid/v4';
 
-import type { Values, Errors, OtherForm } from './types';
+import type { Values, Errors, NestedComponent } from './types';
 
+/**
+ * Type declaration for Props.
+ */
 type Props = {
     children: React.Element<*>,
-    className: string,
-    name: string,
-    onInvalidSubmit?: (Errors) => void,
-    onValidSubmit?: (Values) => void,
+    className?: string,
+    name?: string,
+    onInvalidSubmit?: (Errors) => any,
+    onValidSubmit?: (Values) => any,
     onValues?: (Values) => Values,
 };
 
+/**
+ * Type declaration for Context.
+ */
 type Context = {
     form: {
-        [string]: OtherForm,
+        [string]: NestedComponent,
     },
 };
 
@@ -39,10 +45,20 @@ export default class Form extends React.Component<void, Props, void> {
      */
     props: Props;
 
+    /**
+     * Stores all registered inputs and nested forms.
+     *
+     * @type {Object}
+     */
     form: {
-        [string]: OtherForm,
+        [string]: NestedComponent,
     };
 
+    /**
+     * Unique form identifier.
+     *
+     * @type {string}
+     */
     formId: string;
 
     /**
@@ -134,13 +150,18 @@ export default class Form extends React.Component<void, Props, void> {
                 this.props.onValidSubmit(values);
             }
         }
-        else {
+        else if (errors) {
             this.setErrors(errors);
 
             // Invoke user method.
             if (this.props.onInvalidSubmit) {
                 this.props.onInvalidSubmit(errors);
             }
+        }
+        else {
+            throw new Error(
+                `Errors should be null, or an object, got ${String(errors)}.`
+            );
         }
     }
 
@@ -156,12 +177,14 @@ export default class Form extends React.Component<void, Props, void> {
     /**
      * Validate the form. This will propagate to each child form.
      *
+     * If no validation errors exist, null is returned.
+     *
      * @return {?Errors} An object containing the errors, or null otherwise.
      */
     validate(): ?Errors {
         const result = {};
 
-        for (const form of ((Object.values(this.form): any): Array<OtherForm>)) {
+        for (const form of ((Object.values(this.form): any): Array<NestedComponent>)) {
             const errors = form.validate();
 
             if (errors) {
@@ -194,7 +217,7 @@ export default class Form extends React.Component<void, Props, void> {
      * @return {void}
      */
     clearErrors(): void {
-        for (const form of ((Object.values(this.form): any): Array<OtherForm>)) {
+        for (const form of ((Object.values(this.form): any): Array<NestedComponent>)) {
             form.clearErrors();
         }
     }
@@ -211,11 +234,11 @@ export default class Form extends React.Component<void, Props, void> {
             throw new Error('Form errors must be an object.');
         }
 
-        for (const form of ((Object.values(this.form): any): Array<OtherForm>)) {
+        for (const form of ((Object.values(this.form): any): Array<NestedComponent>)) {
+            // Put it in a nested object if form has a name (implies nesting).
             if (form.props.name) {
                 if (form.props.name in errors) {
-                    const otherErrors = (((errors[form.props.name]): any): Errors);
-                    form.setErrors(otherErrors);
+                    form.setErrors(errors[form.props.name]);
                 }
             }
             else {
@@ -235,9 +258,10 @@ export default class Form extends React.Component<void, Props, void> {
     getValues(): Values {
         const result = {};
 
-        for (const form of ((Object.values(this.form): any): Array<OtherForm>)) {
+        for (const form of ((Object.values(this.form): any): Array<NestedComponent>)) {
             const values = form.getValues();
 
+            // Put it in a nested object if form has a name (implies nesting).
             if (form.props.name) {
                 result[form.props.name] = values;
             }

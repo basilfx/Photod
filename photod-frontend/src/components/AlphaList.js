@@ -12,11 +12,16 @@ import ListItem from 'ui/ListItem';
 /**
  * Type declaration for a AlphaListItem.
  */
-type AlphaListItem = {|
+type AlphaListItem = {
     key?: string,
     label: string,
     component: React.Element<*>,
-|};
+};
+
+/**
+ * Type declaration for GroupByFunc.
+ */
+type GroupByFunc = (AlphaListItem) => string;
 
 /**
  * Type declaration for Props.
@@ -26,7 +31,7 @@ type Props = {
     selectedKey?: string,
     onLastItem?: () => void,
     showCount?: boolean,
-    groupBy?: boolean | (AlphaListItem) => string,
+    groupBy: GroupByFunc | boolean,
 };
 
 /**
@@ -34,7 +39,7 @@ type Props = {
  */
 type DefaultProps = {
     showCount: boolean,
-    groupBy: true,
+    groupBy: boolean,
 };
 
 /**

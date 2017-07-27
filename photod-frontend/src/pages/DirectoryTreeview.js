@@ -33,6 +33,7 @@ type Props = {
     directories?: Array<any>,
 
     directoryId?: string,
+    parentId?: string,
 
     expanded: Object;
     toggle: (string) => void;
@@ -165,7 +166,7 @@ const Query = gql`
 
 const ApolloDirectoryTreeview = compose(
     graphql(Query, {
-        options: (props) => ({
+        options: (props: Props) => ({
             variables: {
                 parentId: props.parentId,
                 collapse: true,
@@ -174,10 +175,10 @@ const ApolloDirectoryTreeview = compose(
         props: ({ data }) => createConnectionProps(data, 'directories', fromRelay),
     }),
     connect(
-        (state, props) => ({
+        (state, props: Props) => ({
             expanded: state.application.directories[props.parentId] || {},
         }),
-        (dispatch, props) => ({
+        (dispatch, props: Props) => ({
             toggle(childId) {
                 return dispatch(toggle(props.parentId, childId));
             },

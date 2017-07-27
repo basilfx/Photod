@@ -40,24 +40,6 @@ export type MediaFilesQuery = {|
         orientation: ?number,
         recorded: ?any,
         created: any,
-        faces: ? {|
-          edges:  Array< {|
-            // The item at the end of the edge
-            node: ? {|
-              // The ID of the object.
-              id: string,
-              x1: number,
-              y1: number,
-              x2: number,
-              y2: number,
-              person: ? {|
-                // The ID of the object.
-                id: string,
-                name: string,
-              |},
-            |},
-          |} >,
-        |},
         palette: ? {|
           edges:  Array< {|
             // The item at the end of the edge
@@ -182,7 +164,7 @@ export type TagsQuery = {|
   |},
 |};
 
-export type MediaFileFragment = {|
+export type LightboxFragment = {|
   // The ID of the object.
   id: string,
   path: string,
@@ -214,6 +196,33 @@ export type MediaFileFragment = {|
       |},
     |} >,
   |},
+  palette: ? {|
+    edges:  Array< {|
+      // The item at the end of the edge
+      node: ? {|
+        // The ID of the object.
+        id: string,
+        color: string,
+        prominence: number,
+      |},
+    |} >,
+  |},
+|};
+
+export type ThumbnailFragment = {|
+  // The ID of the object.
+  id: string,
+  path: string,
+  name: ?string,
+  url: ?string,
+  mimeType: string,
+  fileSize: ?number,
+  width: ?number,
+  height: ?number,
+  duration: ?number,
+  orientation: ?number,
+  recorded: ?any,
+  created: any,
   palette: ? {|
     edges:  Array< {|
       // The item at the end of the edge

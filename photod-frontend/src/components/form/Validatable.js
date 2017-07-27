@@ -8,7 +8,7 @@ import uuid from 'uuid/v4';
 
 import validator from 'validator';
 
-import type { ErrorHelp, ValidationRule, Values, Errors } from './types';
+import type { NestedComponent, ErrorHelp, ValidationRule, Values, Errors } from './types';
 
 // Some extra validation rules.
 validator.required = val => !validator.isEmpty(val);
@@ -27,17 +27,22 @@ type Props = {
     validate?: string,
 };
 
-type Context = {
-    form: Object,
-    formGroup: Object,
-};
-
 /**
  * Type declaration for DefaultProps.
  */
 type DefaultProps = {
     errorHelp: ErrorHelp,
     validate: string,
+};
+
+/**
+ * Type declaration for Props.
+ */
+type Context = {
+    form: {
+        [string]: NestedComponent
+    },
+    formGroup: Object,
 };
 
 /**
@@ -60,8 +65,11 @@ export default class Validatable extends React.Component<DefaultProps, Props, vo
      */
     props: Props;
 
-    form: Object;
-
+    /**
+     * Unique form identifier.
+     *
+     * @type {string}
+     */
     formId: string;
 
     /**
@@ -90,7 +98,6 @@ export default class Validatable extends React.Component<DefaultProps, Props, vo
             throw new Error('Validatable requires a form component.');
         }
 
-        this.form = {};
         this.formId = uuid();
     }
 
@@ -115,7 +122,7 @@ export default class Validatable extends React.Component<DefaultProps, Props, vo
      */
     clearErrors(): void {
         if (this.context.formGroup) {
-            this.context.formGroup.setErrors(null);
+            this.context.formGroup.clearErrors();
         }
     }
 

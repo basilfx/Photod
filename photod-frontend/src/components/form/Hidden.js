@@ -8,6 +8,9 @@ import Validatable from './Validatable';
 
 import type { ErrorHelp } from './types';
 
+/**
+ * Type declaration for Props.
+ */
 type Props = {
     errorHelp: ErrorHelp,
     name: string,

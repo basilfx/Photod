@@ -10,7 +10,7 @@ import type { ComponentClass } from './types';
  * Type declaration for Props.
  */
 type Props = {
-    active?: boolean,
+    active: boolean,
     children?: React.Element<*>,
     className: string,
     componentClass?: ComponentClass,

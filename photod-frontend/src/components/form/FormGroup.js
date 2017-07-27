@@ -6,21 +6,29 @@ import PropTypes from 'prop-types';
 
 import type { Errors } from './types';
 
+/**
+ * Type declaration for Props.
+ */
 type Props = {
     children: React.Element<*>,
 }
 
+/**
+ * Type declaration for State.
+ */
 type State = {
     errors: ?Errors,
 }
 
-type Context = {
-
-};
-
 export default class FormGroup extends React.Component<void, Props, State> {
+    /**
+     * @inheritdoc
+     */
     props: Props;
 
+    /**
+     * @inheritdoc
+     */
     state: State;
 
     /**
@@ -33,8 +41,8 @@ export default class FormGroup extends React.Component<void, Props, State> {
     /**
      * @inheritdoc
      */
-    constructor(props: Props, context: Context) {
-        super(props, context);
+    constructor(props: Props) {
+        super(props);
 
         this.state = {
             errors: null,
@@ -56,9 +64,20 @@ export default class FormGroup extends React.Component<void, Props, State> {
      * @param {Errors} errors One or multiple errors to show.
      * @return {void}
      */
-    setErrors(errors: Errors) {
+    setErrors(errors: Errors): void {
         this.setState({
             errors,
+        });
+    }
+
+    /**
+     * Clear the errors (if any).
+     *
+     * @return {void}
+     */
+    clearErrors(): void {
+        this.setState({
+            errors: null,
         });
     }
 

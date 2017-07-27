@@ -10,19 +10,29 @@ import Validatable from './Validatable';
 
 import type { ErrorHelp } from './types';
 
+/**
+ * Different types of inputs.
+ */
 type InputType = 'text' | 'password' | 'email' | 'radio' | 'checkbox' | 'hidden';
 
+/**
+ * Type declaration for Props.
+ */
 type Props = {
     className: string,
-    errorHelp: ErrorHelp,
+    errorHelp?: ErrorHelp,
     multiple: boolean,
     name: string,
     type: InputType,
     validate?: string,
-    value: mixed,
+    value?: mixed,
 };
 
+/**
+ * Type declaration for DefaultProps.
+ */
 type DefaultProps = {
+    className: string,
     multiple: boolean,
 };
 
@@ -30,6 +40,11 @@ type DefaultProps = {
  * Wrapper for FormControl component that adds validation.
  */
 export default class Input extends React.Component<DefaultProps, Props, void> {
+    /**
+     * The rendered input element.
+     *
+     * @type {HTMLInputElement}
+     */
     input: HTMLInputElement;
 
     /**
@@ -48,6 +63,7 @@ export default class Input extends React.Component<DefaultProps, Props, void> {
      * @inheritdoc
      */
     static defaultProps = {
+        className: '',
         multiple: false,
     };
 
@@ -85,7 +101,7 @@ export default class Input extends React.Component<DefaultProps, Props, void> {
         const formGroup = this.context.formGroup;
 
         const type = this.props.type === 'checkbox' ? 'uk-checkbox' : 'uk-input';
-        const newClassName = `${type} ${formGroup && formGroup.state.errors ? 'uk-form-danger' : ''} ${className}`.trim();
+        const newClassName = `${type} ${formGroup && formGroup.state.errors ? 'uk-form-danger' : ''} ${String(className)}`.trim();
 
         return (
             <Validatable errorHelp={errorHelp} getValue={this.getValue} name={name} validate={validate}>
