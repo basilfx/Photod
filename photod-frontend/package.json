@@ -35,7 +35,6 @@
     "eslint-plugin-graphql": "^1.2.0",
     "eslint-plugin-import": "*",
     "eslint-plugin-jasmine": "*",
-    "eslint-plugin-jsdoc": "^3.1.1",
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-react": "^7.1.0",
