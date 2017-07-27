@@ -19,7 +19,7 @@ import reducer from './reducer';
  * @param {Object} initialState Initial application state.
  * @return {Store} The configured store.
  */
-export default function configureStore(initialState: Object): Store {
+export default function configureStore(initialState?: Object): Store {
     const middlewares = [
         thunkMiddleware,
         promiseMiddleware,
