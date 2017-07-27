@@ -28,6 +28,7 @@
         }],
 
         /* Overrides of Semistandard */
+        "import/no-duplicates": "off",
         "brace-style": ["error", "stroustrup", {
             "allowSingleLine": true
         }],
