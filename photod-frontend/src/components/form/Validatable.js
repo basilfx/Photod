@@ -8,29 +8,21 @@ import uuid from 'uuid/v4';
 
 import validator from 'validator';
 
+import type { ErrorHelp, ValidationRule, Values, Errors } from './types';
+
 // Some extra validation rules.
 validator.required = val => !validator.isEmpty(val);
 validator.isOptionalInt = (val, options) => !val || (val && validator.isInt(val, options));
 validator.isChecked = val => val !== null;
 validator.notNull = val => val !== null;
 
-type ValidationRule = {
-    name: string,
-    inverse: boolean,
-    parameters: Array<any>,
-};
-
-type ErrorHelp = {
-    [key: string]: string,
-};
-
 /**
  * Type declaration for Props.
  */
 type Props = {
-    children: React.Element<*>,
+    children?: React.Element<*>,
     errorHelp: ErrorHelp,
-    getValue: () => any,
+    getValue: () => Values,
     name: string,
     validate?: string,
 };
@@ -70,7 +62,7 @@ export default class Validatable extends React.Component<DefaultProps, Props, vo
 
     form: Object;
 
-    formID: string;
+    formId: string;
 
     /**
      * @inheritdoc
@@ -99,21 +91,21 @@ export default class Validatable extends React.Component<DefaultProps, Props, vo
         }
 
         this.form = {};
-        this.formID = uuid();
+        this.formId = uuid();
     }
 
     /**
      * @inheritdoc
      */
     componentWillMount() {
-        this.context.form[this.formID] = this;
+        this.context.form[this.formId] = this;
     }
 
     /**
      * @inheritdoc
      */
     componentWillUnmount() {
-        delete this.context.form[this.formID];
+        delete this.context.form[this.formId];
     }
 
     /**
@@ -121,7 +113,7 @@ export default class Validatable extends React.Component<DefaultProps, Props, vo
      *
      * @return {void}
      */
-    clearErrors() {
+    clearErrors(): void {
         if (this.context.formGroup) {
             this.context.formGroup.setErrors(null);
         }
@@ -130,10 +122,10 @@ export default class Validatable extends React.Component<DefaultProps, Props, vo
     /**
      * Set the errors.
      *
-     * @param {string} errors One or multiple errors to show.
+     * @param {Errors} errors One or multiple errors to show.
      * @return {void}
      */
-    setErrors(errors: string) {
+    setErrors(errors: Errors) {
         if (typeof errors !== 'string') {
             throw new Error('Input field error must be a string.');
         }
@@ -149,9 +141,9 @@ export default class Validatable extends React.Component<DefaultProps, Props, vo
      * This method will invoke the function that is given by
      * `this.props.getValue`.
      *
-     * @return {any} The value of the child component.
+     * @return {mixed} The value of the child component.
      */
-    getValues(): any {
+    getValues(): mixed {
         return this.props.getValue();
     }
 
@@ -243,10 +235,6 @@ export default class Validatable extends React.Component<DefaultProps, Props, vo
      * @inheritdoc
      */
     render() {
-        if (this.props.children) {
-            return React.Children.only(this.props.children);
-        }
-
-        return null;
+        return React.Children.only(this.props.children);
     }
 }

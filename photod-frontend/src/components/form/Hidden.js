@@ -2,11 +2,18 @@
 
 import autobind from 'autobind-decorator';
 
-import PropTypes from 'prop-types';
-
 import React from 'react';
 
 import Validatable from './Validatable';
+
+import type { ErrorHelp } from './types';
+
+type Props = {
+    errorHelp: ErrorHelp,
+    name: string,
+    validate: string,
+    value: mixed,
+};
 
 /**
  * Hiden value component.
@@ -14,24 +21,18 @@ import Validatable from './Validatable';
  * Compared to HTML input type hidden, this component won't render a HTML
  * element.
  */
-export default class Hidden extends React.Component {
+export default class Hidden extends React.Component<void, Props, void> {
     /**
      * @inheritdoc
      */
-    static propTypes = {
-        children: PropTypes.node,
-        errorHelp: PropTypes.object,
-        name: PropTypes.string.isRequired,
-        validate: PropTypes.string,
-        value: PropTypes.any,
-    }
+    props: Props;
 
     /**
      * Return the value of this hidden control
      *
-     * @return {any} The hidden control value.
+     * @return {mixed} The hidden control value.
      */
-    @autobind getValue() {
+    @autobind getValue(): mixed {
         return this.props.value;
     }
 

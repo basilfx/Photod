@@ -71,23 +71,32 @@ class Search extends React.Component<DefaultProps, Props, State> {
 
     };
 
+    /**
+     * @inheritdoc
+     */
     constructor(props) {
         super(props);
-
-        this.cache = new LRU(100);
 
         this.state = {
             results: null,
         };
 
+        this.cache = new LRU(100);
+
         this.search = throttle(this.props.search, 200);
     }
 
+    /**
+     * @inheritdoc
+     */
     componentDidMount() {
         this.input.addEventListener('keyup', this.handleKeyUp);
         this.input.addEventListener('keydown', this.handleKeyDown);
     }
 
+    /**
+     * @inheritdoc
+     */
     componentWillUnmount() {
         this.input.removeEventListener('keyup', this.handleKeyUp);
         this.input.removeEventListener('keydown', this.handleKeyDown);
@@ -99,7 +108,7 @@ class Search extends React.Component<DefaultProps, Props, State> {
      * When the box has focus and no input, close the search bar when escape
      * is pressed.
      */
-    @autobind handleKeyDown(event) {
+    @autobind handleKeyDown(event: KeyboardEvent): void {
         const value = this.input.value.trim();
 
         if (event.keyCode === 27) {
@@ -109,7 +118,7 @@ class Search extends React.Component<DefaultProps, Props, State> {
         }
     }
 
-    @autobind async handleKeyUp() {
+    @autobind async handleKeyUp(event: KeyboardEvent): Promise<void> {
         const value = this.input.value.trim();
 
         if (this.input.value) {
@@ -155,7 +164,7 @@ class Search extends React.Component<DefaultProps, Props, State> {
                     </div>
                 </div>
 
-                <a ref={(element) => {this.close = element; }} className='uk-navbar-toggle' data-uk-toggle='target: .nav-overlay; animation: uk-animation-fade' href='#'>
+                <a ref={(element) => { this.close = element; }} className='uk-navbar-toggle' data-uk-toggle='target: .nav-overlay; animation: uk-animation-fade' href='#'>
                     <Icon icon='close' size={1} />
                 </a>
 

@@ -8,6 +8,23 @@ import PropTypes from 'prop-types';
 
 import uuid from 'uuid/v4';
 
+import type { Values, Errors, OtherForm } from './types';
+
+type Props = {
+    children: React.Element<*>,
+    className: string,
+    name: string,
+    onInvalidSubmit?: (Errors) => void,
+    onValidSubmit?: (Values) => void,
+    onValues?: (Values) => Values,
+};
+
+type Context = {
+    form: {
+        [string]: OtherForm,
+    },
+};
+
 /**
  * The Form component is a versatile component for creating HTML forms using
  * React components. It allows composition, which means that the same form can
@@ -16,7 +33,18 @@ import uuid from 'uuid/v4';
  * When the form is submitted, values are validated. On successful validation,
  * the `onValidSubmit` is invoked, `onInvalidSubmit` otherwise.
  */
-export default class Form extends React.Component {
+export default class Form extends React.Component<void, Props, void> {
+    /**
+     * @inheritdoc
+     */
+    props: Props;
+
+    form: {
+        [string]: OtherForm,
+    };
+
+    formId: string;
+
     /**
      * @inheritdoc
      */
@@ -34,36 +62,17 @@ export default class Form extends React.Component {
     /**
      * @inheritdoc
      */
-    static propTypes = {
-        children: PropTypes.node,
-        className: PropTypes.string,
-        name: PropTypes.string,
-        onInvalidSubmit: PropTypes.func,
-        onValidSubmit: PropTypes.func,
-        onValues: PropTypes.func,
-    };
-
-    /**
-     * @inheritdoc
-     */
-    static defaultProps = {
-        name: null,
-    };
-
-    /**
-     * @inheritdoc
-     */
-    constructor(props, context) {
+    constructor(props: Props, context: Context) {
         super(props, context);
 
         this.form = {};
-        this.formID = uuid();
+        this.formId = uuid();
     }
 
     /**
      * @inheritdoc
      */
-    getChildContext() {
+    getChildContext(): Context {
         return {
             form: this.form,
         };
@@ -74,7 +83,7 @@ export default class Form extends React.Component {
      */
     componentWillMount() {
         if (this.context.form) {
-            this.context.form[this.formID] = this;
+            this.context.form[this.formId] = this;
         }
     }
 
@@ -83,7 +92,7 @@ export default class Form extends React.Component {
      */
     componentWillUnmount() {
         if (this.context.form) {
-            delete this.context.form[this.formID];
+            delete this.context.form[this.formId];
         }
     }
 
@@ -99,7 +108,7 @@ export default class Form extends React.Component {
      *
      * @return {void}
      */
-    @autobind handleSubmit(event) {
+    @autobind handleSubmit(event?: Event): void {
         if (event) {
             event.preventDefault();
         }
@@ -140,19 +149,19 @@ export default class Form extends React.Component {
      *
      * @returns {void}
      */
-    submit() {
+    submit(): void {
         this.handleSubmit();
     }
 
     /**
      * Validate the form. This will propagate to each child form.
      *
-     * @return {?object} An object containing the errors, or null otherwise.
+     * @return {?Errors} An object containing the errors, or null otherwise.
      */
-    validate() {
+    validate(): ?Errors {
         const result = {};
 
-        for (const form of Object.values(this.form)) {
+        for (const form of ((Object.values(this.form): any): Array<OtherForm>)) {
             const errors = form.validate();
 
             if (errors) {
@@ -160,6 +169,12 @@ export default class Form extends React.Component {
                     result[form.props.name] = errors;
                 }
                 else {
+                    if (typeof errors !== 'object') {
+                        throw new Error(
+                            'Cannot merge errors with non-object values.'
+                        );
+                    }
+
                     Object.assign(result, errors);
                 }
             }
@@ -178,8 +193,8 @@ export default class Form extends React.Component {
      *
      * @return {void}
      */
-    clearErrors() {
-        for (const form of Object.values(this.form)) {
+    clearErrors(): void {
+        for (const form of ((Object.values(this.form): any): Array<OtherForm>)) {
             form.clearErrors();
         }
     }
@@ -188,14 +203,19 @@ export default class Form extends React.Component {
      * Set the form error state. This will propagate to each child form if the
      * key of the error object matches the child form name.
      *
-     * @param {object} errors Object with errors per field.
+     * @param {Errors} errors Object with errors per field.
      * @return {void}
      */
-    setErrors(errors) {
-        for (const form of Object.values(this.form)) {
+    setErrors(errors: Errors): void {
+        if (typeof errors !== 'object') {
+            throw new Error('Form errors must be an object.');
+        }
+
+        for (const form of ((Object.values(this.form): any): Array<OtherForm>)) {
             if (form.props.name) {
                 if (form.props.name in errors) {
-                    form.setErrors(errors[form.props.name]);
+                    const otherErrors = (((errors[form.props.name]): any): Errors);
+                    form.setErrors(otherErrors);
                 }
             }
             else {
@@ -210,18 +230,24 @@ export default class Form extends React.Component {
      * Before the values are returned, the `onValues` callback property is
      * invoked to allow one to modify the return values.
      *
-     * @return {object} Form values per field.
+     * @return {Values} Form values per field.
      */
-    getValues() {
+    getValues(): Values {
         const result = {};
 
-        for (const form of Object.values(this.form)) {
+        for (const form of ((Object.values(this.form): any): Array<OtherForm>)) {
             const values = form.getValues();
 
             if (form.props.name) {
                 result[form.props.name] = values;
             }
             else {
+                if (typeof values !== 'object') {
+                    throw new Error(
+                        'Cannot merge values with non-object values.'
+                    );
+                }
+
                 Object.assign(result, values);
             }
         }

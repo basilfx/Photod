@@ -8,24 +8,34 @@ import PropTypes from 'prop-types';
 
 import Validatable from './Validatable';
 
+import type { ErrorHelp } from './types';
+
+type InputType = 'text' | 'password' | 'email' | 'radio' | 'checkbox' | 'hidden';
+
+type Props = {
+    className: string,
+    errorHelp: ErrorHelp,
+    multiple: boolean,
+    name: string,
+    type: InputType,
+    validate?: string,
+    value: mixed,
+};
+
+type DefaultProps = {
+    multiple: boolean,
+};
+
 /**
  * Wrapper for FormControl component that adds validation.
  */
-export default class Input extends React.Component {
+export default class Input extends React.Component<DefaultProps, Props, void> {
     input: HTMLInputElement;
 
     /**
      * @inheritdoc
      */
-    static propTypes = {
-        className: PropTypes.string,
-        errorHelp: PropTypes.object,
-        multiple: PropTypes.bool,
-        name: PropTypes.string.isRequired,
-        type: PropTypes.string.isRequired,
-        validate: PropTypes.string,
-        value: PropTypes.any,
-    }
+    props: Props;
 
     /**
      * @inheritdoc
@@ -44,9 +54,9 @@ export default class Input extends React.Component {
     /**
      * Return the values of this control.
      *
-     * @return {object|string} Form control value.
+     * @return {mixed} Form control value.
      */
-    @autobind getValue() {
+    @autobind getValue(): mixed {
         if (this.props.type === 'file') {
             if (this.props.multiple) {
                 return this.input.files;
@@ -72,9 +82,10 @@ export default class Input extends React.Component {
             props.value = value;
         }
 
-        const type = this.props.type === 'checkbox' ? 'uk-checkbox' : 'uk-input';
         const formGroup = this.context.formGroup;
-        const newClassName = `${type} ${formGroup && formGroup.state.errors ? 'uk-form-danger' : ''} ${className}`;
+
+        const type = this.props.type === 'checkbox' ? 'uk-checkbox' : 'uk-input';
+        const newClassName = `${type} ${formGroup && formGroup.state.errors ? 'uk-form-danger' : ''} ${className}`.trim();
 
         return (
             <Validatable errorHelp={errorHelp} getValue={this.getValue} name={name} validate={validate}>
