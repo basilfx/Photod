@@ -4,7 +4,20 @@ import autobind from 'autobind-decorator';
 
 import React from 'react';
 
-type MediaFileType = any;
+import gql from 'graphql-tag';
+
+/**
+ * Type declaration for MediaFileType.
+ */
+type MediaFileType = {|
+    mimeType: string,
+    recorded: string,
+    orientation: number,
+    width: number,
+    height: number,
+    fileSize: number,
+    duration: number
+|};
 
 /**
  * Type declaration for Props.
@@ -162,3 +175,44 @@ export default class Lightbox extends React.Component<void, Props, void> {
         );
     }
 }
+
+Lightbox.fragment = gql`
+    fragment Lightbox on MediaFile {
+        id
+        path
+        name
+        url
+        mimeType
+        fileSize
+        width
+        height
+        duration
+        orientation
+        recorded
+        created
+        faces {
+            edges {
+                node {
+                    id
+                    x1
+                    y1
+                    x2
+                    y2
+                    person {
+                          id
+                          name
+                    }
+                }
+            }
+        }
+        palette(first: 1) {
+            edges {
+                node {
+                    id
+                    color
+                    prominence
+                }
+            }
+        }
+    }
+`;

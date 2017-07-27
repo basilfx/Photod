@@ -1,7 +1,5 @@
 // @flow
 
-// import autobind from 'autobind-decorator';
-
 import React from 'react';
 
 import type { ComponentClass } from './types';
@@ -11,7 +9,7 @@ import type { ComponentClass } from './types';
  */
 type Props = {
     active?: boolean,
-    children?: any,
+    children?: React.Element<*>,
     className: string,
     componentClass?: ComponentClass,
 };

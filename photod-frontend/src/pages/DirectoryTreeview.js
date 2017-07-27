@@ -2,11 +2,11 @@
 
 import autobind from 'autobind-decorator';
 
+import React from 'react';
+
 import { connect } from 'react-redux';
 
 import VisibilitySensor from 'react-visibility-sensor';
-
-import React from 'react';
 
 import { Link } from 'react-router-dom';
 
@@ -18,9 +18,9 @@ import { graphql, compose } from 'react-apollo';
 
 import { createConnectionProps, fromRelay } from 'utils/graphql';
 
-import queries from './queries';
-
 import { fromGlobalId } from 'graphql-relay';
+
+import gql from 'graphql-tag';
 
 import { toggle } from 'modules/application/directories/actions';
 
@@ -29,13 +29,12 @@ import { toggle } from 'modules/application/directories/actions';
  */
 type Props = {
     loading: boolean,
-    hasNext: boolean,
-    fetchNext: () => void,
+    fetchNext?: () => void,
     directories?: Array<any>,
 
     directoryId?: string,
 
-    expanded: object;
+    expanded: Object;
     toggle: (string) => void;
 };
 
@@ -63,7 +62,7 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
     };
 
     @autobind handleLastItem(visible) {
-        if (visible && !this.props.loading && this.props.hasNext) {
+        if (visible && this.props.fetchNext) {
             this.props.fetchNext();
         }
     }
@@ -78,9 +77,13 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
     render() {
         if (this.props.loading) {
             return (
-                <List>
-                    <ListItem>Loading...</ListItem>
-                </List>
+                <List><ListItem>Loading...</ListItem></List>
+            );
+        }
+
+        if (!this.props.directories) {
+            return (
+                <List><ListItem>No directories.</ListItem></List>
             );
         }
 
@@ -130,7 +133,7 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
                         }
                     </ListItem>
                 )}
-                {this.props.hasNext && <ListItem key={`sensor-${this.props.directories.length}`}>
+                {this.props.fetchNext && <ListItem key={`sensor-${this.props.directories.length}`}>
                     <VisibilitySensor partialVisibility onChange={this.handleLastItem} />
                 </ListItem>}
             </List>
@@ -138,8 +141,30 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
     }
 }
 
+const Query = gql`
+    query Directories($parentId: ID, $after: String, $collapse: Boolean) {
+        directories(first: 100, after: $after, parentId: $parentId, collapse: $collapse) {
+            edges {
+                node {
+                    id
+                    fullPath
+                    name
+                    childrenCount
+                    totalChildrenCount
+                    mediaFilesCount
+                    totalMediaFilesCount
+                }
+            }
+            pageInfo {
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+`;
+
 const ApolloDirectoryTreeview = compose(
-    graphql(queries.Directories, {
+    graphql(Query, {
         options: (props) => ({
             variables: {
                 parentId: props.parentId,

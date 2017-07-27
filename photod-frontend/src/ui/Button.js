@@ -1,15 +1,11 @@
 // @flow
 
-// import autobind from 'autobind-decorator';
-
 import React from 'react';
 
 import type { ComponentClass } from './types';
 
 /**
  * Button style definitions.
- *
- * @see https://getuikit.com/docs/button
  */
 type ButtonStyle =
     'default' |
@@ -21,8 +17,6 @@ type ButtonStyle =
 
 /**
  * Button type definitions.
- *
- * @see https://www.w3schools.com/tags/att_button_type.asp
  */
 type ButtonType = 'button' | 'reset' | 'submit';
 
@@ -30,7 +24,7 @@ type ButtonType = 'button' | 'reset' | 'submit';
  * Type declaration for Props.
  */
 type Props = {
-    children?: any,
+    children?: React.Element<*>,
     className: string,
     componentClass?: ComponentClass,
     buttonStyle?: ButtonStyle,
@@ -49,7 +43,9 @@ type DefaultProps = {
 };
 
 /**
- * The component.
+ * The button component.
+ *
+ * @see https://getuikit.com/docs/button
  */
 export default class Button extends React.Component<DefaultProps, Props, void> {
     /**

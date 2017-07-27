@@ -131,7 +131,7 @@ export type AlbumsQuery = {|
 
 export type DirectoriesQueryVariables = {|
   parentId?: ?string,
-  cursor?: ?string,
+  after?: ?string,
   collapse?: ?boolean,
 |};
 
@@ -159,7 +159,30 @@ export type DirectoriesQuery = {|
   |},
 |};
 
-export type MediaFileFragmentFragment = {|
+export type TagsQueryVariables = {|
+  after?: ?string,
+|};
+
+export type TagsQuery = {|
+  tags: ? {|
+    edges:  Array< {|
+      // The item at the end of the edge
+      node: ? {|
+        // The ID of the object.
+        id: string,
+        label: string,
+      |},
+    |} >,
+    pageInfo: {|
+      // When paginating forwards, the cursor to continue.
+      endCursor: ?string,
+      // When paginating forwards, are there more items?
+      hasNextPage: boolean,
+    |},
+  |},
+|};
+
+export type MediaFileFragment = {|
   // The ID of the object.
   id: string,
   path: string,

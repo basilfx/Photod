@@ -4,23 +4,17 @@
 
 import React from 'react';
 
-import UIkit from 'uikit';
-import Icons from 'uikit/dist/js/uikit-icons';
-
-// loads the Icon plugin
-UIkit.use(Icons);
-
 import 'styles/main.less';
 
 /**
  * Type declaration for Props.
  */
 type Props = {
-    children?: any,
-    header: any,
-    sidebarLeft?: any,
-    sidebarRight?: any,
-    footer?: any,
+    children?: React.Element<*>,
+    header: React.Element<*>,
+    sidebarLeft?: React.Element<*>,
+    sidebarRight?: React.Element<*>,
+    footer?: React.Element<*>,
 };
 
 /**
@@ -33,7 +27,7 @@ type DefaultProps = {
 /**
  * The component.
  */
-export default class Template extends React.Component<DefaultProps, Props, void> {
+export default class Main extends React.Component<DefaultProps, Props, void> {
     /**
      * @inheritdoc
      */

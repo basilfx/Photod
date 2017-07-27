@@ -6,13 +6,16 @@ import React from 'react';
 
 import type { ComponentClass } from './types';
 
+/**
+ * Type declaration for the Navbar position.
+ */
 type NavbarPosition = 'left' | 'center' | 'right';
 
 /**
  * Type declaration for Props.
  */
 type Props = {
-    children?: any,
+    children?: React.Element<*>,
     className: string;
     componentClass?: ComponentClass,
     position?: NavbarPosition,
@@ -30,9 +33,11 @@ type DefaultProps = {
 };
 
 /**
- * The component.
+ * The Navbar component.
+ *
+ * @see https://getuikit.com/docs/navbar
  */
-export default class Template extends React.Component<DefaultProps, Props, void> {
+export default class Navbar extends React.Component<DefaultProps, Props, void> {
     /**
      * @inheritdoc
      */

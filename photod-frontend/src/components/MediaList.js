@@ -8,9 +8,16 @@ import React from 'react';
 
 import VisibilitySensor from 'react-visibility-sensor';
 
-import MediaFile from './MediaFile';
+import Thumbnail from './Thumbnail';
 
 import moment from 'moment-timezone';
+
+/**
+ * Type declaration for MediaFileType.
+ */
+type MediaFileType = {
+    id: String,
+};
 
 /**
  * Type declaration for Props.
@@ -66,7 +73,7 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
     /**
      * @inheritdoc
      */
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
 
         this.state = {
@@ -94,7 +101,7 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
         this.multipleSelect = false;
     }
 
-    @autobind handleSelect(mediaFile) {
+    @autobind handleSelect(mediaFile: MediaFileType): void {
         if (!this.multipleSelect) {
             this.handleDeselectAll();
         }
@@ -155,7 +162,7 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
         ).format('YYYY-MM-DD');
     }
 
-    * renderMediaFiles(): any {
+    * renderMediaFiles(): Generator<React.Element<*>, *, *> {
         let lastGroup;
 
         if (this.props.mediaFiles) {
@@ -169,7 +176,7 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
                 }
 
                 yield (
-                    <MediaFile
+                    <Thumbnail
                         selected={this.state.selected[edge.node.id]}
                         key={edge.node.id}
                         mediaFile={edge.node}

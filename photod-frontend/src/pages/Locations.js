@@ -23,7 +23,7 @@ window.Leaflet = Leaflet;
  * Type declaration for Props.
  */
 type Props = {
-    // children?: any,
+    // children?: React.Element<*>,
 };
 
 /**

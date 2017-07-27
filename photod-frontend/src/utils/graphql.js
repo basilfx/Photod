@@ -1,6 +1,10 @@
 // @flow
 
 function createFetchNext(data, key: string) {
+    if (data.loading || !data[key].pageInfo.hasNextPage) {
+        return false;
+    }
+
     return () => data.fetchMore({
         variables: {
             after: data[key].pageInfo.endCursor,
@@ -29,7 +33,6 @@ function createConnectionProps(data, key: string, converter?: (object) => object
     return {
         loading: data.loading,
         [key]: converter ? converter(data[key]) : data[key],
-        hasNext: data[key] && data[key].pageInfo.hasNextPage,
         fetchNext: createFetchNext(data, key),
     };
 }

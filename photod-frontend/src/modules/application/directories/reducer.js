@@ -1,17 +1,23 @@
+// @flow
+
 import actionTypes from './actionTypes';
 
-const initialState = {};
+import type { Action, State } from './types';
 
-export default function reducer(state = initialState, action) {
+const initialState: State = {};
+
+export default function reducer(state: State = initialState, action: Action): State {
     switch (action.type) {
     case actionTypes.TOGGLE:
-        const tree = state[action.payload.parentId] || {};
+        const subState = state[action.payload.parentId] || {};
 
-        return Object.assign({}, state, {
-            [action.payload.parentId]: Object.assign({}, tree, {
-                [action.payload.childId]: !tree[action.payload.childId],
-            })
-        });
+        return {
+            ...state,
+            [action.payload.parentId]: {
+                ...subState,
+                [action.payload.childId]: !subState[action.payload.childId],
+            },
+        };
     default:
         return state;
     }

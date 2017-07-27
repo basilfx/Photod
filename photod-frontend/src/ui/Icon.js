@@ -5,6 +5,7 @@
 import React from 'react';
 
 import UIkit from 'uikit';
+import Icons from 'uikit/dist/js/uikit-icons';
 
 import type { ComponentClass } from './types';
 
@@ -26,6 +27,9 @@ type DefaultProps = {
     componentClass: ComponentClass,
     size: number,
 };
+
+// Loads the Icon plugin.
+UIkit.use(Icons);
 
 /**
  * The component.
@@ -52,7 +56,6 @@ export default class Icon extends React.Component<DefaultProps, Props, void> {
         const className = `${this.props.className}`;
         const props = {
             className: className.trim(),
-
             'data-uk-icon': `icon: ${this.props.icon}; ratio: ${String(this.props.size)}`,
         };
 

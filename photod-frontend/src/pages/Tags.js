@@ -17,9 +17,9 @@ import TagsMediaList from './TagsMediaList';
 
 import { graphql } from 'react-apollo';
 
-import { createConnectionProps, fromRelay } from 'utils/graphql';
+import gql from 'graphql-tag';
 
-import queries from './queries';
+import { createConnectionProps, fromRelay } from 'utils/graphql';
 
 /**
  * Type declaration for Props.
@@ -28,8 +28,7 @@ type Props = {
     tag?: string,
 
     loading: boolean,
-    hasNext: boolean,
-    fetchNext: () => void;
+    fetchNext?: () => void;
     tags?: Array<any>
 };
 
@@ -57,7 +56,7 @@ class Tags extends React.Component<DefaultProps, Props, void> {
     };
 
     @autobind onLastItem() {
-        if (this.props.hasNext && !this.props.loading) {
+        if (this.props.fetchNext){
             this.props.fetchNext();
         }
     }
@@ -104,6 +103,23 @@ class Tags extends React.Component<DefaultProps, Props, void> {
     }
 }
 
-export default graphql(queries.Tags, {
+const Query = gql`
+    query Tags($after: String) {
+        tags(first: 100, after: $after) {
+            edges {
+                node {
+                    id
+                    label
+                }
+            }
+            pageInfo {
+                endCursor
+                hasNextPage
+            }
+        }
+    }
+`;
+
+export default graphql(Query, {
     props: ({ data }) => createConnectionProps(data, 'tags', fromRelay),
 })(Tags);

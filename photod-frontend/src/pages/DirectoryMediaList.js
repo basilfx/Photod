@@ -5,7 +5,7 @@ import autobind from 'autobind-decorator';
 import React from 'react';
 
 import MediaList from 'components/MediaList';
-import MediaFile from 'components/MediaFile';
+import Thumbnail from 'components/Thumbnail';
 
 import { graphql } from 'react-apollo';
 
@@ -68,12 +68,12 @@ class DirectoryMediaList extends React.Component<DefaultProps, Props, void> {
     }
 }
 
-const MediaFilesQuery = gql`
+const Query = gql`
     query MediaFiles($cursor: String, $directoryId: ID, $profile: String) {
         mediaFiles(first: 25, after: $cursor, directoryId: $directoryId) {
             edges {
                 node {
-                    ...MediaFile
+                    ...Thumbnail
                 }
             }
             pageInfo {
@@ -82,10 +82,10 @@ const MediaFilesQuery = gql`
             }
         }
     }
-    ${MediaFile.fragment}
+    ${Thumbnail.fragment}
 `;
 
-export default graphql(MediaFilesQuery, {
+export default graphql(Query, {
     options: (props) => ({
         variables: {
             directoryId: props.directoryId,

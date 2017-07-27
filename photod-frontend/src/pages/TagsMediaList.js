@@ -5,7 +5,7 @@ import autobind from 'autobind-decorator';
 import React from 'react';
 
 import MediaList from 'components/MediaList';
-import MediaFile from 'components/MediaFile';
+import Thumbnail from 'components/Thumbnail';
 
 import { graphql } from 'react-apollo';
 
@@ -71,7 +71,7 @@ const MediaFilesQuery = gql`
         mediaFiles(first: 25, after: $cursor, tag: $tag) {
             edges {
                 node {
-                    ...MediaFileFragment
+                    ...Thumbnail
                 }
             }
             pageInfo {
@@ -80,7 +80,7 @@ const MediaFilesQuery = gql`
             }
         }
     }
-    ${MediaFile.fragment}
+    ${Thumbnail.fragment}
 `;
 
 export default graphql(MediaFilesQuery, {

@@ -14,7 +14,7 @@ import Input from 'components/form/Input';
  * Type declaration for Props.
  */
 type Props = {
-    // children?: any,
+    // children?: React.Element<*>,
 };
 
 /**
@@ -40,8 +40,8 @@ export default class Interface extends React.Component<DefaultProps, Props, void
 
     };
 
-    @autobind async handleValidSubmit(values: any) {
-        alert(values)
+    @autobind async handleValidSubmit(values: Object) {
+
     }
 
     /**

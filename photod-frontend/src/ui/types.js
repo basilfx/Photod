@@ -1,10 +1,15 @@
 // @flow
 
+/**
+ * Type declaration for the `componentClass` property.
+ *
+ * This list is incomplete, so extend at will.
+ */
 export type ComponentClass =
-    'div' |
-    'span' |
     'a' |
-    'nav' |
+    'div' |
     'i' |
-    'ul' |
-    'li';
+    'li' |
+    'nav' |
+    'span' |
+    'ul' ;

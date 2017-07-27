@@ -22,7 +22,7 @@ type DefaultProps = {
 };
 
 /**
- * Format a given timestamp in a human-readable format.
+ * Format a given timestamp in a human-friendly format.
  *
  * Refer to the documentation of Moment.js (http://momentjs.com/) for the
  * different formatting options.

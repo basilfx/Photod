@@ -4,6 +4,8 @@
 
 import React from 'react';
 
+import { Link } from 'react-router-dom';
+
 import Breadcrumb from 'ui/Breadcrumb';
 import BreadcrumbItem from 'ui/BreadcrumbItem';
 import Navbar from 'ui/Navbar';
@@ -13,7 +15,13 @@ import Icon from 'ui/Icon';
 
 import Search from './Search';
 
-type HeaderTrail = Array<{ label: string }>;
+/**
+ * Type declaration for HeaderTrail.
+ */
+type HeaderTrail = Array<{
+    label: string,
+    to?: string,
+}>;
 
 /**
  * Type declaration for Props.
@@ -32,7 +40,9 @@ type DefaultProps = {
 };
 
 /**
- * The component.
+ * The header component.
+ *
+ * In the header componenent, the breadcrumb and search component are shown.
  */
 export default class Header extends React.Component<DefaultProps, Props, void> {
     /**
@@ -49,13 +59,18 @@ export default class Header extends React.Component<DefaultProps, Props, void> {
     };
 
     /**
-     * [className description]
-     * @type {String}
+     * Render the trail of breadcrumb items.
+     *
+     * @returns {?Array<React.Element<*>>} Breadcrumb items.
      */
     renderTrail() {
-        return (this.props.trail || []).map((item, index) =>
+        if (!this.props.trail) {
+            return;
+        }
+
+        return this.props.trail.map((item, index) =>
             <BreadcrumbItem key={index}>
-                <a href='#'>{item.label}</a>
+                <Link to={item.to || '#'}>{item.label}</Link>
             </BreadcrumbItem>
         );
     }

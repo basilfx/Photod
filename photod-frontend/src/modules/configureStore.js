@@ -1,3 +1,5 @@
+// @flow
+
 import { createStore, applyMiddleware, compose } from 'redux';
 
 import thunkMiddleware from 'redux-thunk';
@@ -14,16 +16,16 @@ import reducer from './reducer';
  * When development is toggled, it will also add middleware for checking if
  * actions are FSA-compliant and to add logging.
  *
- * @param {object} initialState Initial application state.
+ * @param {Object} initialState Initial application state.
  * @return {Store} The configured store.
  */
-export default function configureStore(initialState) {
+export default function configureStore(initialState: Object): Store {
     const middlewares = [
         thunkMiddleware,
         promiseMiddleware,
     ];
 
-    // Add some middleware in development only.
+    // Add debug middleware in development only.
     if (process.env.NODE_ENV !== 'production') {
         middlewares.push(ensureFSAMiddleware({
             ignore: () => false,
@@ -44,9 +46,7 @@ export default function configureStore(initialState) {
         );
     }
 
-    const store = createStore(
-        reducer, initialState, middleware
-    );
+    const store = createStore(reducer, initialState, middleware);
 
     // Enable hot reloading of root reducer.
     if (module.hot) {

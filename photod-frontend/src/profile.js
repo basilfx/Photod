@@ -7,7 +7,7 @@ import bowser from 'bowser';
  *
  * @return {Array<string>} Array of preferred MIME types.
  */
-function getMimeTypes() {
+function getMimeTypes(): Array<string> {
     if (bowser.chrome) {
         return ['image/webp', 'image/jpeg'];
     }
@@ -20,7 +20,7 @@ function getMimeTypes() {
  *
  * @return {number} Minimal quality of images.
  */
-function getQuality() {
+function getQuality(): number {
     if (bowser.mobile) {
         return 60;
     }

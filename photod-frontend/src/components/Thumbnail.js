@@ -16,7 +16,7 @@ import gql from 'graphql-tag';
 /**
  * Type declaration for MediaFileType.
  */
-type MediaFileType = {
+type MediaFileType = {|
     mimeType: string,
     recorded: string,
     orientation: number,
@@ -24,7 +24,7 @@ type MediaFileType = {
     height: number,
     fileSize: number,
     duration: number
-};
+|};
 
 /**
  * Type declaration for Props.
@@ -68,7 +68,7 @@ type MediaFileParser = {
 /**
  * Media file thumbnail component.
  */
-export default class MediaFile extends React.Component<DefaultProps, Props, State> {
+export default class Thumbnail extends React.Component<DefaultProps, Props, State> {
     parseMediaFile: () => MediaFileParser;
 
     state: State;
@@ -117,7 +117,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
         // MIME-type.
         const source = this.props.mediaFile.mimeType.split(';', 1)[0].split('/');
 
-        for (const parser of MediaFile.parsers) {
+        for (const parser of Thumbnail.parsers) {
             const target = parser.mimeType.split(';', 1)[0].split('/');
 
             if (target[0] === source[0] || target[0] === '*') {
@@ -204,7 +204,7 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
             orientation: mediaFile.orientation || 0,
             label: (
                 <span>
-                    <Icon icon='image' /> {mediaFile.width}x{mediaFile.height}, {filesize(mediaFile.fileSize)}, {mediaFile.faces.edges.length} faces
+                    <Icon icon='image' /> {mediaFile.width}x{mediaFile.height}, {filesize(mediaFile.fileSize)}, {1 || mediaFile.faces.edges.length} faces
                 </span>
             ),
         };
@@ -310,8 +310,8 @@ export default class MediaFile extends React.Component<DefaultProps, Props, Stat
     }
 }
 
-MediaFile.fragment = gql`
-    fragment MediaFile on MediaFile {
+Thumbnail.fragment = gql`
+    fragment Thumbnail on MediaFile {
         id
         path
         name
@@ -324,21 +324,6 @@ MediaFile.fragment = gql`
         orientation
         recorded
         created
-        faces {
-            edges {
-                node {
-                    id
-                    x1
-                    y1
-                    x2
-                    y2
-                    person {
-                          id
-                          name
-                    }
-                }
-            }
-        }
         palette(first: 1) {
             edges {
                 node {

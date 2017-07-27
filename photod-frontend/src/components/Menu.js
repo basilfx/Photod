@@ -7,9 +7,6 @@ import React from 'react';
 import Icon from 'ui/Icon';
 import Iconnav from 'ui/Iconnav';
 import IconnavItem from 'ui/IconnavItem';
-import List from 'ui/List';
-
-import IconListItem from 'components/IconListItem';
 
 import { Link } from 'react-router-dom';
 

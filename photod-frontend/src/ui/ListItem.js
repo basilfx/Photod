@@ -11,7 +11,7 @@ import type { ComponentClass } from './types';
  */
 type Props = {
     active?: boolean,
-    children?: any,
+    children?: React.Element<*>,
     className: string,
     componentClass?: ComponentClass,
 };

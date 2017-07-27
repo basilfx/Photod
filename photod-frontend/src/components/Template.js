@@ -8,7 +8,7 @@ import React from 'react';
  * Type declaration for Props.
  */
 type Props = {
-    // children?: any,
+    // children?: React.Element<*>,
 };
 
 /**

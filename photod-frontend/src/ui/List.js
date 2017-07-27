@@ -1,7 +1,5 @@
 // @flow
 
-// import autobind from 'autobind-decorator';
-
 import React from 'react';
 
 import ListItem from './ListItem';
@@ -12,7 +10,7 @@ import type { ComponentClass } from './types';
  * Type declaration for Props.
  */
 type Props = {
-    children?: Array<ListItem>,
+    children?: React.Element<ListItem>,
     className: string,
     componentClass?: ComponentClass,
     divider?: boolean,

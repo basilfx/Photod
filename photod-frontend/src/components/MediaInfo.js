@@ -11,6 +11,7 @@ import filesize from 'filesize';
  * Type declaration for MediaFileType.
  */
 type MediaFileType = {
+    id: String,
     path: string,
     name: string,
     mimeType: string,

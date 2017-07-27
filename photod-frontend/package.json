@@ -35,6 +35,7 @@
     "eslint-plugin-graphql": "^1.2.0",
     "eslint-plugin-import": "*",
     "eslint-plugin-jasmine": "*",
+    "eslint-plugin-jsdoc": "^3.1.1",
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-react": "^7.1.0",
@@ -43,6 +44,7 @@
     "file-loader": "^0.11.2",
     "flow-bin": "^0.51.0",
     "flow-typed": "^2.0.0",
+    "flowgen": "^1.2.0",
     "flowtype-loader": "^0.2.2",
     "html-loader": "*",
     "jasmine": "*",
@@ -71,6 +73,7 @@
     "fbjs": "^0.8.12",
     "filesize": "^3.5.10",
     "flow-runtime": "^0.14.0",
+    "flux-standard-action": "^1.2.0",
     "format-duration": "^1.0.0",
     "graphql": "^0.10.1",
     "graphql-relay": "^0.5.2",
@@ -110,7 +113,7 @@
     "start-production": "NODE_ENV=production node_modules/.bin/webpack-dev-server --config webpack.config.production.js --port 8000 --progress --hot --inline",
     "build": "NODE_ENV=production node_modules/.bin/webpack --config webpack.config.js --bail",
     "build-production": "NODE_ENV=production node_modules/.bin/webpack --config webpack.config.production.js --bail",
-    "build-schema": "apollo-codegen generate src/**/*.js --schema schema.json --target flow --output interfaces/schema.js",
+    "build-schema": "apollo-codegen generate src/**/*.js --schema schema.json --target flow --output src/schema.js",
     "build-docs": "esdoc -c esdoc.json"
   }
 }

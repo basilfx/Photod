@@ -28,7 +28,7 @@ type ErrorHelp = {
  * Type declaration for Props.
  */
 type Props = {
-    children: any,
+    children: React.Element<*>,
     errorHelp: ErrorHelp,
     getValue: () => any,
     name: string,

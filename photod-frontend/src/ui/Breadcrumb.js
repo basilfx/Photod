@@ -1,7 +1,5 @@
 // @flow
 
-// import autobind from 'autobind-decorator';
-
 import React from 'react';
 
 import BreadcrumbItem from './BreadcrumbItem';
@@ -12,7 +10,7 @@ import type { ComponentClass } from './types';
  * Type declaration for Props.
  */
 type Props = {
-    children?: Array<BreadcrumbItem>,
+    children?: React.Element<BreadcrumbItem>,
     className: string,
     componentClass?: ComponentClass,
 };

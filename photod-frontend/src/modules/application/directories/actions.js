@@ -1,6 +1,10 @@
+// @flow
+
 import actionTypes from './actionTypes';
 
-export function toggle(parentId, childId) {
+import type { Action } from './types';
+
+export function toggle(parentId: string, childId: string): Action {
     return { type: actionTypes.TOGGLE, payload: { parentId, childId } };
 }
 

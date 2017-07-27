@@ -11,7 +11,7 @@ import Main from 'components/Main';
 import Header from 'components/Header';
 import SidebarLeft from 'components/SidebarLeft';
 import Menu from 'components/Menu';
-import MenuList from 'components/MenuList';
+import AlphaList from 'components/AlphaList';
 
 /**
  * Type declaration for Props.
@@ -74,7 +74,7 @@ export default class Favorites extends React.Component<DefaultProps, Props, void
                 component: <Link to={'/favorites/views'}>Views</Link>,
             },
         ];
-        
+
         const trail = [
             {
                 label: 'Favorites',
@@ -95,7 +95,7 @@ export default class Favorites extends React.Component<DefaultProps, Props, void
                 sidebarLeft={
                     <SidebarLeft
                         menu={<Menu selectedKey='favorites' />}
-                        panel={<MenuList items={menuItems} selectedKey={this.props.page} showCount={false} />}
+                        panel={<AlphaList groupBy={false} items={menuItems} selectedKey={this.props.page} showCount={false} />}
                     />
                 }
             >

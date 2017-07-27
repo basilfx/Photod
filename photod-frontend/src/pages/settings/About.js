@@ -10,7 +10,7 @@ import Icon from 'ui/Icon';
  * Type declaration for Props.
  */
 type Props = {
-    // children?: any,
+    // children?: React.Element<*>,
 };
 
 /**

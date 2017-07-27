@@ -8,13 +8,16 @@ import IconnavItem from './IconnavItem';
 
 import type { ComponentClass } from './types';
 
+/**
+ * Type declaration for the Iconnav direction.
+ */
 type IconnavDirection = 'horizontal' | 'vertical';
 
 /**
  * Type declaration for Props.
  */
 type Props = {
-    children?: Array<IconnavItem>,
+    children?: React.Element<IconnavItem>,
     className: string,
     componentClass?: ComponentClass,
     direction?: IconnavDirection,
@@ -30,7 +33,9 @@ type DefaultProps = {
 };
 
 /**
- * The component.
+ * The Iconnav component.
+ *
+ * @see https://getuikit.com/docs/iconnav
  */
 export default class Iconnav extends React.Component<DefaultProps, Props, void> {
     /**

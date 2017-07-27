@@ -11,7 +11,7 @@ import Main from 'components/Main';
 import Header from 'components/Header';
 import SidebarLeft from 'components/SidebarLeft';
 import Menu from 'components/Menu';
-import MenuList from 'components/MenuList';
+import AlphaList from 'components/AlphaList';
 
 import About from 'pages/settings/About';
 import Interface from 'pages/settings/Interface';
@@ -122,7 +122,7 @@ export default class Settings extends React.Component<DefaultProps, Props, void>
                 sidebarLeft={
                     <SidebarLeft
                         menu={<Menu selectedKey='settings' />}
-                        panel={<MenuList items={menuItems} selectedKey={this.props.page} showCount={false} />}
+                        panel={<AlphaList groupBy={false} items={menuItems} selectedKey={this.props.page} showCount={false} />}
                     />
                 }
             >

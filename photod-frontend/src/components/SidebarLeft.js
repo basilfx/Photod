@@ -8,8 +8,8 @@ import React from 'react';
  * Type declaration for Props.
  */
 type Props = {
-    menu: any,
-    panel?: any,
+    menu: React.Element<*>,
+    panel?: React.Element<*>,
 };
 
 /**
