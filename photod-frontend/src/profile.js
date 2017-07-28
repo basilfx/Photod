@@ -28,7 +28,27 @@ function getQuality(): number {
     return 100;
 }
 
+/**
+ * Return the preferred width and height of of thumbnails.
+ *
+ * @return {Object} Object with preferred width and height of thumbnails.
+ */
+function getThumbnail(): { width: number, height: number } {
+    if (bowser.mobile) {
+        return {
+            width: 128,
+            height: 128,
+        };
+    }
+
+    return {
+        width: 256,
+        height: 256,
+    };
+}
+
 export default {
     mimeTypes: getMimeTypes(),
     quality: getQuality(),
+    thumbnail: getThumbnail(),
 };
