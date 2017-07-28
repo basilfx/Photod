@@ -1,41 +1,35 @@
 // @flow
 
-import autobind from 'autobind-decorator';
-
 import React from 'react';
 
-import MediaList from 'components/MediaList';
+import ConnectionMediaList from 'components/MediaList';
 import Thumbnail from 'components/Thumbnail';
 
 import { graphql } from 'react-apollo';
 
 import gql from 'graphql-tag';
 
+import { createConnectionProps, fromRelay } from 'utils/graphql';
+
 import profile from 'profile';
+
+import type {
+    Props as ConnectionMediaListProps,
+} from 'components/ConnectionMediaList';
 
 /**
  * Type declaration for Props.
  */
 type Props = {
-    tag: string,
+    ...ConnectionMediaListProps,
 
-    loading: boolean,
-    hasNextPage: boolean,
-    loadMoreEntries: () => void;
-    mediaFiles?: Object
-};
-
-/**
- * Type declaration for DefaultProps.
- */
-type DefaultProps = {
-    // TODO
+    tag: ?string,
 };
 
 /**
  * The component.
  */
-class TagsMediaList extends React.Component<DefaultProps, Props, void> {
+class TagsMediaList extends React.Component<void, Props, void> {
     /**
      * @inheritdoc
      */
@@ -44,31 +38,14 @@ class TagsMediaList extends React.Component<DefaultProps, Props, void> {
     /**
      * @inheritdoc
      */
-    static defaultProps = {
-
-    };
-
-    @autobind handleLastItem(visible) {
-        if (visible && this.props.hasNextPage && !this.props.loading) {
-            this.props.loadMoreEntries();
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
     render() {
-        if (this.props.loading) {
-            return null;
-        }
-
-        return <MediaList mediaFiles={this.props.mediaFiles} onLastItem={this.handleLastItem} />;
+        return <ConnectionMediaList {...this.props} />;
     }
 }
 
-const MediaFilesQuery = gql`
-    query MediaFiles($cursor: String, $tag: String, $profile: String) {
-        mediaFiles(first: 25, after: $cursor, tag: $tag) {
+const Query = gql`
+    query MediaFiles($after: String, $tag: String, $profile: String) {
+        mediaFiles(first: 25, after: $after, tag: $tag) {
             edges {
                 node {
                     ...Thumbnail
@@ -83,44 +60,16 @@ const MediaFilesQuery = gql`
     ${Thumbnail.fragment}
 `;
 
-export default graphql(MediaFilesQuery, {
+export default graphql(Query, {
     options: (props) => ({
         variables: {
             tag: props.tag,
             profile: JSON.stringify({
-                height: 192,
+                height: profile.thumbnail.height,
                 quality: profile.quality,
                 mimeType: profile.mimeTypes,
             }),
         },
     }),
-    props({ data: { loading, mediaFiles, fetchMore } }) {
-        return {
-            loading,
-            mediaFiles,
-            hasNextPage: mediaFiles ? mediaFiles.pageInfo.hasNextPage : false,
-            loadMoreEntries: () => {
-                return fetchMore({
-                    variables: {
-                        cursor: mediaFiles.pageInfo.endCursor,
-                    },
-                    updateQuery: (previousResult, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) {
-                            return previousResult;
-                        }
-
-                        const newEdges = fetchMoreResult.mediaFiles.edges;
-                        const pageInfo = fetchMoreResult.mediaFiles.pageInfo;
-
-                        return {
-                            mediaFiles: {
-                                edges: [...previousResult.mediaFiles.edges, ...newEdges],
-                                pageInfo,
-                            },
-                        };
-                    },
-                });
-            },
-        };
-    },
+    props: ({ data }) => createConnectionProps(data, 'mediaFiles', fromRelay),
 })(TagsMediaList);

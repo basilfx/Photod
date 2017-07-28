@@ -7,9 +7,9 @@ import React from 'react';
 import Loading from 'components/Loading';
 import MediaList from 'components/MediaList';
 
-import type { MediaFileType } from './types';
+import type { MediaFile } from './types';
 
-type SelectionHandler = Array<MediaFileType> => void;
+type SelectionHandler = Array<MediaFile> => void;
 
 /**
  * Type declaration for Props.
@@ -17,7 +17,7 @@ type SelectionHandler = Array<MediaFileType> => void;
 export type Props = {
     loading: boolean,
     fetchNext: () => void,
-    mediaFiles?: Array<MediaFileType>,
+    mediaFiles?: Array<MediaFile>,
 
     onSelection: ?SelectionHandler,
 };

@@ -14,7 +14,7 @@ export default class Loading extends React.Component<void, void, void> {
     render() {
         return (
             <div className='uk-padding-small uk-height-1-1 uk-flex uk-flex-center uk-flex-middle uk-flex-column'>
-                <Spinner size={2}/>
+                <Spinner size={2} />
             </div>
         );
     }
