@@ -60,10 +60,31 @@ class MediaFileFilter(django_filters.FilterSet):
         model = models.MediaFile
         fields = ["albums__id", "directory_id", "directory", "tag"]
 
-    tag = django_filters.CharFilter(name='tags', method='filter_tag')
+    tag = django_filters.CharFilter(method="filter_tag")
+
+    has_views = django_filters.BooleanFilter(method="filter_has_views")
+    is_shared = django_filters.BooleanFilter(method="filter_is_shared")
+    is_starred = django_filters.BooleanFilter(method="filter_is_starred")
 
     def filter_tag(self, queryset, name, value):
         return queryset.filter(tags__label__iexact=value)
+
+    def filter_has_views(self, queryset, name, value):
+        if value:
+            queryset = queryset.filter(views__isnull=False, views__count__gt=0)
+        return queryset
+
+    def filter_is_shared(self, queryset, name, value):
+        if value:
+            queryset = queryset.filter(
+                shared__isnull=False, shared__user=self.request.user)
+        return queryset
+
+    def filter_is_starred(self, queryset, name, value):
+        if value:
+            queryset = queryset.filter(
+                stars__isnull=False, stars__user=self.request.user)
+        return queryset
 
 
 class ThumbnailFilter(django_filters.FilterSet):

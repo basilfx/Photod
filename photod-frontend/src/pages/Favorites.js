@@ -13,6 +13,10 @@ import SidebarLeft from 'components/SidebarLeft';
 import Menu from 'components/Menu';
 import AlphaList from 'components/AlphaList';
 
+import Shared from 'pages/favorites/Shared';
+import Starred from 'pages/favorites/Starred';
+import Views from 'pages/favorites/Views';
+
 /**
  * Type declaration for Props.
  */
@@ -44,16 +48,16 @@ export default class Favorites extends React.Component<DefaultProps, Props, void
     };
 
     renderPage() {
-        /*if (this.props.page === 'interface') {
-            return <Interface />;
+        if (this.props.page === 'starred') {
+            return <Starred />;
         }
-        else if (this.props.page === 'statistics') {
-            return <Statistics />;
+        else if (this.props.page === 'views') {
+            return <Views />;
         }
-        else if (this.props.page === 'about') {
-            return <About />;
+        else if (this.props.page === 'shared') {
+            return <Shared />;
         }
-        else*/ {
+        else {
             return null;
         }
     }
@@ -72,6 +76,11 @@ export default class Favorites extends React.Component<DefaultProps, Props, void
                 key: 'views',
                 label: 'Views',
                 component: <Link to={'/favorites/views'}>Views</Link>,
+            },
+            {
+                key: 'shared',
+                label: 'Shared',
+                component: <Link to={'/favorites/shared'}>Shared</Link>,
             },
         ];
 
