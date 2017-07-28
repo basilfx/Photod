@@ -87,6 +87,8 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, Stat
         selected: false,
     }
 
+    static fragment: mixed;
+
     /**
      * Mapping between MIME-types and render methods.
      *
