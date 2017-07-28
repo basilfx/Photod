@@ -34,10 +34,12 @@ class MediaFile(TimeStampedModel, models.Model):
         "Step", through="MediaFileStep", related_name="media_files")
 
     name = models.CharField(max_length=255, null=True)
+
     directory = models.ForeignKey(
         "Directory", null=True, related_name="media_files")
+    albums = models.ManyToManyField("Album", related_name="media_files")
 
-    tags = models.ManyToManyField("Tag")
+    tags = models.ManyToManyField("Tag", related_name="media_files")
 
     file_size = models.IntegerField(null=True)
 
@@ -211,7 +213,7 @@ class Filmstrip(models.Model):
     file_size = models.IntegerField(null=True)
 
 
-class Album(MP_Node):
+class Album(TimeStampedModel, MP_Node):
     name = models.CharField(max_length=255)
 
     node_order_by = ['name']

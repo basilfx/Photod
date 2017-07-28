@@ -58,7 +58,7 @@ class ProfileFilter(django_filters.Filter):
 class MediaFileFilter(django_filters.FilterSet):
     class Meta:
         model = models.MediaFile
-        fields = ["directory_id", "directory", "tag"]
+        fields = ["albums__id", "directory_id", "directory", "tag"]
 
     tag = django_filters.CharFilter(name='tags', method='filter_tag')
 
@@ -106,6 +106,32 @@ class Album(DjangoObjectType):
         model = models.Album
         interfaces = (relay.Node, )
 
+    children = DjangoFilterConnectionField(lambda: Album)
+
+    children_count = graphene.Int()
+    total_children_count = graphene.Int()
+    media_files_count = graphene.Int()
+    total_media_files_count = graphene.Int()
+
+    def resolve_children(self, args, context, info):
+        return self.get_children()
+
+    def resolve_children_count(self, args, context, info):
+        return self.get_children_count()
+
+    def resolve_total_children_count(self, args, context, info):
+        return models.Album.objects.filter(
+            path__startswith=self.path
+        ).count()
+
+    def resolve_media_files_count(self, args, context, info):
+        return self.media_files.count()
+
+    def resolve_total_media_files_count(self, args, context, info):
+        return models.MediaFile.objects.filter(
+            albums__path__startswith=self.path
+        ).count()
+
 
 class Directory(DjangoObjectType):
     class Meta:
@@ -131,7 +157,7 @@ class Directory(DjangoObjectType):
         ).count()
 
     def resolve_media_files_count(self, args, context, info):
-        return self.media_files.all().count()
+        return self.media_files.count()
 
     def resolve_total_media_files_count(self, args, context, info):
         return models.MediaFile.objects.filter(
@@ -248,7 +274,7 @@ class Query(graphene.ObjectType):
     faces = DjangoFilterConnectionField(Face)
     persons = DjangoFilterConnectionField(Person)
 
-    albums = DjangoFilterConnectionField(Album)
+    albums = DjangoFilterConnectionField(Album, parent_id=graphene.ID())
     directories = DjangoFilterConnectionField(
         Directory, parent_id=graphene.ID(), collapse=graphene.Boolean())
 
@@ -257,6 +283,17 @@ class Query(graphene.ObjectType):
     jobs = DjangoFilterConnectionField(Job)
 
     me = graphene.Field(User)
+
+    def resolve_albums(self, args, context, info):
+        parent_id = args.get('parent_id')
+
+        if parent_id:
+            _, parent_id = from_global_id(parent_id)
+
+            return models.Album.objects.get(id=parent_id) \
+                .get_children()
+
+        return models.Album.get_root_nodes()
 
     def resolve_directories(self, args, context, info):
         parent_id = args.get('parent_id')
