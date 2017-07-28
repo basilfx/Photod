@@ -1,55 +1,44 @@
 // @flow
 
-import autobind from 'autobind-decorator';
-
 import React from 'react';
 
 import { connect } from 'react-redux';
 
-import VisibilitySensor from 'react-visibility-sensor';
+import ConnectionTreeview from 'components/ConnectionTreeview';
 
 import { Link } from 'react-router-dom';
 
 import Icon from 'ui/Icon';
-import List from 'ui/List';
-import ListItem from 'ui/ListItem';
 
 import { graphql, compose } from 'react-apollo';
 
 import { createConnectionProps, fromRelay } from 'utils/graphql';
 
-import { fromGlobalId } from 'graphql-relay';
-
 import gql from 'graphql-tag';
 
+import { fromGlobalId } from 'graphql-relay';
+
 import { toggle } from 'modules/application/directories/actions';
+
+import type { Props as ConnectionTreeviewProps } from 'components/ConnectionTreeview';
+import type { Directory } from 'components/types';
 
 /**
  * Type declaration for Props.
  */
 type Props = {
-    loading: boolean,
-    fetchNext?: () => void,
-    directories?: Array<any>,
+    ...ConnectionTreeviewProps<Directory>,
 
-    directoryId?: string,
+    directories?: Array<Directory>,
+
     parentId?: string,
-
-    expanded: Object;
-    toggle: (string) => void;
-};
-
-/**
- * Type declaration for DefaultProps.
- */
-type DefaultProps = {
-
+    directoryId: ?string,
 };
 
 /**
  * The component.
  */
-class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
+class DirectoryTreeview extends React.Component<void, Props, void> {
     /**
      * @inheritdoc
      */
@@ -58,86 +47,42 @@ class DirectoryTreeview extends React.Component<DefaultProps, Props, void> {
     /**
      * @inheritdoc
      */
-    static defaultProps = {
-
-    };
-
-    @autobind handleLastItem(visible) {
-        if (visible && this.props.fetchNext) {
-            this.props.fetchNext();
-        }
-    }
-
-    @autobind handleClick(childId) {
-        this.props.toggle(childId);
-    }
-
-    /**
-     * @inheritdoc
-     */
     render() {
-        if (this.props.loading) {
-            return (
-                <List><ListItem>Loading...</ListItem></List>
-            );
-        }
-
-        if (!this.props.directories) {
-            return (
-                <List><ListItem>No directories.</ListItem></List>
-            );
-        }
-
-        const icon = (directory) => {
-            if (directory.childrenCount === 0) {
-                if (directory.id === this.props.directoryId) {
-                    return 'chevron-down';
-                }
-                else {
-                    return 'chevron-right';
-                }
-            }
-            else if (this.props.expanded[directory.id]) {
-                return 'minus';
-            }
-            else {
-                return 'plus';
-            }
-        };
-
-        if (!this.props.directories.length) {
-            return <span>No directories</span>;
-        }
+        class DirectoryConnectionTreeview extends ConnectionTreeview<Directory> {}
 
         return (
-            <List className='tm-treeview'>
-                {this.props.directories && this.props.directories.map(directory =>
-                    <ListItem key={directory.id}>
-                        <span style={{ whiteSpace: 'nowrap' }}>
-                            <a onClick={() => this.handleClick(directory.id)}>
-                                <Icon icon={icon(directory)} />
-                            </a>
+            <DirectoryConnectionTreeview
+                nodes={((this.props.directories: any): ?Array<Directory>)}
+                selectedNodeId={this.props.directoryId}
+                renderNode={(node, onToggle, icon) => (
+                    <span style={{ whiteSpace: 'nowrap' }}>
+                        <a onClick={onToggle}>
+                            <Icon icon={icon(node)} />
+                        </a>
 
-                            &nbsp;
+                        &nbsp;
 
-                            <Link to={`/directories/${fromGlobalId(directory.id).id}`} onDoubleClick={() => this.handleClick(directory.id)} title={directory.fullPath}>
-                                {directory.name}
-                            </Link>
+                        <Link
+                            to={`/directories/${fromGlobalId(node.id).id}`}
+                            onDoubleClick={onToggle}
+                            title={node.fullPath}
+                        >
+                            {node.name}
+                        </Link>
 
-                            &nbsp;
+                        &nbsp;
 
-                            ({directory.totalMediaFilesCount})
-                        </span>
-
-                        {directory.childrenCount > 0 && this.props.expanded[directory.id] &&
-                            <ApolloDirectoryTreeview parentId={directory.id} directoryId={this.props.directoryId} />
-                        }
-                    </ListItem>
+                        ({node.totalMediaFilesCount})
+                    </span>
                 )}
-                {this.props.fetchNext && <ListItem key={`sensor-${this.props.directories.length}`}>
-                    <VisibilitySensor partialVisibility onChange={this.handleLastItem} />
-                </ListItem>}
-            </List>
+                renderChildren={node => (
+                    <ApolloDirectoryTreeview
+                        parentId={node.id}
+                        selectedNodeId={this.props.directoryId}
+                    />
+                )}
+                {...this.props}
+            />
         );
     }
 }

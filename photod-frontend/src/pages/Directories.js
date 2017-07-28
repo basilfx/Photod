@@ -19,11 +19,15 @@ import DirectoryMediaList from './DirectoryMediaList';
 
 // import gql from 'graphql-tag';
 
+type MediaFileType = {
+
+};
+
 /**
  * Type declaration for Props.
  */
 type Props = {
-    id?: string,
+    id: ?string,
 };
 
 /**
@@ -34,7 +38,7 @@ type DefaultProps = {
 };
 
 type State = {
-    selection?: Array<any>,
+    selection: ?Array<MediaFileType>,
 };
 
 /**
@@ -46,6 +50,9 @@ export default class Directories extends React.Component<DefaultProps, Props, St
      */
     props: Props;
 
+    /**
+     * @inheritdoc
+     */
     state: State;
 
     /**
@@ -63,7 +70,7 @@ export default class Directories extends React.Component<DefaultProps, Props, St
         };
     }
 
-    @autobind handleSelection(selection: Array<any>) {
+    @autobind handleSelection(selection: Array<MediaFileType>) {
         this.setState({
             selection,
         });

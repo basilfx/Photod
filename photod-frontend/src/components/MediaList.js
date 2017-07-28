@@ -13,13 +13,6 @@ import Thumbnail from './Thumbnail';
 import moment from 'moment-timezone';
 
 /**
- * Type declaration for MediaFileType.
- */
-type MediaFileType = {
-    id: String,
-};
-
-/**
  * Type declaration for Props.
  */
 type Props = {
@@ -115,10 +108,8 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
         });
 
         if (this.props.onSelection) {
-            this.props.onSelection(this.props.mediaFiles.edges.filter(edge =>
-                !!selected[edge.node.id]
-            ).map(
-                edge => edge.node
+            this.props.onSelection(this.props.mediaFiles.filter(
+                mediaFile => !!selected[mediaFile.id]
             ));
         }
     }
@@ -133,11 +124,9 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
         });
 
         if (this.props.onSelection) {
-            this.props.onSelection(this.props.mediaFiles.edges.filter(edge =>
-                !!selected[edge.node.id]
-            ).map(
-                edge => edge.node
-            ));
+            this.props.onSelection(this.props.mediaFiles.filter(
+                mediaFile => !!selected[mediaFile.id]
+            ))
         }
     }
 
@@ -166,8 +155,8 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
         let lastGroup;
 
         if (this.props.mediaFiles) {
-            for (const edge of this.props.mediaFiles.edges) {
-                const group = this.getGroup(edge.node);
+            for (const mediaFile of this.props.mediaFiles) {
+                const group = this.getGroup(mediaFile);
 
                 if (group !== lastGroup) {
                     yield <div key={`group-${group}`} className='uk-text-lead uk-width-1-1'>{group}</div>;
@@ -177,9 +166,9 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
 
                 yield (
                     <Thumbnail
-                        selected={this.state.selected[edge.node.id]}
-                        key={edge.node.id}
-                        mediaFile={edge.node}
+                        selected={this.state.selected[mediaFile.id]}
+                        key={mediaFile.id}
+                        mediaFile={mediaFile}
                         onClick={this.handleSelect}
                     />
                 );

@@ -193,18 +193,18 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, Stat
      */
     parseImage(): MediaFileParser {
         const mediaFile = this.props.mediaFile;
-        const thumbnails = mediaFile.thumbnails.edges;
+        const thumbnails = mediaFile.thumbnails;
 
         return {
-            src: thumbnails.length ? thumbnails[0].node.url : this.props.mediaFile.url,
-            backgroundColor: mediaFile.palette.edges.length ? mediaFile.palette.edges[0].node.color : '#fff',
+            src: thumbnails.length ? thumbnails[0].url : this.props.mediaFile.url,
+            backgroundColor: mediaFile.palette.length ? mediaFile.palette[0].color : '#fff',
             width: mediaFile.width || 0,
             height: mediaFile.height || 0,
             frames: 1,
             orientation: mediaFile.orientation || 0,
             label: (
                 <span>
-                    <Icon icon='image' /> {mediaFile.width}x{mediaFile.height}, {filesize(mediaFile.fileSize)}, {1 || mediaFile.faces.edges.length} faces
+                    <Icon icon='image' /> {mediaFile.width}x{mediaFile.height}, {filesize(mediaFile.fileSize)}, {1 || mediaFile.faces.length} faces
                 </span>
             ),
         };
@@ -217,14 +217,14 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, Stat
      */
     parseVideo(): MediaFileParser {
         const mediaFile = this.props.mediaFile;
-        const filmstrips = mediaFile.filmstrips.edges;
+        const filmstrips = mediaFile.filmstrips;
 
         return {
-            src: filmstrips.length ? filmstrips[0].node.url : require('images/filmstrip.svg'),
+            src: filmstrips.length ? filmstrips[0].url : require('images/filmstrip.svg'),
             backgroundColor: '#ffffff',
-            width: filmstrips[0].node.width / filmstrips[0].node.frames,
-            height: filmstrips[0].node.height,
-            frames: filmstrips[0].node.frames,
+            width: filmstrips[0].width / filmstrips[0].frames,
+            height: filmstrips[0].height,
+            frames: filmstrips[0].frames,
             orientation: 0,
             label: (
                 <span>

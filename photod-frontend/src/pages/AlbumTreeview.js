@@ -1,48 +1,44 @@
 // @flow
 
-import autobind from 'autobind-decorator';
-
-import VisibilitySensor from 'react-visibility-sensor';
-
 import React from 'react';
+
+import { connect } from 'react-redux';
+
+import ConnectionTreeview from 'components/ConnectionTreeview';
 
 import { Link } from 'react-router-dom';
 
-import List from 'ui/List';
-import ListItem from 'ui/ListItem';
+import Icon from 'ui/Icon';
 
-import { graphql } from 'react-apollo';
+import { graphql, compose } from 'react-apollo';
+
+import { createConnectionProps, fromRelay } from 'utils/graphql';
 
 import gql from 'graphql-tag';
 
 import { fromGlobalId } from 'graphql-relay';
 
+import { toggle } from 'modules/application/directories/actions';
+
+import type { Props as ConnectionTreeviewProps } from 'components/ConnectionTreeview';
+import type { Album } from 'components/types';
+
 /**
  * Type declaration for Props.
  */
 type Props = {
-    loading: boolean,
-    hasNextPage: boolean,
-    loadMoreEntries: () => void,
-    albums?: Object,
-    albumId?: string
+    ...ConnectionTreeviewProps<Album>,
+
+    albums?: Array<Album>,
+
+    parentId?: string,
+    albumId: ?string,
 };
-
-/**
- * Type declaration for DefaultProps.
- */
-type DefaultProps = {
-
-};
-
-type State = {
-    expanded: any,
-}
 
 /**
  * The component.
  */
-class AlbumTreeView extends React.Component<DefaultProps, Props, State> {
+class AlbumTreeview extends React.Component<void, Props, void> {
     /**
      * @inheritdoc
      */
@@ -51,104 +47,56 @@ class AlbumTreeView extends React.Component<DefaultProps, Props, State> {
     /**
      * @inheritdoc
      */
-    static defaultProps = {
-
-    };
-
-    /**
-     * @inheritdoc
-     */
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            expanded: {},
-        };
-    }
-
-    @autobind handleLastItem(visible) {
-        if (visible && this.props.hasNextPage && !this.props.loading) {
-            this.props.loadMoreEntries();
-        }
-    }
-
-    @autobind handleClick(id) {
-        this.setState({
-            expanded: Object.assign({}, this.state.expanded, {
-                [id]: !this.state.expanded[id],
-            }),
-        });
-    }
-
-    /**
-     * @inheritdoc
-     */
     render() {
-        if (this.props.loading) {
-            return (
-                <List>
-                    <ListItem>Loading...</ListItem>
-                </List>
-            );
-        }
-
-        const icon = (node) => {
-            if (node.childrenCount === 0) {
-                if (node.id === this.props.albumId) {
-                    return 'folder-open';
-                }
-                else {
-                    return 'folder';
-                }
-            }
-            else if (this.state.expanded[node.id]) {
-                return 'minus';
-            }
-            else {
-                return 'plus';
-            }
-        };
-
-        if (!this.props.albums) {
-            return <span>No albums</span>;
-        }
+        class AlbumConnectionTreeview extends ConnectionTreeview<Album> {}
 
         return (
-            <List className='tm-treeview'>
-                {this.props.albums && this.props.albums.edges.map(edge =>
-                    <ListItem key={edge.node.id}>
-                        <a onClick={() => this.handleClick(edge.node.id)}>
-                            Icon
+            <AlbumConnectionTreeview
+                nodes={((this.props.albums: any): ?Array<Album>)}
+                selectedNodeId={this.props.albumId}
+                renderNode={(node, onToggle, icon) => (
+                    <span style={{ whiteSpace: 'nowrap' }}>
+                        <a onClick={onToggle}>
+                            <Icon icon={icon(node)} />
                         </a>
 
                         &nbsp;
 
-                        <Link to={`/albums/${fromGlobalId(edge.node.id).id}`}>
-                            {edge.node.name}
+                        <Link
+                            to={`/albums/${fromGlobalId(node.id).id}`}
+                            onDoubleClick={onToggle}
+                        >
+                            {node.name}
                         </Link>
 
                         &nbsp;
 
-                        ({edge.node.mediaFilesCount})
-
-                        {edge.node.childrenCount > 0 && this.state.expanded[edge.node.id] &&
-                            <ApolloAlbumTreeView parentId={edge.node.id} albumId={this.props.albumId} />
-                        }
-                    </ListItem>
+                        ({node.totalMediaFilesCount})
+                    </span>
                 )}
-                {this.props.hasNextPage && <ListItem key='sensor'><VisibilitySensor onChange={this.handleLastItem} /></ListItem>}
-            </List>
+                renderChildren={node => (
+                    <ApolloAlbumTreeview
+                        parentId={node.id}
+                        selectedNodeId={this.props.albumId}
+                    />
+                )}
+                {...this.props}
+            />
         );
     }
 }
 
-const DirectoriesQuery = gql`
+const Query = gql`
     query Albums($parentId: ID, $cursor: String) {
-        albums(first: 25, after: $cursor, parentId: $parentId) {
+        albums(first: 100, after: $cursor, parentId: $parentId) {
             edges {
                 node {
                     id
                     name
+                    childrenCount
+                    totalChildrenCount
+                    mediaFilesCount
+                    totalMediaFilesCount
                 }
             }
             pageInfo {
@@ -159,41 +107,25 @@ const DirectoriesQuery = gql`
     }
 `;
 
-const ApolloAlbumTreeView = graphql(DirectoriesQuery, {
-    options: (props) => ({
-        variables: {
-            parentId: props.parentId,
-        },
-    }),
-    props({ data: { loading, albums, fetchMore } }) {
-        return {
-            loading,
-            albums,
-            hasNextPage: albums && albums.pageInfo.hasNextPage,
-            loadMoreEntries: () => {
-                return fetchMore({
-                    variables: {
-                        cursor: albums.pageInfo.endCursor,
-                    },
-                    updateQuery: (previousResult, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) {
-                            return previousResult;
-                        }
-
-                        const newEdges = fetchMoreResult.albums.edges;
-                        const pageInfo = fetchMoreResult.albums.pageInfo;
-
-                        return {
-                            albums: {
-                                edges: [...previousResult.albums.edges, ...newEdges],
-                                pageInfo,
-                            },
-                        };
-                    },
-                });
+const ApolloAlbumTreeview = compose(
+    graphql(Query, {
+        options: (props: Props) => ({
+            variables: {
+                parentId: props.parentId,
             },
-        };
-    },
-})(AlbumTreeView);
+        }),
+        props: ({ data }) => createConnectionProps(data, 'albums', fromRelay),
+    }),
+    connect(
+        (state, props: Props) => ({
+            expanded: state.application.albums[props.parentId] || {},
+        }),
+        (dispatch, props: Props) => ({
+            toggle(childId) {
+                return dispatch(toggle(props.parentId, childId));
+            },
+        })
+    )
+)(AlbumTreeview);
 
-export default ApolloAlbumTreeView;
+export default ApolloAlbumTreeview;

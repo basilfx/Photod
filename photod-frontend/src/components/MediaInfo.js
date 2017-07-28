@@ -27,7 +27,7 @@ type MediaFileType = {
  * Type declaration for Props.
  */
 type Props = {
-    mediaFiles?: Array<MediaFileType>,
+    mediaFiles: ?Array<MediaFileType>,
 };
 
 /**
