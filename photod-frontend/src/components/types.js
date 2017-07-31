@@ -39,3 +39,17 @@ export type Thumbnail = {
     width: number,
     height: number,
 };
+
+export type Person = {
+    id: string,
+    name: string,
+};
+
+export type Face = {
+    id: string,
+    x1: number,
+    x2: number,
+    y1: number,
+    y2: number,
+    person: ?Person,
+};

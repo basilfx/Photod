@@ -6,28 +6,30 @@ import React from 'react';
 
 import gql from 'graphql-tag';
 
-import type { MediaFile as BaseMediaFile } from './types';
+import type { MediaFile as BaseMediaFile, Face } from './types';
 
 /**
- * Type declaration for MediaFileType.
+ * Type declaration for MediaFile.
  */
-type MediaFileType = BaseMediaFile & {
+type MediaFile = BaseMediaFile & {
     recorded: string,
     orientation: number,
     width: number,
     height: number,
     fileSize: number,
-    duration: number
+    duration: number,
+    faces: Array<Face>,
+    url: string,
 };
 
 /**
  * Type declaration for Props.
  */
 type Props = {
+    mediaFile: MediaFile,
     onClose: () => void,
-    previous: ?MediaFileType,
-    mediaFile: MediaFileType,
-    next: ?MediaFileType
+    onPrevious: ?() => void,
+    onNext: ?() => void,
 };
 
 /**
@@ -40,6 +42,8 @@ export default class Lightbox extends React.Component<void, Props, void> {
      * @type {Props}
      */
     props: Props;
+
+    static fragment: mixed;
 
     /**
      * @inheritdoc
@@ -65,37 +69,29 @@ export default class Lightbox extends React.Component<void, Props, void> {
 
     @autobind handleKeyDown(event: Event) {
         if (event.which === 37) {
-            this.props.previous && this.handlePrevious();
+            this.props.onPrevious && this.props.onPrevious();
         }
         else if (event.which === 39) {
-            this.props.next && this.handleNext();
+            this.props.onNext && this.props.onNext();
         }
         else if (event.which === 27) {
             this.props.onClose();
         }
     }
 
-    @autobind handlePrevious() {
-        console.log('previous');
-    }
-
-    @autobind handleNext() {
-        console.log('next');
-    }
-
     renderFaces() {
         const faces = [];
 
-        for (const edge of this.props.mediaFile.faces.edges) {
+        for (const face of this.props.mediaFile.faces) {
             faces.push(
-                <div key={edge.node.id} style={{
+                <div key={face.id} style={{
                     position: 'absolute',
-                    top: `${edge.node.y1 * 100}%`,
-                    left: `${edge.node.x1 * 100}%`,
-                    width: `${(edge.node.x2 - edge.node.x1) * 100}%`,
-                    height: `${(edge.node.y2 - edge.node.y1) * 100}%`,
+                    top: `${face.y1 * 100}%`,
+                    left: `${face.x1 * 100}%`,
+                    width: `${(face.x2 - face.x1) * 100}%`,
+                    height: `${(face.y2 - face.y1) * 100}%`,
                     border: '3px solid rgba(255, 0, 0, 0.5)',
-                    zIndex: 3000
+                    zIndex: 3000,
                 }} />
             );
         }
@@ -119,13 +115,13 @@ export default class Lightbox extends React.Component<void, Props, void> {
                 backgroundColor: '#000000',
                 zIndex: 2000,
             }} >
-                {this.props.previous && <div className='hover' onClick={this.handlePrevious} style={{
+                {this.props.onPrevious && <div className='hover' onClick={this.props.onPrevious} style={{
                     top: '0',
                     bottom: '0',
                     left: '0',
                     width: '100px',
                     position: 'absolute',
-                    backgroundImage: `url(${require('images/left.svg')})`,
+                    // backgroundImage: `url(${require('images/left.svg')})`,
                     backgroundSize: 'contain',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: '50%',
@@ -133,7 +129,7 @@ export default class Lightbox extends React.Component<void, Props, void> {
                 }} />}
                 <img src={`${mediaFile.url}`} style={{
                     boxShadow: '1px 0 0 0 rgba(255, 255, 255, 0.1) inset, 0 0 1px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 0, 0, 0.5)',
-                    backgroundColor: mediaFile.palette.edges.length ? mediaFile.palette.edges[0].node.color : '#fff',
+                    backgroundColor: mediaFile.palette.length ? mediaFile.palette[0].node.color : '#fff',
                     display: 'block',
                     maxWidth: '90%',
                     maxHeight: '90%',
@@ -157,13 +153,13 @@ export default class Lightbox extends React.Component<void, Props, void> {
                     bottom: '-150px',
                     zIndex: 1,
                 }} />
-                {this.props.next && <div className='hover' onClick={this.handleNext} style={{
+                {this.props.onNext && <div className='hover' onClick={this.props.onNext} style={{
                     top: '0',
                     bottom: '0',
                     right: '0',
                     width: '100px',
                     position: 'absolute',
-                    backgroundImage: `url(${require('images/right.svg')})`,
+                    // backgroundImage: `url(${require('images/right.svg')})`,
                     backgroundSize: 'contain',
                     backgroundRepeat: 'no-repeat',
                     backgroundPosition: '50%',
