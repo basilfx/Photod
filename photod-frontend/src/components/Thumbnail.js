@@ -23,7 +23,9 @@ export type MediaFile = BaseMediaFile & {
     width: ?number,
     height: ?number,
     fileSize: ?number,
-    duration: ?number
+    duration: ?number,
+    facesCount: number,
+    locationsCount: number,
 };
 
 /**
@@ -191,7 +193,7 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, void
             orientation: mediaFile.orientation || 0,
             label: (
                 <span>
-                    <Icon icon='image' /> {mediaFile.width}x{mediaFile.height}, {filesize(mediaFile.fileSize)}, {1 || mediaFile.faces.length} faces
+                    <Icon icon='image' /> {mediaFile.width}x{mediaFile.height}, {filesize(mediaFile.fileSize)}, {mediaFile.facesCount} faces
                 </span>
             ),
         };
@@ -314,6 +316,8 @@ Thumbnail.fragment = gql`
         orientation
         recorded
         created
+        facesCount
+        locationsCount
         palette(first: 1) {
             edges {
                 node {

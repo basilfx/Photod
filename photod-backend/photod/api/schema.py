@@ -224,10 +224,19 @@ class MediaFile(DjangoObjectType):
     filmstrips = DjangoFilterConnectionField(
         Filmstrip, filterset_class=FilmstripFilter)
 
+    faces_count = graphene.Int()
+    locations_count = graphene.Int()
+
     url = graphene.String()
 
     def resolve_url(self, args, context, info):
         return reverse(media, args=[self.id])
+
+    def resolve_faces_count(self, args, context, info):
+        return self.faces.count()
+
+    def resolve_locations_count(self, args, context, info):
+        return self.locations.count()
 
 
 class User(DjangoObjectType):
