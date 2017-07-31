@@ -5,9 +5,19 @@ import React from 'react';
 import Spinner from 'ui/Spinner';
 
 /**
+ * Type declaration for Props;
+ */
+type Props = {};
+
+/**
  * The component.
  */
-export default class Loading extends React.Component<void, void, void> {
+export default class Loading extends React.Component<void, Props, void> {
+    /**
+     * @inheritdoc
+     */
+    props: Props;
+
     /**
      * @inheritdoc
      */

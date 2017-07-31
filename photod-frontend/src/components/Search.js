@@ -60,7 +60,7 @@ class Search extends React.Component<DefaultProps, Props, State> {
 
     close: HTMLAnchorElement;
 
-    cache: LRU;
+    cache: LRU<string, mixed>;
 
     search: (string) => Promise<*>;
 
@@ -81,7 +81,9 @@ class Search extends React.Component<DefaultProps, Props, State> {
             results: null,
         };
 
-        this.cache = new LRU(100);
+        this.cache = new LRU({
+            max: 100,
+        });
 
         this.search = throttle(this.props.search, 200);
     }
@@ -118,6 +120,9 @@ class Search extends React.Component<DefaultProps, Props, State> {
         }
     }
 
+    /**
+     * Handle the key up event.
+     */
     @autobind async handleKeyUp(event: KeyboardEvent): Promise<void> {
         const value = this.input.value.trim();
 
@@ -189,7 +194,7 @@ class Search extends React.Component<DefaultProps, Props, State> {
     }
 }
 
-const SearchMutation = gql`
+const Mutation = gql`
     mutation search($query: String!) {
         search(query: $query) {
             results {
@@ -202,7 +207,7 @@ const SearchMutation = gql`
     }
 `;
 
-export default graphql(SearchMutation, {
+export default graphql(Mutation, {
     props: ({ mutate }) => ({
         search: (query) => mutate({ variables: { query } }),
     }),

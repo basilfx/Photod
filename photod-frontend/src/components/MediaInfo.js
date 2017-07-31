@@ -7,27 +7,13 @@ import React from 'react';
 import duration from 'format-duration';
 import filesize from 'filesize';
 
-/**
- * Type declaration for MediaFileType.
- */
-type MediaFileType = {
-    id: String,
-    path: string,
-    name: string,
-    mimeType: string,
-    recorded: string,
-    orientation: number,
-    width: number,
-    height: number,
-    fileSize: number,
-    duration: number
-};
+import type { MediaFile } from './Thumbnail';
 
 /**
  * Type declaration for Props.
  */
 type Props = {
-    mediaFiles: ?Array<MediaFileType>,
+    mediaFiles: ?Array<MediaFile>,
 };
 
 /**

@@ -21,7 +21,7 @@ import queryString from 'query-string';
  * Type declaration for Props.
  */
 type Props = {
-    history: Object,
+    history: mixed,
 };
 
 /**

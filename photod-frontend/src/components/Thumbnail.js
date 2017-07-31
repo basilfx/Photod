@@ -6,34 +6,34 @@ import React from 'react';
 
 import Icon from 'ui/Icon';
 
-import Lightbox from './Lightbox';
-
 import duration from 'format-duration';
 import filesize from 'filesize';
 
 import gql from 'graphql-tag';
 
+import type { MediaFile as BaseMediaFile } from './types';
+
 /**
- * Type declaration for MediaFileType.
+ * Type declaration for MediaFile.
  */
-type MediaFileType = {|
-    mimeType: string,
-    recorded: string,
-    orientation: number,
-    width: number,
-    height: number,
-    fileSize: number,
-    duration: number
-|};
+export type MediaFile = BaseMediaFile & {
+    name: ?string,
+    recorded: ?string,
+    orientation: ?number,
+    width: ?number,
+    height: ?number,
+    fileSize: ?number,
+    duration: ?number
+};
 
 /**
  * Type declaration for Props.
  */
 type Props = {
     height: number,
-    mediaFile: MediaFileType,
-    onClick?: (MediaFileType) => void,
-    onDoubleClick?: (MediaFileType) => void,
+    mediaFile: MediaFile,
+    onClick?: (MediaFile) => void,
+    onDoubleClick?: (MediaFile) => void,
     selected?: boolean
 };
 
@@ -44,13 +44,6 @@ type DefaultProps = {
     height: number,
     selected: boolean,
 }
-
-/**
- * Type declaration for State.
- */
-type State = {
-    lightbox: boolean,
-};
 
 /**
  * Type declaration for MediaFileParser.
@@ -68,12 +61,12 @@ type MediaFileParser = {
 /**
  * Media file thumbnail component.
  */
-export default class Thumbnail extends React.Component<DefaultProps, Props, State> {
+export default class Thumbnail extends React.Component<DefaultProps, Props, void> {
     parseMediaFile: () => MediaFileParser;
 
-    state: State;
-
     props: Props;
+
+    thumbnail: HTMLDivElement;
 
     container: HTMLDivElement;
 
@@ -130,61 +123,53 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, Stat
                 }
             }
         }
-
-        // Setup state.
-        this.state = {
-            frame: 0,
-            lightbox: false,
-        };
     }
 
+    /**
+     * @inheritdoc
+     */
     componentDidMount() {
-        this.container.addEventListener('click', this.handleClick);
-        this.container.addEventListener('dblclick', this.handleDoubleClick);
+        this.thumbnail.addEventListener('click', this.handleClick);
+        this.thumbnail.addEventListener('dblclick', this.handleDoubleClick);
         window.addEventListener('resize', this.handleResize);
 
         this.handleResize();
     }
 
+    /**
+     * @inheritdoc
+     */
     componentWillUnmount() {
-        this.container.removeEventListener('click', this.handleClick);
-        this.container.removeEventListener('dblclick', this.handleDoubleClick);
+        this.thumbnail.removeEventListener('click', this.handleClick);
+        this.thumbnail.removeEventListener('dblclick', this.handleDoubleClick);
         window.removeEventListener('resize', this.handleResize);
     }
 
-    @autobind handleClick() {
+    @autobind handleClick(event: MouseEvent): void {
         if (this.props.onClick) {
             this.props.onClick(this.props.mediaFile);
         }
     }
 
-    @autobind handleDoubleClick() {
+    @autobind handleDoubleClick(event: MouseEvent): void {
         if (this.props.onDoubleClick) {
             this.props.onDoubleClick(this.props.mediaFile);
         }
-    }
-
-    @autobind handleClose() {
-        this.setState({
-            lightbox: false,
-        });
     }
 
     @autobind handleResize() {
         const info = this.parseMediaFile();
 
         if (info.orientation === 90 || info.orientation === 270) {
-            const rect = this.container.getClientRects();
+            const rect = this.thumbnail.getClientRects();
 
             this.image.style.transform = `rotate(${info.orientation}deg)`;
             this.image.style.transformOrigin = `${rect[0].width / 2}px`;
             this.image.style.width = `${rect[0].height}px`;
             this.image.style.height = `${rect[0].width}px`;
 
-            if (this.image.parentNode) {
-                this.image.parentNode.style.width = `${rect[0].width}px`;
-                this.image.parentNode.style.height = `${rect[0].height}px`;
-            }
+            this.container.style.width = `${rect[0].width}px`;
+            this.container.style.height = `${rect[0].height}px`;
         }
     }
 
@@ -270,7 +255,7 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, Stat
 
         return (
             <div
-                ref={element => { this.container = element; }}
+                ref={element => { this.thumbnail = element; }}
                 className={`uk-card uk-card-default uk-card-hover tm-thumbnail ${this.props.selected ? 'tm-thumbnail-selected' : ''}`}
                 style={{
                     flexGrow: `${width / height * 100}`,
@@ -285,13 +270,17 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, Stat
                 <div style={{
                     paddingBottom: `${height / width * 100}%`,
                 }} />
-                <div className='uk-transition-toggle' style={{
-                    position: 'absolute',
-                    top: '0',
-                    width: '100%',
-                    height: '100%',
-                    overflow: 'hidden',
-                }}>
+                <div
+                    ref={element => { this.container = element; }}
+                    className='uk-transition-toggle'
+                    style={{
+                        position: 'absolute',
+                        top: '0',
+                        width: '100%',
+                        height: '100%',
+                        overflow: 'hidden',
+                    }}
+                >
                     <div
                         ref={element => { this.image = element; }}
                         className={`tm-thumbnail-shadow ${info.frames ? `tm-thumbnail-animate-${info.frames}` : ''}`}
@@ -306,7 +295,6 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, Stat
                         {info.label}
                     </div>
                 </div>
-                {this.state.lightbox && <Lightbox mediaFile={this.props.mediaFile} onClose={this.handleClose} />}
             </div>
         );
     }

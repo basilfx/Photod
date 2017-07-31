@@ -7,7 +7,7 @@ import React from 'react';
 import Loading from 'components/Loading';
 import MediaList from 'components/MediaList';
 
-import type { MediaFile } from './types';
+import type { MediaFile } from './Thumbnail';
 
 type SelectionHandler = Array<MediaFile> => void;
 

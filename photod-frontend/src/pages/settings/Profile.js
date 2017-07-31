@@ -17,7 +17,11 @@ import gql from 'graphql-tag';
  */
 type Props = {
     loading: boolean,
-    me?: Object,
+    me?: {
+        firstName: string,
+        lastName: string,
+        username: string,
+    },
 };
 
 /**

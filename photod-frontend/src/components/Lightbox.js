@@ -6,18 +6,19 @@ import React from 'react';
 
 import gql from 'graphql-tag';
 
+import type { MediaFile as BaseMediaFile } from './types';
+
 /**
  * Type declaration for MediaFileType.
  */
-type MediaFileType = {|
-    mimeType: string,
+type MediaFileType = BaseMediaFile & {
     recorded: string,
     orientation: number,
     width: number,
     height: number,
     fileSize: number,
     duration: number
-|};
+};
 
 /**
  * Type declaration for Props.

@@ -12,14 +12,16 @@ import Thumbnail from './Thumbnail';
 
 import moment from 'moment-timezone';
 
+import type { MediaFile } from './Thumbnail';
+
 /**
  * Type declaration for Props.
  */
 type Props = {
-    mediaFiles: Object,
+    mediaFiles: Array<MediaFile>,
     groupBy?: string,
     onLastItem?: (boolean) => void;
-    onSelection?: (Array<any>) => void,
+    onSelection?: ?(Array<MediaFile>) => void,
 };
 
 /**
@@ -29,6 +31,9 @@ type DefaultProps = {
     // TODO
 };
 
+/**
+ * Type declaration for State.
+ */
 type State = {
     selected: {
         [string]: boolean
@@ -94,27 +99,30 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
         this.multipleSelect = false;
     }
 
-    @autobind handleSelect(mediaFile: MediaFileType): void {
+    @autobind handleSelect(mediaFile: MediaFile): void {
         if (!this.multipleSelect) {
             this.handleDeselectAll();
         }
 
-        const selected = Object.assign({}, this.state.selected, {
+        const selected = {
+            ...this.state.selected,
             [mediaFile.id]: true,
-        });
+        };
 
         this.setState({
             selected,
         });
 
+        const mediaFiles = this.props.mediaFiles.filter(
+            mediaFile => !!selected[mediaFile.id],
+        );
+
         if (this.props.onSelection) {
-            this.props.onSelection(this.props.mediaFiles.filter(
-                mediaFile => !!selected[mediaFile.id]
-            ));
+            this.props.onSelection(mediaFiles);
         }
     }
 
-    @autobind handleDeselect(mediaFile) {
+    @autobind handleDeselect(mediaFile: MediaFile): void {
         const selected = Object.assign({}, this.state.selected, {
             [mediaFile.id]: false,
         });
@@ -123,10 +131,12 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
             selected,
         });
 
+        const mediaFiles = this.props.mediaFiles.filter(
+            mediaFile => !!selected[mediaFile.id],
+        );
+
         if (this.props.onSelection) {
-            this.props.onSelection(this.props.mediaFiles.filter(
-                mediaFile => !!selected[mediaFile.id]
-            ))
+            this.props.onSelection(mediaFiles);
         }
     }
 
@@ -154,25 +164,27 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
     * renderMediaFiles(): Generator<React.Element<*>, *, *> {
         let lastGroup;
 
-        if (this.props.mediaFiles) {
-            for (const mediaFile of this.props.mediaFiles) {
-                const group = this.getGroup(mediaFile);
+        for (const mediaFile of this.props.mediaFiles) {
+            const group = this.getGroup(mediaFile);
 
-                if (group !== lastGroup) {
-                    yield <div key={`group-${group}`} className='uk-text-lead uk-width-1-1'>{group}</div>;
-
-                    lastGroup = group;
-                }
-
+            if (group !== lastGroup) {
                 yield (
-                    <Thumbnail
-                        selected={this.state.selected[mediaFile.id]}
-                        key={mediaFile.id}
-                        mediaFile={mediaFile}
-                        onClick={this.handleSelect}
-                    />
+                    <div key={`group-${group}`} className='uk-text-lead uk-width-1-1'>
+                        {group}
+                    </div>
                 );
+
+                lastGroup = group;
             }
+
+            yield (
+                <Thumbnail
+                    key={mediaFile.id}
+                    selected={this.state.selected[mediaFile.id]}
+                    mediaFile={mediaFile}
+                    onClick={this.handleSelect}
+                />
+            );
         }
     }
 

@@ -22,6 +22,8 @@ export type Album = Node & {
  */
 export type MediaFile = {
     id: string,
+    path: string,
+    mimeType: string,
 };
 
 export type Filmstrip = {

@@ -21,7 +21,7 @@ import UIkit from 'uikit';
  */
 type Props = {
     loading: boolean,
-    shares?: Object,
+    shares?: mixed,
     hasNextPage: boolean,
     loadMoreEntries: () => void;
 };

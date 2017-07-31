@@ -24,7 +24,11 @@ export type Props<T: Node> = {
     renderNode: (T, () => void, (T) => string) => React.Element<*>,
     renderChildren: (T) => React.Element<*>,
 
-    expanded: Object;
+    expanded: {
+        [string]: {
+            [string]: boolean,
+        }
+    };
     toggle: (string) => void;
 };
 

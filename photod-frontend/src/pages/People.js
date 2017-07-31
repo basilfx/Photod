@@ -27,7 +27,7 @@ type Props = {
     loading: boolean,
     hasNextPage: boolean,
     loadMoreEntries: () => void;
-    persons?: Object
+    persons?: mixed
 };
 
 /**
