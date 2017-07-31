@@ -29,7 +29,7 @@ function getQuality(): number {
 }
 
 /**
- * Return the preferred width and height of of thumbnails.
+ * Return the preferred width and height of thumbnails.
  *
  * @return {Object} Object with preferred width and height of thumbnails.
  */
@@ -47,8 +47,21 @@ function getThumbnail(): { width: number, height: number } {
     };
 }
 
+/**
+ * Return the preferred width and height of images in the lightbox.
+ *
+ * @return {Object} Object with preferred width and height of lightbox.
+ */
+function getLightbox(): { width: number, height: number } {
+    return {
+        width: window.screen.availWidth,
+        height: window.screen.availHeight,
+    };
+}
+
 export default {
     mimeTypes: getMimeTypes(),
     quality: getQuality(),
     thumbnail: getThumbnail(),
+    lightbox: getLightbox(),
 };
