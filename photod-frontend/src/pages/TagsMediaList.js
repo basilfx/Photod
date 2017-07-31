@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import ConnectionMediaList from 'components/MediaList';
+import ConnectionMediaList from 'components/ConnectionMediaList';
 import Thumbnail from 'components/Thumbnail';
 
 import { graphql } from 'react-apollo';
