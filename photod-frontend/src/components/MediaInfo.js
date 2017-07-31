@@ -7,6 +7,8 @@ import React from 'react';
 import duration from 'format-duration';
 import filesize from 'filesize';
 
+import DateTime from 'components/DateTime';
+
 import type { MediaFile } from './Thumbnail';
 
 /**
@@ -86,6 +88,11 @@ export default class MediaInfo extends React.Component<DefaultProps, Props, void
                 {matches('video/*') && <dl className='uk-description-list'>
                     <dt>Duration</dt>
                     <dd>{duration(mediaFile.duration / 1000)}</dd>
+                </dl>}
+
+                {mediaFile.recorded && <dl className='uk-description-list'>
+                    <dt>Recorded</dt>
+                    <dd><DateTime timestamp={mediaFile.recorded} /></dd>
                 </dl>}
 
                 {mediaFile.facesCount > 0 && <dl className='uk-description-list'>
