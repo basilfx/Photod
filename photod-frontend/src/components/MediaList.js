@@ -265,6 +265,14 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
     render() {
         const mediaFileCount = this.props.mediaFiles.length;
 
+        if (mediaFileCount === 0) {
+            return (
+                <div className='uk-padding-small'>
+                    <h4>No media files to show.</h4>
+                </div>
+            );
+        }
+
         return (
             <div>
                 <div className='uk-padding-small uk-height-1-1 uk-flex uk-flex-wrap'>
