@@ -16,6 +16,9 @@
         "react-hot-loader/babel"
     ],
     "env": {
+        "development": {
+            "plugins": []
+        },
         "production": {
             "plugins": [
                 "transform-react-inline-elements",
