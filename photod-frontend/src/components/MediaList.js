@@ -169,6 +169,10 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
         }
 
         if ((this.state.lightbox + 1) >= this.props.mediaFiles.length) {
+            if (this.props.onLastItem) {
+                this.props.onLastItem(true);
+            }
+
             return;
         }
 
