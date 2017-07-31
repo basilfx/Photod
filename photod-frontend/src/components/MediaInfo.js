@@ -79,6 +79,16 @@ export default class MediaInfo extends React.Component<DefaultProps, Props, void
                     <dd>{duration(mediaFile.duration / 1000)}</dd>
                 </dl>}
 
+                {mediaFile.facesCount > 0 && <dl className='uk-description-list'>
+                    <dt>Faces</dt>
+                    <dd>{mediaFile.facesCount}</dd>
+                </dl>}
+
+                {mediaFile.locationsCount > 0 && <dl className='uk-description-list'>
+                    <dt>Locations</dt>
+                    <dd>{mediaFile.locationsCount}</dd>
+                </dl>}
+
                 {false && <dl className='uk-description-list'>
                     <dt>Tags</dt>
                     <dd>vidoe panorama</dd>
