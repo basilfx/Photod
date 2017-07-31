@@ -118,8 +118,8 @@ export default class ConnectionTreeview<T: Node> extends React.Component<void, P
                             this.props.renderChildren(node)}
                     </ListItem>
                 )}
-                {this.props.fetchNext && <ListItem key={`sensor-${nodeCount}`}>
-                    <VisibilitySensor partialVisibility onChange={this.handleLastItem} />
+                {this.props.fetchNext && <ListItem>
+                    <VisibilitySensor key={`sensor-${nodeCount}`} partialVisibility onChange={this.handleLastItem} />
                 </ListItem>}
             </List>
         );

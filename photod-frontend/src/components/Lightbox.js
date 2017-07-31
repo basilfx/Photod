@@ -4,7 +4,17 @@ import autobind from 'autobind-decorator';
 
 import React from 'react';
 
+import Icon from 'ui/Icon';
+
+import Thumbnail from './Thumbnail';
+
+import { fromRelay } from 'utils/graphql';
+
+import { graphql } from 'react-apollo';
+
 import gql from 'graphql-tag';
+
+import profile from 'profile';
 
 import type { MediaFile as BaseMediaFile, Face } from './types';
 
@@ -18,7 +28,7 @@ type MediaFile = BaseMediaFile & {
     height: number,
     fileSize: number,
     duration: number,
-    faces: Array<Face>,
+    faces: ?Array<Face>,
     url: string,
 };
 
@@ -35,7 +45,7 @@ type Props = {
 /**
  * Lightbox component.
  */
-export default class Lightbox extends React.Component<void, Props, void> {
+class Lightbox extends React.Component<void, Props, void> {
     /**
      * Component properties.
      *
@@ -82,6 +92,10 @@ export default class Lightbox extends React.Component<void, Props, void> {
     renderFaces() {
         const faces = [];
 
+        if (!this.props.mediaFile.faces) {
+            return;
+        }
+
         for (const face of this.props.mediaFile.faces) {
             faces.push(
                 <div key={face.id} style={{
@@ -105,6 +119,8 @@ export default class Lightbox extends React.Component<void, Props, void> {
     render() {
         const mediaFile = this.props.mediaFile;
 
+        const thumbnails = mediaFile.thumbnails;
+
         return (
             <div style={{
                 position: 'fixed',
@@ -115,21 +131,19 @@ export default class Lightbox extends React.Component<void, Props, void> {
                 backgroundColor: '#000000',
                 zIndex: 2000,
             }} >
-                {this.props.onPrevious && <div className='hover' onClick={this.props.onPrevious} style={{
+                {this.props.onPrevious && <div className='uk-flex uk-flex-left uk-flex-middle' onClick={this.props.onPrevious} style={{
                     top: '0',
                     bottom: '0',
                     left: '0',
                     width: '100px',
                     position: 'absolute',
-                    // backgroundImage: `url(${require('images/left.svg')})`,
-                    backgroundSize: 'contain',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: '50%',
                     zIndex: 3,
-                }} />}
-                <img src={`${mediaFile.url}`} style={{
+                }}>
+                    <Icon icon='chevron-left' size={3} />
+                </div>}
+                <img src={thumbnails.length ? thumbnails[0].url : ''} style={{
                     boxShadow: '1px 0 0 0 rgba(255, 255, 255, 0.1) inset, 0 0 1px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 0, 0, 0.5)',
-                    backgroundColor: mediaFile.palette.length ? mediaFile.palette[0].node.color : '#fff',
+                    backgroundColor: mediaFile.palette.length ? mediaFile.palette[0].color : '#fff',
                     display: 'block',
                     maxWidth: '90%',
                     maxHeight: '90%',
@@ -140,8 +154,8 @@ export default class Lightbox extends React.Component<void, Props, void> {
                     zIndex: 3,
                 }} />
                 <div style={{
-                    backgroundColor: mediaFile.palette.edges.length ? mediaFile.palette.edges[0].node.color : '#fff',
-                    backgroundImage: `url(${mediaFile.url})`,
+                    backgroundColor: mediaFile.palette.length ? mediaFile.palette[0].color : '#fff',
+                    backgroundImage: `url(${thumbnails.length ? thumbnails[0].url : ''})`,
                     backgroundRepeat: 'no-repeat',
                     backgroundSize: 'cover',
                     backgroundPosition: '50%',
@@ -153,18 +167,16 @@ export default class Lightbox extends React.Component<void, Props, void> {
                     bottom: '-150px',
                     zIndex: 1,
                 }} />
-                {this.props.onNext && <div className='hover' onClick={this.props.onNext} style={{
+                {this.props.onNext && <div className='uk-flex uk-flex-right uk-flex-middle' onClick={this.props.onNext} style={{
                     top: '0',
                     bottom: '0',
                     right: '0',
                     width: '100px',
                     position: 'absolute',
-                    // backgroundImage: `url(${require('images/right.svg')})`,
-                    backgroundSize: 'contain',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition: '50%',
                     zIndex: 3,
-                }} />}
+                }}>
+                    <Icon icon='chevron-right' size={3} />
+                </div>}
                 <div>
                     {this.renderFaces()}
                 </div>
@@ -173,43 +185,52 @@ export default class Lightbox extends React.Component<void, Props, void> {
     }
 }
 
-Lightbox.fragment = gql`
-    fragment Lightbox on MediaFile {
-        id
-        path
-        name
-        url
-        mimeType
-        fileSize
-        width
-        height
-        duration
-        orientation
-        recorded
-        created
-        faces {
-            edges {
-                node {
-                    id
-                    x1
-                    y1
-                    x2
-                    y2
-                    person {
-                          id
-                          name
+const Query = gql`
+    query MediaFile($id: ID!, $profile: String) {
+        mediaFile(id: $id) {
+            ...Thumbnail,
+            faces {
+                edges {
+                    node {
+                        id
+                        x1
+                        y1
+                        x2
+                        y2
+                        person {
+                              id
+                              name
+                        }
+                    }
+                }
+            }
+            palette(first: 1) {
+                edges {
+                    node {
+                        id
+                        color
+                        prominence
                     }
                 }
             }
         }
-        palette(first: 1) {
-            edges {
-                node {
-                    id
-                    color
-                    prominence
-                }
-            }
-        }
     }
+    ${Thumbnail.fragment}
 `;
+
+export default graphql(Query, {
+    options: (props: Props) => ({
+        variables: {
+            id: props.mediaFile.id,
+            profile: JSON.stringify({
+                width: profile.lightbox.width,
+                quality: profile.quality,
+                mimeType: profile.mimeTypes,
+            }),
+        },
+    }),
+    props: ({ data, ownProps }) => ({
+        loading: data.loading,
+        mediaFile: (data.mediaFile && fromRelay(data.mediaFile)) || ownProps.mediaFile,
+    }),
+})(Lightbox);

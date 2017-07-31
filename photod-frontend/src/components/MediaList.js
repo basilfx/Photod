@@ -8,6 +8,7 @@ import React from 'react';
 
 import VisibilitySensor from 'react-visibility-sensor';
 
+import Lightbox from './Lightbox';
 import Thumbnail from './Thumbnail';
 
 import moment from 'moment-timezone';
@@ -38,6 +39,7 @@ type State = {
     selected: {
         [string]: boolean
     },
+    lightbox: ?number,
 };
 
 /**
@@ -76,6 +78,7 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
 
         this.state = {
             selected: {},
+            lightbox: null,
         };
     }
 
@@ -150,8 +153,48 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
         }
     }
 
-    @autobind handleLightbox() {
+    @autobind handleLightbox(mediaFile: MediaFile): void {
+        const index = this.props.mediaFiles.findIndex(
+            mediaFile_ => mediaFile_.id === mediaFile.id
+        );
 
+        this.setState({
+            lightbox: index,
+        });
+    }
+
+    @autobind handleLightboxNext(): void {
+        if (typeof this.state.lightbox !== 'number') {
+            return;
+        }
+
+        if ((this.state.lightbox + 1) >= this.props.mediaFiles.length) {
+            return;
+        }
+
+        this.setState({
+            lightbox: this.state.lightbox + 1,
+        });
+    }
+
+    @autobind handleLightboxPrevious(): void {
+        if (typeof this.state.lightbox !== 'number') {
+            return;
+        }
+
+        if ((this.state.lightbox - 1) === -1) {
+            return;
+        }
+
+        this.setState({
+            lightbox: this.state.lightbox - 1,
+        });
+    }
+
+    @autobind handleLightboxClose(): void {
+        this.setState({
+            lightbox: null,
+        });
     }
 
     getGroup(mediaFile: MediaFile): string {
@@ -183,23 +226,54 @@ export default class MediaList extends React.Component<DefaultProps, Props, Stat
                     selected={this.state.selected[mediaFile.id]}
                     mediaFile={mediaFile}
                     onClick={this.handleSelect}
+                    onDoubleClick={this.handleLightbox}
                 />
             );
         }
+    }
+
+    renderLightbox() {
+        let previous = null;
+        let next = null;
+
+        if (typeof this.state.lightbox !== 'number') {
+            return;
+        }
+
+        if (this.state.lightbox > 0) {
+            previous = this.handleLightboxPrevious;
+        }
+        if (this.state.lightbox < (this.props.mediaFiles.length - 1)) {
+            next = this.handleLightboxNext;
+        }
+
+        const mediaFile = this.props.mediaFiles[this.state.lightbox];
+
+        return (
+            <Lightbox
+                onPrevious={previous}
+                onNext={next}
+                onClose={this.handleLightboxClose}
+                mediaFile={mediaFile}
+            />
+        );
     }
 
     /**
      * @inheritdoc
      */
     render() {
+        const mediaFileCount = this.props.mediaFiles.length;
+
         return (
             <div>
                 <div className='uk-padding-small uk-height-1-1 uk-flex uk-flex-wrap'>
                     {Array.from(this.renderMediaFiles())}
                 </div>
-                {this.props.onLastItem && <div style={{ height: '50vh', marginTop: '-50vh' }}>
-                    <VisibilitySensor partialVisibility onChange={this.props.onLastItem} />
+                {this.props.onLastItem && <div style={{ height: '50%', marginTop: '-50%' }}>
+                    <VisibilitySensor minTopValue={1} key={`sensor-${mediaFileCount}`} partialVisibility onChange={this.props.onLastItem} />
                 </div>}
+                {this.renderLightbox()}
             </div>
         );
     }
