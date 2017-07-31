@@ -45,7 +45,7 @@ class DirectoryMediaList extends React.Component<void, Props, void> {
 
 const Query = gql`
     query MediaFiles($after: String, $directoryId: ID!, $profile: String) {
-        mediaFiles(first: 1, after: $after, directoryId: $directoryId) {
+        mediaFiles(first: 25, after: $after, directoryId: $directoryId) {
             edges {
                 node {
                     ...Thumbnail
