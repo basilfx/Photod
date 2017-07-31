@@ -288,6 +288,7 @@ class Search(graphene.Mutation):
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
 
+    media_file = relay.Node.Field(MediaFile)
     media_files = DjangoFilterConnectionField(
         MediaFile, filterset_class=MediaFileFilter)
 
