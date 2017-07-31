@@ -262,8 +262,8 @@ export default class Thumbnail extends React.Component<DefaultProps, Props, void
                 style={{
                     flexGrow: `${width / height * 100}`,
                     flexBasis: `${width * this.props.height / height}px`,
-                    maxHeight: `${this.props.height * 1.25}px`,
-                    maxWidth: `${this.props.height * 1.25 * (width / height)}px`,
+                    maxHeight: `${this.props.height * 1.5}px`,
+                    maxWidth: `${this.props.height * 1.5 * (width / height)}px`,
                     backgroundColor: info.backgroundColor,
                     marginRight: '16px',
                     marginBottom: '16px',
