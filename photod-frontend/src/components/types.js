@@ -21,5 +21,19 @@ export type Album = Node & {
  * Type declaration for MediaFileType.
  */
 export type MediaFile = {
-    id: String,
+    id: string,
+};
+
+export type Filmstrip = {
+    id: string,
+    frames: number,
+    width: number,
+    height: number,
+};
+
+export type Thumbnail = {
+    id: string,
+    url: string,
+    width: number,
+    height: number,
 };
