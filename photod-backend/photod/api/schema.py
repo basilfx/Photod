@@ -38,7 +38,7 @@ class ProfileFilter(django_filters.Filter):
                     default=Value(1),
                     output_field=IntegerField()
                 )
-                orderings += ["%s_ordered" % field, field]
+                orderings += ["%s_ordered" % field, "-%s" % field]
 
         # Perform inclusion of MIME type.
         if "mimeType" in profile:
