@@ -53,7 +53,16 @@ export default class MediaInfo extends React.Component<DefaultProps, Props, void
 
         const mediaFile = this.props.mediaFiles[0];
 
-        const matches = (mimeType) => true;
+        const matches = (mimeType) => {
+            const source = mediaFile.mimeType.split(';', 1)[0].split('/');
+            const target = mimeType.split(';', 1)[0].split('/');
+
+            if (target[0] === source[0] || target[0] === '*') {
+                if (target[1] === source[1] || target[1] === '*') {
+                    return true;
+                }
+            }
+        };
 
         return (
             <div>
