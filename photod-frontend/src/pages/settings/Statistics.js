@@ -98,8 +98,8 @@ class Statistics extends React.Component<DefaultProps, Props, void> {
 }
 
 const StatisticsQuery = gql`
-    query MediaFiles($cursor: String) {
-        jobs(first: 100, after: $cursor) {
+    query MediaFiles($after: String) {
+        jobs(first: 100, after: $after) {
             edges {
                 node {
                     id,

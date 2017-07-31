@@ -44,8 +44,8 @@ class AlbumMediaList extends React.Component<void, Props, void> {
 }
 
 const Querys = gql`
-    query MediaFiles($cursor: String, $albumId: ID, $profile: String) {
-        mediaFiles(first: 25, after: $cursor, albums_Id: $albumId) {
+    query MediaFiles($after: String, $albumId: ID, $profile: String) {
+        mediaFiles(first: 25, after: $after, albums_Id: $albumId) {
             edges {
                 node {
                     ...Thumbnail

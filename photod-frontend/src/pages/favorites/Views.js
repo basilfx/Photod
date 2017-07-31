@@ -44,8 +44,8 @@ class Views extends React.Component<void, Props, void> {
 }
 
 const Query = gql`
-    query MediaFiles($cursor: String, $profile: String) {
-        mediaFiles(first: 25, after: $cursor, hasViews: true) {
+    query MediaFiles($after: String, $profile: String) {
+        mediaFiles(first: 25, after: $after, hasViews: true) {
             edges {
                 node {
                     ...Thumbnail

@@ -142,8 +142,8 @@ class Shared extends React.Component<DefaultProps, Props, void> {
 }
 
 const SharedQuery = gql`
-    query Shared($cursor: String) {
-        shares(first: 100, after: $cursor) {
+    query Shared($after: String) {
+        shares(first: 100, after: $after) {
             edges {
                 node {
                     id

@@ -98,8 +98,8 @@ class People extends React.Component<DefaultProps, Props, void> {
 }
 
 const PersonsQuery = gql`
-    query MediaFiles($cursor: String) {
-        persons(first: 25, after: $cursor) {
+    query MediaFiles($after: String) {
+        persons(first: 25, after: $after) {
             edges {
                 node {
                     id

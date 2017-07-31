@@ -44,8 +44,8 @@ class Starred extends React.Component<void, Props, void> {
 }
 
 const Query = gql`
-    query MediaFiles($cursor: String, $profile: String) {
-        mediaFiles(first: 25, after: $cursor, isStarred: true) {
+    query MediaFiles($after: String, $profile: String) {
+        mediaFiles(first: 25, after: $after, isStarred: true) {
             edges {
                 node {
                     ...Thumbnail

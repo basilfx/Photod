@@ -87,8 +87,8 @@ class AlbumTreeview extends React.Component<void, Props, void> {
 }
 
 const Query = gql`
-    query Albums($parentId: ID, $cursor: String) {
-        albums(first: 100, after: $cursor, parentId: $parentId) {
+    query Albums($parentId: ID, $after: String) {
+        albums(first: 100, after: $after, parentId: $parentId) {
             edges {
                 node {
                     id

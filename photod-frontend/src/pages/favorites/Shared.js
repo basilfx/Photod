@@ -44,8 +44,8 @@ class Shared extends React.Component<void, Props, void> {
 }
 
 const Query = gql`
-    query MediaFiles($cursor: String, $profile: String) {
-        mediaFiles(first: 25, after: $cursor, isShared: true) {
+    query MediaFiles($after: String, $profile: String) {
+        mediaFiles(first: 25, after: $after, isShared: true) {
             edges {
                 node {
                     ...Thumbnail
