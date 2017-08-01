@@ -11,6 +11,16 @@ class MediaFileIndex(indexes.SearchIndex, indexes.Indexable):
     recorded = indexes.DateTimeField(model_attr="recorded", null=True)
     location = indexes.LocationField(null=True)
 
+    mime_type = indexes.CharField(model_attr="mime_type")
+
+    color = indexes.CharField(null=True)
+
+    faces = indexes.IntegerField()
+
+    width = indexes.IntegerField(model_attr="width", null=True)
+    height = indexes.IntegerField(model_attr="height", null=True)
+    aspect_ratio = indexes.FloatField(model_attr="aspect_ratio", null=True)
+
     def get_model(self):
         return MediaFile
 
@@ -19,6 +29,15 @@ class MediaFileIndex(indexes.SearchIndex, indexes.Indexable):
 
         if location:
             return "%s,%s" % (location.point.y, location.point.x)
+
+    def prepare_color(self, instance):
+        palette = instance.palette.all()
+
+        if palette:
+            return palette[0].classified_color
+
+    def prepare_faces(self, instance):
+        return instance.faces.count()
 
 
 class TagIndex(indexes.SearchIndex, indexes.Indexable):
