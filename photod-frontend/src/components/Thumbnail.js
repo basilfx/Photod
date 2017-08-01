@@ -324,6 +324,7 @@ Thumbnail.fragment = gql`
                     id
                     color
                     prominence
+                    classifiedColor
                 }
             }
         }

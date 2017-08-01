@@ -105,6 +105,11 @@ export default class MediaInfo extends React.Component<DefaultProps, Props, void
                     <dd>{mediaFile.locationsCount}</dd>
                 </dl>}
 
+                {mediaFile.palette.length > 0 && <dl className='uk-description-list'>
+                    <dt>Color</dt>
+                    <dd>{mediaFile.palette[0].classifiedColor} ({Math.round(mediaFile.palette[0].prominence * 100)}%)</dd>
+                </dl>}
+
                 {false && <dl className='uk-description-list'>
                     <dt>Tags</dt>
                     <dd>vidoe panorama</dd>
