@@ -1,3 +1,6 @@
+-e git+https://github.com/basilfx/graphene-django#egg=graphene_django
+-e git+https://github.com/basilfx/haystack-queryparser#egg=haystack_queryparser
+-e git+https://github.com/basilfx/python-mapzen.git#egg=mapzen
 av>=0.3.3
 celery>=4.0.2
 colorific>=0.3
@@ -14,10 +17,8 @@ django>=1.11.2
 ExifRead>=2.1.2
 face_recognition>=0.1.14
 geopy>=1.11.0
--e git+https://github.com/basilfx/graphene-django#egg=graphene_django
 opencv-python>=3.2.0.7
 Pillow>=4.1.1
 python-magic>=0.4.13
 tesserocr>=2.2.1
 tzlocal>=1.4
--e git+https://github.com/basilfx/python-mapzen.git#egg=mapzen

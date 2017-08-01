@@ -3,7 +3,8 @@ from django.db.models import IntegerField, Case, Value, When
 from django.contrib.auth import get_user_model
 
 from haystack.query import SearchQuerySet
-from haystack.inputs import AutoQuery
+
+from haystack_queryparser import ParseSQ, QueryParserException
 
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django import DjangoObjectType
@@ -282,7 +283,10 @@ class Search(graphene.Mutation):
 
         # Perform the query if there is one.
         if query:
-            results = SearchQuerySet().filter(content=AutoQuery(query))[:25]
+            try:
+                results = SearchQuerySet().filter(ParseSQ().parse(query))[:25]
+            except QueryParserException:
+                results = []
         else:
             results = []
 
