@@ -147,7 +147,7 @@ class Person(models.Model):
 
 class Palette(models.Model):
     class Meta:
-        ordering = ["prominence"]
+        ordering = ["-prominence"]
 
     media_file = models.ForeignKey("MediaFile", related_name="palette")
 
