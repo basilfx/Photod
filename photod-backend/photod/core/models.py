@@ -113,7 +113,7 @@ class Face(models.Model):
     x2 = models.FloatField()
     y2 = models.FloatField()
 
-    person = models.ForeignKey("Person", null=True)
+    person = models.ForeignKey("Person", null=True, related_name="faces")
 
     is_confirmed = models.BooleanField(default=False)
     is_ignored = models.BooleanField(default=False)
