@@ -119,6 +119,12 @@ class Face(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
+class Text(DjangoObjectType):
+    class Meta:
+        model = models.Text
+        interfaces = (relay.Node, )
+
+
 class Person(DjangoObjectType):
     class Meta:
         model = models.Person

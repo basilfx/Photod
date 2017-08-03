@@ -16,7 +16,7 @@ import gql from 'graphql-tag';
 
 import profile from 'profile';
 
-import type { MediaFile as BaseMediaFile, Face } from './types';
+import type { MediaFile as BaseMediaFile, Face, Text } from './types';
 
 /**
  * Type declaration for MediaFile.
@@ -29,6 +29,7 @@ type MediaFile = BaseMediaFile & {
     fileSize: number,
     duration: number,
     faces: ?Array<Face>,
+    texts: ?Array<Text>,
     url: string,
 };
 
@@ -130,13 +131,37 @@ class Lightbox extends React.Component<void, Props, void> {
                     left: `${face.x1 * 100}%`,
                     width: `${(face.x2 - face.x1) * 100}%`,
                     height: `${(face.y2 - face.y1) * 100}%`,
-                    border: '3px solid rgba(255, 0, 0, 0.5)',
+                    border: '3px solid rgba(255, 0, 0, 0.25)',
                     zIndex: 3000,
                 }} />
             );
         }
 
         return faces;
+    }
+
+    renderTexts() {
+        const texts = [];
+
+        if (!this.props.mediaFile.texts) {
+            return;
+        }
+
+        for (const text of this.props.mediaFile.texts) {
+            texts.push(
+                <div key={text.id} style={{
+                    position: 'absolute',
+                    top: `${text.y1 * 100}%`,
+                    left: `${text.x1 * 100}%`,
+                    width: `${(text.x2 - text.x1) * 100}%`,
+                    height: `${(text.y2 - text.y1) * 100}%`,
+                    border: '3px solid rgba(0, 0, 255, 0.25)',
+                    zIndex: 3000,
+                }} />
+            );
+        }
+
+        return texts;
     }
 
     /**
@@ -207,6 +232,7 @@ class Lightbox extends React.Component<void, Props, void> {
                 </div>}
                 <div ref={element => { this.faces = element; }}>
                     {this.renderFaces()}
+                    {this.renderTexts()}
                 </div>
             </div>
         );
@@ -229,6 +255,19 @@ const Query = gql`
                               id
                               name
                         }
+                    }
+                }
+            }
+            texts {
+                edges {
+                    node {
+                        id
+                        x1
+                        y1
+                        x2
+                        y2
+                        content
+                        confidence
                     }
                 }
             }

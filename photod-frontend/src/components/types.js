@@ -61,3 +61,13 @@ export type Face = {
     y2: number,
     person: ?Person,
 };
+
+export type Text = {
+    id: string,
+    x1: number,
+    x2: number,
+    y1: number,
+    y2: number,
+    content: string,
+    confidence: number,
+};
