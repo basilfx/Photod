@@ -312,11 +312,18 @@ class Query(graphene.ObjectType):
     media_files = DjangoFilterConnectionField(
         MediaFile, filterset_class=MediaFileFilter)
 
+    tag = relay.Node.Field(Tag)
     tags = DjangoFilterConnectionField(Tag)
+
     faces = DjangoFilterConnectionField(Face)
+
+    person = relay.Node.Field(Person)
     persons = DjangoFilterConnectionField(Person)
 
+    album = relay.Node.Field(Album)
     albums = DjangoFilterConnectionField(Album, parent_id=graphene.ID())
+
+    directory = relay.Node.Field(Directory)
     directories = DjangoFilterConnectionField(
         Directory, parent_id=graphene.ID(), collapse=graphene.Boolean())
 
