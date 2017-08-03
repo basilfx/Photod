@@ -124,6 +124,11 @@ class Person(DjangoObjectType):
         model = models.Person
         interfaces = (relay.Node, )
 
+    faces_count = graphene.Int()
+
+    def resolve_faces_count(self, args, context, info):
+        return self.faces.count()
+
 
 class Album(DjangoObjectType):
     class Meta:
