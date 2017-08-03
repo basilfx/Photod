@@ -12,7 +12,7 @@ import ListItem from 'ui/ListItem';
 /**
  * Type declaration for a AlphaListItem.
  */
-type AlphaListItem = {
+export type AlphaListItem = {
     key?: string,
     label: string,
     component: React.Element<*>,

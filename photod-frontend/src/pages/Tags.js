@@ -13,6 +13,7 @@ import SidebarLeft from 'components/SidebarLeft';
 import Menu from 'components/Menu';
 import AlphaList from 'components/AlphaList';
 
+import TagsListView from './TagsListView';
 import TagsMediaList from './TagsMediaList';
 
 import { graphql } from 'react-apollo';
@@ -20,6 +21,8 @@ import { graphql } from 'react-apollo';
 import gql from 'graphql-tag';
 
 import { createConnectionProps, fromRelay } from 'utils/graphql';
+
+import type { Tag } from 'components/types';
 
 /**
  * Type declaration for Props.
@@ -33,43 +36,13 @@ type Props = {
 };
 
 /**
- * Type declaration for DefaultProps.
- */
-type DefaultProps = {
-    // TODO
-};
-
-/**
  * The component.
  */
-class Tags extends React.Component<DefaultProps, Props, void> {
+class Tags extends React.Component<void, Props, void> {
     /**
      * @inheritdoc
      */
     props: Props;
-
-    /**
-     * @inheritdoc
-     */
-    static defaultProps = {
-
-    };
-
-    @autobind onLastItem() {
-        if (this.props.fetchNext){
-            this.props.fetchNext();
-        }
-    }
-
-    * renderItems() {
-        for (const tag of this.props.tags || []) {
-            yield {
-                key: tag.label,
-                label: tag.label,
-                component: <Link to={`/tags/${tag.label}`}>{tag.label}</Link>,
-            };
-        }
-    }
 
     /**
      * @inheritdoc
@@ -93,7 +66,7 @@ class Tags extends React.Component<DefaultProps, Props, void> {
                 sidebarLeft={
                     <SidebarLeft
                         menu={<Menu selectedKey='tags' />}
-                        panel={<AlphaList items={Array.from(this.renderItems())} selectedKey={this.props.tag} onLastItem={this.onLastItem} />}
+                        panel={<TagsListView tag={this.props.tag} />}
                     />
                 }
             >
@@ -104,22 +77,22 @@ class Tags extends React.Component<DefaultProps, Props, void> {
 }
 
 const Query = gql`
-    query Tags($after: String) {
-        tags(first: 100, after: $after) {
-            edges {
-                node {
-                    id
-                    label
-                }
-            }
-            pageInfo {
-                endCursor
-                hasNextPage
-            }
+    query Tag($tag: String!) {
+        tag(label: $id) {
+            name
         }
     }
 `;
 
 export default graphql(Query, {
-    props: ({ data }) => createConnectionProps(data, 'tags', fromRelay),
+    skip: (ownProps: Props) => !ownProps.id,
+    options: (props: Props) => ({
+        variables: {
+            tag: props.tag,
+        },
+    }),
+    props: ({ data, ownProps }) => ({
+        loading: data.loading,
+        person: fromRelay(data.person),
+    }),
 })(Tags);

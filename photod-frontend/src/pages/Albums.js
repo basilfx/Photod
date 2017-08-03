@@ -13,10 +13,21 @@ import Menu from 'components/Menu';
 import AlbumTreeview from './AlbumTreeview';
 import AlbumMediaList from './AlbumMediaList';
 
+import { fromRelay } from 'utils/graphql';
+
+import { graphql } from 'react-apollo';
+
+import gql from 'graphql-tag';
+
+import type { MediaFile, Album } from 'components/types';
+
 /**
  * Type declaration for Props.
  */
 type Props = {
+    loading: boolean,
+    album: ?Album,
+
     id?: string,
 };
 
@@ -30,7 +41,7 @@ type DefaultProps = {
 /**
  * The component.
  */
-export default class Albums extends React.Component<DefaultProps, Props, void> {
+class Albums extends React.Component<DefaultProps, Props, void> {
     /**
      * @inheritdoc
      */
@@ -53,6 +64,12 @@ export default class Albums extends React.Component<DefaultProps, Props, void> {
             },
         ];
 
+        if (this.props.album) {
+            trail.push({
+                label: this.props.album.name,
+            });
+        }
+
         return (
             <Main
                 header={<Header trail={trail} />}
@@ -68,3 +85,24 @@ export default class Albums extends React.Component<DefaultProps, Props, void> {
         );
     }
 }
+
+const Query = gql`
+    query Album($id: ID!) {
+        album(id: $id) {
+            name
+        }
+    }
+`;
+
+export default graphql(Query, {
+    skip: (ownProps: Props) => !ownProps.id,
+    options: (props: Props) => ({
+        variables: {
+            id: props.id,
+        },
+    }),
+    props: ({ data, ownProps }) => ({
+        loading: data.loading,
+        album: fromRelay(data.album),
+    }),
+})(Albums);

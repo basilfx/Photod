@@ -15,7 +15,20 @@ export type Directory = Node & {
 
 export type Album = Node & {
     name: string,
-}
+};
+
+export type Item = {};
+
+export type Tag = Item & {
+    id: string,
+    label: string,
+};
+
+export type Person = Item & {
+    id: string,
+    name: string,
+    facesCount: number,
+};
 
 /**
  * Type declaration for MediaFileType.
@@ -38,11 +51,6 @@ export type Thumbnail = {
     url: string,
     width: number,
     height: number,
-};
-
-export type Person = {
-    id: string,
-    name: string,
 };
 
 export type Face = {

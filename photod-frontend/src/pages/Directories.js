@@ -15,18 +15,21 @@ import MediaInfo from 'components/MediaInfo';
 import DirectoryTreeview from './DirectoryTreeview';
 import DirectoryMediaList from './DirectoryMediaList';
 
-// import { graphql } from 'react-apollo';
+import { fromRelay } from 'utils/graphql';
 
-// import gql from 'graphql-tag';
+import { graphql } from 'react-apollo';
 
-type MediaFileType = {
+import gql from 'graphql-tag';
 
-};
+import type { MediaFile, Directory } from 'components/types';
 
 /**
  * Type declaration for Props.
  */
 type Props = {
+    loading: boolean,
+    directory: ?Directory,
+
     id: ?string,
 };
 
@@ -38,13 +41,13 @@ type DefaultProps = {
 };
 
 type State = {
-    selection: ?Array<MediaFileType>,
+    selection: ?Array<MediaFile>,
 };
 
 /**
  * The component.
  */
-export default class Directories extends React.Component<DefaultProps, Props, State> {
+class Directories extends React.Component<DefaultProps, Props, State> {
     /**
      * @inheritdoc
      */
@@ -70,7 +73,7 @@ export default class Directories extends React.Component<DefaultProps, Props, St
         };
     }
 
-    @autobind handleSelection(selection: Array<MediaFileType>) {
+    @autobind handleSelection(selection: Array<MediaFile>) {
         this.setState({
             selection,
         });
@@ -86,9 +89,9 @@ export default class Directories extends React.Component<DefaultProps, Props, St
             },
         ];
 
-        if (this.props.id) {
+        if (this.props.directory) {
             trail.push({
-                label: this.props.id,
+                label: this.props.directory.name,
             });
         }
 
@@ -120,3 +123,25 @@ export default class Directories extends React.Component<DefaultProps, Props, St
         );
     }
 }
+
+const Query = gql`
+    query Directory($id: ID!) {
+        directory(id: $id) {
+            name
+            fullPath
+        }
+    }
+`;
+
+export default graphql(Query, {
+    skip: (ownProps: Props) => !ownProps.id,
+    options: (props: Props) => ({
+        variables: {
+            id: props.id,
+        },
+    }),
+    props: ({ data, ownProps }) => ({
+        loading: data.loading,
+        directory: fromRelay(data.directory),
+    }),
+})(Directories);

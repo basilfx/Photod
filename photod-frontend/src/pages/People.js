@@ -1,33 +1,34 @@
 // @flow
 
-import autobind from 'autobind-decorator';
+// import autobind from 'autobind-decorator';
 
 import React from 'react';
-
-import { Link } from 'react-router-dom';
 
 import Main from 'components/Main';
 
 import Header from 'components/Header';
 import SidebarLeft from 'components/SidebarLeft';
 import Menu from 'components/Menu';
-import AlphaList from 'components/AlphaList';
+
+import PeopleListView from './PeopleListView';
+import PeopleMediaList from './PeopleMediaList';
+
+import { fromRelay } from 'utils/graphql';
 
 import { graphql } from 'react-apollo';
 
 import gql from 'graphql-tag';
 
-import { fromGlobalId } from 'graphql-relay';
+import type { Person } from 'components/types';
 
 /**
  * Type declaration for Props.
  */
 type Props = {
-    id?: string,
     loading: boolean,
-    hasNextPage: boolean,
-    loadMoreEntries: () => void;
-    persons?: mixed
+    person: ?Person,
+
+    id?: string,
 };
 
 /**
@@ -53,33 +54,21 @@ class People extends React.Component<DefaultProps, Props, void> {
 
     };
 
-    @autobind onLastItem() {
-        if (this.props.hasNextPage && !this.props.loading) {
-            this.props.loadMoreEntries();
-        }
-    }
-
-    * renderItems() {
-        if (this.props.persons) {
-            for (const edge of this.props.persons) {
-                yield {
-                    key: edge.node.id,
-                    label: edge.node.name,
-                    component: <Link to={`/people/${fromGlobalId(edge.node.id).id}`}>{edge.node.name}</Link>,
-                };
-            }
-        }
-    }
-
     /**
      * @inheritdoc
      */
     render() {
         const trail = [
             {
-                label: 'people',
+                label: 'People',
             },
         ];
+
+        if (this.props.person) {
+            trail.push({
+                label: this.props.person.name,
+            });
+        }
 
         return (
             <Main
@@ -87,61 +76,33 @@ class People extends React.Component<DefaultProps, Props, void> {
                 sidebarLeft={
                     <SidebarLeft
                         menu={<Menu selectedKey='people' />}
-                        panel={<AlphaList items={Array.from(this.renderItems())} selectedKey={this.props.id} onLastItem={this.onLastItem} />}
+                        panel={<PeopleListView personId={this.props.id} />}
                     />
                 }
             >
-
+                {this.props.id && <PeopleMediaList personId={this.props.id} />}
             </Main>
         );
     }
 }
 
-const PersonsQuery = gql`
-    query MediaFiles($after: String) {
-        persons(first: 25, after: $after) {
-            edges {
-                node {
-                    id
-                    name
-                }
-            }
-            pageInfo {
-                endCursor
-                hasNextPage
-            }
+const Query = gql`
+    query Person($id: ID!) {
+        person(id: $id) {
+            name
         }
     }
 `;
 
-export default graphql(PersonsQuery, {
-    props({ data: { loading, persons, fetchMore } }) {
-        return {
-            loading,
-            persons: persons ? persons.edges : [],
-            hasNextPage: persons ? persons.pageInfo.hasNextPage : false,
-            loadMoreEntries: () => {
-                return fetchMore({
-                    variables: {
-                        cursor: persons.pageInfo.endCursor,
-                    },
-                    updateQuery: (previousResult, { fetchMoreResult }) => {
-                        if (!fetchMoreResult) {
-                            return previousResult;
-                        }
-
-                        const newEdges = fetchMoreResult.persons.edges;
-                        const pageInfo = fetchMoreResult.persons.pageInfo;
-
-                        return {
-                            persons: {
-                                edges: [...previousResult.persons.edges, ...newEdges],
-                                pageInfo,
-                            },
-                        };
-                    },
-                });
-            },
-        };
-    },
+export default graphql(Query, {
+    skip: (ownProps: Props) => !ownProps.id,
+    options: (props: Props) => ({
+        variables: {
+            id: props.id,
+        },
+    }),
+    props: ({ data, ownProps }) => ({
+        loading: data.loading,
+        person: fromRelay(data.person),
+    }),
 })(People);
