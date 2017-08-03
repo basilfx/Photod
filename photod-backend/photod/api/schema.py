@@ -59,7 +59,9 @@ class ProfileFilter(django_filters.Filter):
 class MediaFileFilter(django_filters.FilterSet):
     class Meta:
         model = models.MediaFile
-        fields = ["albums__id", "directory_id", "directory", "tag"]
+        fields = [
+            "albums__id", "faces__person__id", "directory_id", "directory",
+            "tag"]
 
     tag = django_filters.CharFilter(method="filter_tag")
 
