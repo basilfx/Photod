@@ -10,14 +10,9 @@ import Header from 'components/Header';
 import SidebarLeft from 'components/SidebarLeft';
 import Menu from 'components/Menu';
 
-import { Map, TileLayer } from 'react-leaflet';
+import Loading from 'components/Loading';
 
-import Leaflet from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-
-Leaflet.Icon.Default.imagePath = '//cdnjs.cloudflare.com/ajax/libs/leaflet/1.1.0/images/';
-
-window.Leaflet = Leaflet;
+import Loadable from 'react-loadable';
 
 /**
  * Type declaration for Props.
@@ -32,6 +27,16 @@ type Props = {
 type DefaultProps = {
     // TODO
 };
+
+/**
+ * Loadable version of the map, for bundle splitting.
+ *
+ * @type React.Component<*, *, *>
+ */
+const LoadableMap = Loadable({
+    loader: () => import('components/Map'),
+    loading: Loading,
+});
 
 /**
  * The component.
@@ -68,12 +73,7 @@ export default class Locations extends React.Component<DefaultProps, Props, void
                     />
                 }
             >
-                <Map center={[51.98510, 5.89872]} zoom={9} className='uk-height-1-1'>
-                    <TileLayer
-                        attribution='© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url={`${document.location.protocol}//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png`}
-                    />
-                </Map>
+                <LoadableMap />
             </Main>
         );
     }
