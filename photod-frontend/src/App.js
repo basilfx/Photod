@@ -64,25 +64,39 @@ export default class App extends React.Component<DefaultProps, Props, State> {
                     } />
 
                     <Route exact name='directories' path='/directories/:id?' component={
-                        ({ match }) => <Directories key='directories' id={match.params.id && toGlobalId('Directory', match.params.id)} />
+                        ({ match }) => (
+                            <Directories key='directories' id={match.params.id && toGlobalId('Directory', match.params.id)} />
+                        )
                     } />
                     <Route exact path='/albums/:id?' component={
-                        ({ match }) => <Albums key='albums' id={match.params.id && toGlobalId('Album', match.params.id)} />
+                        ({ match }) => (
+                            <Albums key='albums' id={match.params.id && toGlobalId('Album', match.params.id)} />
+                        )
                     } />
                     <Route exact path='/favorites/:page?' component={
-                        ({ match }) => <Favorites key='favorites' page={match.params.page} />
+                        ({ match }) => (
+                            <Favorites key='favorites' page={match.params.page} />
+                        )
                     } />
                     <Route exact path='/tags/:tag?' component={
-                        ({ match }) => <Tags key='tags' tag={match.params.tag} />
+                        ({ match }) => (
+                            <Tags key='tags' tag={match.params.tag} />
+                        )
                     } />
                     <Route exact path='/people/:id?' component={
-                        ({ match }) => <People key='people' id={match.params.id && toGlobalId('Person', match.params.id)} />
+                        ({ match }) => (
+                            <People key='people' id={match.params.id && toGlobalId('Person', match.params.id)} />
+                        )
                     } />
                     <Route exact path='/locations' component={
-                        ({ match }) => <Locations key='locations' />
+                        ({ match }) => (
+                            <Locations key='locations' />
+                        )
                     } />
                     <Route exact path='/settings/:page?' component={
-                        ({ match }) => <Settings key='settings' page={match.params.page} />
+                        ({ match }) => (
+                            <Settings key='settings' page={match.params.page} />
+                        )
                     } />
 
                     <Route component={NotFound} />
