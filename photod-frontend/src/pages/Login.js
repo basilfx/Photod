@@ -66,7 +66,7 @@ export default class Login extends React.Component<DefaultProps, Props, void> {
 
         if (!data.ok) {
             return UIkit.notification({
-                message: 'Login failed',
+                message: 'Login failed.',
                 pos: 'bottom-left',
                 status: 'danger',
             });
