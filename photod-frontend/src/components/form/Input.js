@@ -23,6 +23,7 @@ type Props = {
     errorHelp?: ErrorHelp,
     multiple: boolean,
     name: string,
+    onChange?: (string, mixed) => void,
     type: InputType,
     validate?: string,
     value?: mixed,
@@ -91,11 +92,23 @@ export default class Input extends React.Component<DefaultProps, Props, void> {
      * @inheritdoc
      */
     render() {
-        const { errorHelp, name, validate, value, className, ...props } = this.props;
+        const { errorHelp, name, validate, value, className, onChange, ...props } = this.props;
 
         // The value of a file input cannot be set.
         if (this.props.type !== 'file') {
-            props.value = value;
+            if (this.props.type === 'checkbox') {
+                props.checked = !!value;
+            }
+            else {
+                props.value = value;
+            }
+        }
+
+        // Improve the onChange event, if set.
+        if (onChange) {
+            props.onChange = event => {
+                onChange(name, this.getValue());
+            };
         }
 
         const formGroup = this.context.formGroup;
