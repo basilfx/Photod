@@ -4,7 +4,11 @@ import autobind from 'autobind-decorator';
 
 import React from 'react';
 
+import { connect } from 'react-redux';
+
 import Icon from 'ui/Icon';
+
+import { toggle } from 'modules/application/panels/actions';
 
 /**
  * Type declaration for Props.
@@ -12,6 +16,8 @@ import Icon from 'ui/Icon';
 type Props = {
     menu: React.Element<*>,
     panel?: React.Element<*>,
+    expanded: boolean,
+    toggle: () => void,
 };
 
 /**
@@ -22,25 +28,13 @@ type DefaultProps = {
 };
 
 /**
- * Type declaration for State.
- */
-type State = {
-    expanded: boolean,
-};
-
-/**
  * The component.
  */
-export default class SidebarLeft extends React.Component<DefaultProps, Props, State> {
+class SidebarLeft extends React.Component<DefaultProps, Props, void> {
     /**
      * @inheritdoc
      */
     props: Props;
-
-    /**
-     * @inheritdoc
-     */
-    state: State;
 
     /**
      * @inheritdoc
@@ -50,20 +44,12 @@ export default class SidebarLeft extends React.Component<DefaultProps, Props, St
     };
 
     /**
-     * @inheritdoc
+     * Handle panel toggeling.
+     * 
+     * @returns {void}
      */
-    constructor(props: Props) {
-        super(props);
-
-        this.state = {
-            expanded: true,
-        };
-    }
-
-    @autobind handleToggle() {
-        this.setState({
-            expanded: !this.state.expanded,
-        });
+    @autobind handleToggle(): void {
+        this.props.toggle();
     }
 
     /**
@@ -75,13 +61,24 @@ export default class SidebarLeft extends React.Component<DefaultProps, Props, St
                 <div className='tm-sidebar-left-menu' data-panel={!!this.props.panel}>
                     {this.props.menu}
                 </div>
-                {this.props.panel && <div className={`tm-sidebar-left-panel tm-sidebar-left-panel-${this.state.expanded ? 'expanded' : 'collapsed'} uk-overflow-auto`}>
+                {this.props.panel && <div className={`tm-sidebar-left-panel tm-sidebar-left-panel-${this.props.expanded ? 'expanded' : 'collapsed'} uk-overflow-auto`}>
                     <div onClick={this.handleToggle} className='tm-sidebar-toggle'>
-                        <Icon icon={`chevron-${this.state.expanded ? 'left' : 'right'}`} size={1.5} />
+                        <Icon icon={`chevron-${this.props.expanded ? 'left' : 'right'}`} size={1.5} />
                     </div>
-                    {this.state.expanded && this.props.panel}
+                    {this.props.expanded && this.props.panel}
                 </div>}
             </aside>
         );
     }
 }
+
+export default connect(
+    (state, props: Props) => ({
+        expanded: state.application.panels.left,
+    }),
+    (dispatch, props: Props) => ({
+        toggle() {
+            return dispatch(toggle('left'));
+        },
+    })
+)(SidebarLeft);
