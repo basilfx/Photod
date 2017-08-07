@@ -10,6 +10,8 @@ import App from './App';
 import ApolloClient, { createNetworkInterface } from 'apollo-client';
 import { ApolloProvider } from 'react-apollo';
 
+import { refresh } from 'modules/settings/actions';
+
 import configureStore from 'modules/configureStore';
 
 /*
@@ -46,6 +48,11 @@ if (process.env.NODE_ENV !== 'production') {
 if (process.env.NODE_ENV !== 'production') {
     window.store = store;
 }
+
+/*
+ * Initialize settings.
+ */
+store.dispatch(refresh());
 
 /*
  * Mount the application to the DOM.
