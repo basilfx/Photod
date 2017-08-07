@@ -7,9 +7,10 @@
  */
 export type ComponentClass =
     'a' |
+    'button' |
     'div' |
     'i' |
     'li' |
     'nav' |
     'span' |
-    'ul' ;
+    'ul';
