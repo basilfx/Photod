@@ -26,6 +26,7 @@ export type MediaFile = BaseMediaFile & {
     duration: ?number,
     facesCount: number,
     locationsCount: number,
+    starred: boolean,
 };
 
 /**
@@ -318,6 +319,7 @@ Thumbnail.fragment = gql`
         created
         facesCount
         locationsCount
+        starred
         palette(first: 1) {
             edges {
                 node {

@@ -1,4 +1,5 @@
 from django.urls import reverse
+from django.shortcuts import get_object_or_404
 from django.db.models import IntegerField, Case, Value, When
 from django.contrib.auth import get_user_model
 
@@ -238,10 +239,12 @@ class MediaFile(DjangoObjectType):
     filmstrips = DjangoFilterConnectionField(
         Filmstrip, filterset_class=FilmstripFilter)
 
+    url = graphene.String()
+
     faces_count = graphene.Int()
     locations_count = graphene.Int()
 
-    url = graphene.String()
+    starred = graphene.Boolean()
 
     def resolve_url(self, args, context, info):
         return reverse(media, args=[self.id])
@@ -251,6 +254,9 @@ class MediaFile(DjangoObjectType):
 
     def resolve_locations_count(self, args, context, info):
         return self.locations.count()
+
+    def resolve_starred(self, args, context, info):
+        return self.stars.filter(user=context.user).exists()
 
 
 class User(DjangoObjectType):
@@ -309,6 +315,45 @@ class Search(graphene.Mutation):
                 text=str(result.object)
             ) for result in results
         ])
+
+
+class View(graphene.Mutation):
+    class Input:
+        id = graphene.ID()
+
+    count = graphene.Int()
+
+    @staticmethod
+    def mutate(root, args, context, info):
+        media_file = get_object_or_404(models.MediaFile, args.get("id"))
+
+        view, created = models.View.get_or_create(
+            media_file=media_file, user=context.user)
+        view.count += 1
+        view.save()
+
+        return View(result=view.count)
+
+
+class Star(graphene.Mutation):
+    class Input:
+        id = graphene.ID(description="Identifier of media file.")
+        star = graphene.Boolean(description="True if star should be added.")
+
+    star = graphene.Boolean()
+
+    @staticmethod
+    def mutate(root, args, context, info):
+        media_file = get_object_or_404(models.MediaFile, args.get("id"))
+
+        if args.get("star"):
+            star, _ = models.Star.get_or_create(
+                media_file=media_file, user=context.user)
+        else:
+            models.Star.filter(
+                media_file=media_file, user=context.user).delete()
+
+        return Star(bool(args.get("star")))
 
 
 class Query(graphene.ObjectType):
@@ -377,6 +422,9 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     search = Search.Field()
+
+    star = Star.Field()
+    view = View.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
