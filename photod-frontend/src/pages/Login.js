@@ -11,6 +11,7 @@ import Form from 'components/form/Form';
 import FormGroup from 'components/form/FormGroup';
 import Input from 'components/form/Input';
 
+import Button from 'ui/Button';
 import Icon from 'ui/Icon';
 
 import UIkit from 'uikit';
@@ -112,9 +113,9 @@ export default class Login extends React.Component<DefaultProps, Props, void> {
                                 </FormGroup>
                             </div>
                             <div className='uk-margin'>
-                                <button type='submit' className='uk-width-1-1 uk-button uk-button-primary uk-button-large'>
+                                <Button type='submit' buttonSize='large' buttonStyle='primary' className='uk-width-1-1'>
                                     Login
-                                </button>
+                                </Button>
                             </div>
                             <div className='uk-margin uk-text-small'>
                                 <label className='uk-float-left'><Input type='checkbox' name='remember' /> Remember Me</label>

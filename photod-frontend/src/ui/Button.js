@@ -16,6 +16,13 @@ type ButtonStyle =
     'link';
 
 /**
+ * Button size definitions.
+ */
+type ButtonSize =
+    '' |
+    'large';
+
+/**
  * Button type definitions.
  */
 type ButtonType = 'button' | 'reset' | 'submit';
@@ -28,6 +35,7 @@ type Props = {
     className: string,
     componentClass?: ComponentClass,
     buttonStyle?: ButtonStyle,
+    buttonSize?: ButtonSize,
     onClick?: (Event) => void,
     type?: ButtonType,
 };
@@ -39,6 +47,7 @@ type DefaultProps = {
     className: string,
     componentClass: ComponentClass,
     buttonStyle: ButtonStyle,
+    buttonSize: ButtonSize,
     type: ButtonType,
 };
 
@@ -60,6 +69,7 @@ export default class Button extends React.Component<DefaultProps, Props, void> {
         className: '',
         componentClass: 'button',
         buttonStyle: 'default',
+        buttonSize: '',
         type: 'button',
     };
 
@@ -67,7 +77,7 @@ export default class Button extends React.Component<DefaultProps, Props, void> {
      * @inheritdoc
      */
     render() {
-        const className = `uk-button uk-button-${String(this.props.buttonStyle)} ${this.props.className}`;
+        const className = `uk-button uk-button-${String(this.props.buttonStyle)} uk-button-${String(this.props.buttonSize)} ${this.props.className}`;
         const props = {
             className: className.trim(),
             onClick: this.props.onClick,
