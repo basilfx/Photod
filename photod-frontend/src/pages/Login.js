@@ -18,11 +18,13 @@ import UIkit from 'uikit';
 
 import queryString from 'query-string';
 
+import type { RouterHistory } from 'react-router';
+
 /**
  * Type declaration for Props.
  */
 type Props = {
-    history: mixed,
+    history: RouterHistory,
 };
 
 /**
@@ -50,20 +52,35 @@ export default class Login extends React.Component<DefaultProps, Props, void> {
 
     };
 
-    @autobind async handleValidSubmit(values: any) {
+    /**
+     * Handle valid form submission.
+     *
+     * @returns {Promise<void>}
+     */
+    @autobind async handleValidSubmit(values: any): Promise<void> {
         const form = new FormData();
 
         form.append('username', values.username);
         form.append('password', values.password);
         form.append('remember', values.remember);
 
-        const response = await fetch('/login', {
-            method: 'POST',
-            body: form,
-            credentials: 'same-origin',
-        });
+        // Perform request to the server.
+        let data;
 
-        const data = await response.json();
+        if (process.env.DEMO) {
+            data = {
+                ok: values.username === 'demo' && values.password === 'demo',
+            };
+        }
+        else {
+            const response = await fetch('/login', {
+                method: 'POST',
+                body: form,
+                credentials: 'same-origin',
+            });
+
+            data = await response.json();
+        }
 
         if (!data.ok) {
             return UIkit.notification({
@@ -73,7 +90,7 @@ export default class Login extends React.Component<DefaultProps, Props, void> {
             });
         }
 
-        // Forward to next page.
+        // Forward to next page on success.
         const search = queryString.parse(location.search);
 
         UIkit.notification({
