@@ -27,9 +27,6 @@ module.exports = {
         new BabiliPlugin(),
         new CompressionPlugin(),
     ],
-    output: {
-        filename: config.output.filename,
-        path: config.output.path,
-    },
+    output: config.output,
     resolve: config.resolve,
 };
