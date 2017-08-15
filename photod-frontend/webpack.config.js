@@ -88,7 +88,7 @@ module.exports = {
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'public'),
-        publicPath: isDevServer ? 'http://localhost:8000/' : (process.env.PUBLIC_PATH || '/static/'),
+        publicPath: process.env.PUBLIC_PATH || (isDevServer ? 'http://localhost:8000/' : '/static/'),
     },
     resolve: {
         modules: [
