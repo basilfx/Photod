@@ -3,7 +3,6 @@ const webpack = require('webpack');
 
 const CircularDependencyPlugin = require('circular-dependency-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const FlowtypePlugin = require('flowtype-loader/plugin');
 
 // Detect if started via webpack-dev-server or not.
 const isDevServer = process.argv[1].indexOf('webpack-dev-server') >= 0;
@@ -17,12 +16,6 @@ module.exports = {
     ],
     module: {
         rules: [
-            /*{
-                test: /\.jsx?$/,
-                enforce: 'pre',
-                exclude: /node_modules/,
-                use: 'flowtype-loader',
-            },*/
             {
                 test: /\.jsx?$/,
                 exclude: /node_modules/,
@@ -69,9 +62,6 @@ module.exports = {
         new webpack.WatchIgnorePlugin([
             path.resolve(__dirname, 'node_modules'),
         ]),
-        /*new FlowtypePlugin({
-            cwd: path.resolve(__dirname),
-        }),*/
         new ExtractTextPlugin({
             disable: true,
         }),
