@@ -57,6 +57,9 @@ module.exports = {
         new webpack.LoaderOptionsPlugin({
             debug: true,
         }),
+        new webpack.EnvironmentPlugin({
+            'DEMO': false,
+        }),
         new webpack.NamedModulesPlugin(),
         new webpack.NoEmitOnErrorsPlugin(),
         new webpack.WatchIgnorePlugin([

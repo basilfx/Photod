@@ -18,9 +18,10 @@ module.exports = {
             minimize: true,
             debug: false,
         }),
-        new webpack.EnvironmentPlugin([
-            'NODE_ENV',
-        ]),
+        new webpack.EnvironmentPlugin({
+            'NODE_ENV': 'production',
+            'DEMO': false,
+        }),
         new webpack.NoEmitOnErrorsPlugin(),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new ExtractTextPlugin('style.css'),

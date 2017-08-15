@@ -53,7 +53,12 @@ class Profile extends React.Component<DefaultProps, Props, void> {
      * @return {void}
      */
     @autobind handleLogout() {
-        window.location.href = '/logout';
+        if (process.env.DEMO) {
+            window.location.href = '/login';
+        }
+        else {
+            window.location.href = '/logout';
+        }
     }
 
     /**
